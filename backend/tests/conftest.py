@@ -2,41 +2,20 @@ import asyncio
 import os
 from collections.abc import AsyncIterator, Iterator
 from pathlib import Path
-from urllib.parse import urlencode
 from uuid import uuid4
 
 import asyncpg
 import httpx
 import pytest
 from alembic import command
-from backend.app import create_app
-from backend.features.auth.domain import ExternalIdentity, IdentityProvider
-from backend.platform.database.migrations import migration_config
-from backend.shared import AuthenticationRequired
-from dishka import Provider, Scope, provide
 from fastapi import FastAPI
 from fastapi_canon import Feature
 from sqlalchemy.engine import make_url
 
+from backend.app import create_app
+from backend.platform.database.migrations import migration_config
+from tests.fakes import GoogleTestProvider
 from tests.support import sign_in
-
-
-class FakeGoogle(IdentityProvider):
-    """Only the nondeterministic Google boundary is scripted; auth/SQL/transactions are real."""
-
-    def authorize_url(self, *, state: str, verifier: str, nonce: str) -> str:
-        return "https://accounts.google.test/authorize?" + urlencode({"state": state})
-
-    async def exchange(self, *, code: str, verifier: str, nonce: str) -> ExternalIdentity:
-        if code == "invalid":
-            raise AuthenticationRequired
-        return ExternalIdentity(issuer="https://accounts.google.com", subject=code)
-
-
-class GoogleTestProvider(Provider):
-    @provide(scope=Scope.APP, override=True)
-    def google(self) -> IdentityProvider:
-        return FakeGoogle()
 
 
 @pytest.fixture

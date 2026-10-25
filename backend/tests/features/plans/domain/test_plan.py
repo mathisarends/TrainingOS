@@ -4,6 +4,7 @@ from decimal import Decimal as D
 from uuid import uuid4
 
 import pytest
+
 from backend.features.exercises.domain import Category
 from backend.features.plans.domain import Plan, Prescription, Slot, TrainingDay
 

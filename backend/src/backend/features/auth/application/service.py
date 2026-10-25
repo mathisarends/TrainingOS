@@ -96,7 +96,7 @@ class AuthService:
         if athlete is None:
             raise AuthenticationRequired
         login_session = await self._auth.get_session(token_hash=token_hash(token))
-        if login_session is None:
+        if login_session is None or login_session.expires_at <= datetime.now(UTC):
             raise AuthenticationRequired
         return athlete
 

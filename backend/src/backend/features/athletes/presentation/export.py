@@ -15,6 +15,11 @@ from .mapper import to_response
 from .schemas import AthleteResponse
 
 
+class IdentityExportResponse(Schema):
+    issuer: str
+    subject: str
+
+
 class AccountExportResponse(Schema):
     format_version: Literal[1] = 1
     athlete: AthleteResponse
@@ -22,6 +27,8 @@ class AccountExportResponse(Schema):
     plans: list[PlanResponse]
     sessions: list[SessionResponse]
     bodyweight: list[WeighInResponse]
+    identities: list[IdentityExportResponse]
+    shared_templates: list[PlanResponse]
 
 
 def to_export_response(export: AccountExport) -> AccountExportResponse:
@@ -32,4 +39,9 @@ def to_export_response(export: AccountExport) -> AccountExportResponse:
         plans=[plan_response(item, preferences) for item in export.plans],
         sessions=[session_response(item, preferences) for item in export.sessions],
         bodyweight=[weigh_in_response(item, preferences) for item in export.bodyweight],
+        identities=[
+            IdentityExportResponse(issuer=item.issuer, subject=item.subject)
+            for item in export.identities
+        ],
+        shared_templates=[plan_response(item, preferences) for item in export.shared_templates],
     )

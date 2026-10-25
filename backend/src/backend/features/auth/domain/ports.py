@@ -14,6 +14,9 @@ class IdentityProvider(ABC):
 
 class AuthRepository(ABC):
     @abstractmethod
+    async def identities(self, *, athlete_id: UUID) -> list[ExternalIdentity]: ...
+
+    @abstractmethod
     async def save_attempt(self, *, attempt: LoginAttempt) -> None: ...
 
     @abstractmethod

@@ -59,11 +59,7 @@ class ExerciseService:
         if exercise is None:
             raise NotFound
         sessions = await self._sessions.list(athlete_id=athlete_id)
-        if any(
-            slot.exercise_id == exercise_id and slot.sets
-            for session in sessions
-            for slot in session.slots
-        ):
+        if any(slot.exercise_id == exercise_id for session in sessions for slot in session.slots):
             exercise.archive()
             await self._exercises.save(exercise=exercise)
             return

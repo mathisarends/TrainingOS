@@ -3,6 +3,7 @@ from decimal import Decimal as D
 
 import pytest
 from httpx import AsyncClient
+
 from tests.support import configured_plan, record_set, start_session
 
 pytestmark = pytest.mark.integration

@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from uuid import UUID
 
 from backend.features.athletes.domain import Athlete, AthleteRepository, Preferences
+from backend.features.auth.domain import AuthRepository, ExternalIdentity
 from backend.features.bodyweight.domain import BodyweightRepository, WeighIn
 from backend.features.exercises.domain import Exercise, ExerciseRepository
 from backend.features.plans.domain import Plan, PlanRepository
@@ -16,6 +17,8 @@ class AccountExport:
     plans: list[Plan]
     sessions: list[Session]
     bodyweight: list[WeighIn]
+    identities: list[ExternalIdentity]
+    shared_templates: list[Plan]
 
 
 class AthleteService:
@@ -26,6 +29,7 @@ class AthleteService:
         plan_repository: PlanRepository,
         session_repository: SessionRepository,
         bodyweight_repository: BodyweightRepository,
+        auth_repository: AuthRepository,
     ) -> None:
         self._athletes, self._exercises, self._plans = (
             athlete_repository,
@@ -33,6 +37,7 @@ class AthleteService:
             plan_repository,
         )
         self._sessions, self._bodyweight = session_repository, bodyweight_repository
+        self._auth = auth_repository
 
     async def configure(self, *, athlete_id: UUID, preferences: Preferences) -> Athlete:
         athlete = await self._athletes.get(athlete_id=athlete_id)
@@ -55,4 +60,6 @@ class AthleteService:
             plans=await self._plans.list(athlete_id=athlete_id),
             sessions=await self._sessions.list(athlete_id=athlete_id),
             bodyweight=await self._bodyweight.list(athlete_id=athlete_id),
+            identities=await self._auth.identities(athlete_id=athlete_id),
+            shared_templates=await self._plans.templates(athlete_id=athlete_id),
         )

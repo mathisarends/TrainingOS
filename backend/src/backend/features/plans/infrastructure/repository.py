@@ -45,6 +45,12 @@ class SqlPlanRepository(PlanRepository):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
+    async def templates(self, *, athlete_id: UUID) -> list[Plan]:
+        rows = await self._session.exec(
+            select(TemplateRow).where(col(TemplateRow.athlete_id) == athlete_id)
+        )
+        return [from_payload(row.payload) for row in rows]
+
     async def list(self, *, athlete_id: UUID) -> list[Plan]:
         rows = await self._session.exec(
             select(PlanRow).where(col(PlanRow.athlete_id) == athlete_id).order_by(col(PlanRow.id))

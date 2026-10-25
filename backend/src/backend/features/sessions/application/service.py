@@ -4,6 +4,7 @@ from decimal import Decimal
 from uuid import UUID
 
 from backend.features.athletes.domain import Preferences
+from backend.features.exercises.domain import ExerciseRepository
 from backend.features.plans.domain import PlanRepository, PlanStatus
 from backend.features.sessions.domain import Session, SessionRepository, SessionSlot, WorkSet
 from backend.features.training.domain import backoff, e1rm
@@ -29,9 +30,13 @@ class SetFeedback:
 
 class SessionService:
     def __init__(
-        self, session_repository: SessionRepository, plan_repository: PlanRepository
+        self,
+        session_repository: SessionRepository,
+        plan_repository: PlanRepository,
+        exercise_repository: ExerciseRepository,
     ) -> None:
         self._sessions, self._plans = session_repository, plan_repository
+        self._exercises = exercise_repository
 
     async def get(self, *, athlete_id: UUID, session_id: UUID) -> Session:
         session = await self._sessions.get(athlete_id=athlete_id, session_id=session_id)
@@ -129,12 +134,16 @@ class SessionService:
             preferences=preferences,
         )
         await self._sessions.save(session=session)
+        exercise = await self._exercises.get(athlete_id=athlete_id, exercise_id=slot.exercise_id)
+        new_personal_record = (
+            exercise is not None and exercise.main and maximum > max(historical, default=Decimal(0))
+        )
         return SetFeedback(
             session=session,
             work_set=work_set,
             e1rm_kg=maximum,
             backoff_weight_kg=backoff_weight,
-            new_personal_record=slot.main and maximum > max(historical, default=Decimal(0)),
+            new_personal_record=new_personal_record,
         )
 
     async def guidance(

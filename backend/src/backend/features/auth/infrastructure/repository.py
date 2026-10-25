@@ -25,6 +25,12 @@ class SqlAuthRepository(AuthRepository):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
+    async def identities(self, *, athlete_id: UUID) -> list[ExternalIdentity]:
+        rows = await self._session.exec(
+            select(IdentityRow).where(col(IdentityRow.athlete_id) == athlete_id)
+        )
+        return [ExternalIdentity(issuer=row.issuer, subject=row.subject) for row in rows]
+
     async def save_attempt(self, *, attempt: LoginAttempt) -> None:
         await self._session.exec(
             delete(AttemptRow).where(col(AttemptRow.expires_at) < datetime.now(UTC))

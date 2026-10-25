@@ -1,6 +1,7 @@
 from decimal import Decimal as D
 
 import pytest
+
 from backend.features.athletes.domain import Preferences, WeightUnit
 from backend.features.training.domain import backoff, e1rm, effort_to_rpe
 from backend.shared import InvalidInput

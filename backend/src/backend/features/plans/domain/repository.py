@@ -6,6 +6,9 @@ from .models import Plan
 
 class PlanRepository(ABC):
     @abstractmethod
+    async def templates(self, *, athlete_id: UUID) -> list[Plan]: ...
+
+    @abstractmethod
     async def list(self, *, athlete_id: UUID) -> list[Plan]: ...
 
     @abstractmethod
