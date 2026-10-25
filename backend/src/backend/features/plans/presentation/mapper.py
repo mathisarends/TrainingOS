@@ -1,6 +1,6 @@
-from backend.features.athletes.domain import EffortScale, Preferences
 from backend.features.plans.application import NextTraining
 from backend.features.plans.domain import Plan, Prescription
+from backend.features.users.domain import EffortScale, Preferences
 
 from .schemas import (
     DayResponse,
@@ -73,5 +73,5 @@ def to_next_response(training: NextTraining | None) -> NextTrainingResponse:
         day_id=training.day_id,
         week=training.week,
         scheduled_date=training.scheduled_date,
-        running_session_id=training.running_session_id,
+        running_training_session_id=training.running_training_session_id,
     )

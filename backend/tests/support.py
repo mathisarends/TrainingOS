@@ -39,9 +39,9 @@ async def configured_plan(
     return copied.json()
 
 
-async def start_session(client: AsyncClient, plan: dict, *, week: int = 1) -> dict:
+async def start_training_session(client: AsyncClient, plan: dict, *, week: int = 1) -> dict:
     response = await client.post(
-        "/api/v1/sessions",
+        "/api/v1/training-sessions",
         json={"plan_id": plan["id"], "day_id": plan["days"][0]["id"], "week": week},
     )
     assert response.status_code == 201, response.text
@@ -57,14 +57,14 @@ async def record_set(
     effort: Decimal | int = 8,
 ) -> dict:
     response = await client.post(
-        f"/api/v1/sessions/{session['id']}/slots/{session['slots'][0]['id']}/sets",
+        f"/api/v1/training-sessions/{session['id']}/slots/{session['slots'][0]['id']}/sets",
         json={"weight": str(weight), "reps": reps, "effort": str(effort)},
     )
     assert response.status_code == 201, response.text
     return response.json()
 
 
-async def sign_in(client: httpx.AsyncClient, subject: str = "athlete-a") -> dict:
+async def sign_in(client: httpx.AsyncClient, subject: str = "user-a") -> dict:
     started = await client.get("/api/v1/auth/google/login")
     assert started.status_code == 307, started.text
     state = parse_qs(urlparse(started.headers["location"]).query)["state"][0]

@@ -1,14 +1,16 @@
+from decimal import Decimal as D
+
 import pytest
 from httpx import AsyncClient
 
-from tests.support import configured_plan, record_set, start_session
+from tests.support import configured_plan, record_set, start_training_session
 
 pytestmark = pytest.mark.integration
 
 
 async def test_exercise_with_history_is_archived_and_keeps_records(client: AsyncClient) -> None:
     plan = await configured_plan(client)
-    session = await start_session(client, plan)
+    session = await start_training_session(client, plan)
     await record_set(client, session)
     exercise_id = session["slots"][0]["exercise_id"]
 
@@ -16,14 +18,16 @@ async def test_exercise_with_history_is_archived_and_keeps_records(client: Async
     assert deleted.status_code == 204
     catalog = (await client.get("/api/v1/exercises")).json()["items"]
     assert next(item for item in catalog if item["id"] == exercise_id)["archived"]
-    assert len((await client.get("/api/v1/statistics")).json()["records"]) == 1
+    reloaded = (await client.get(f"/api/v1/training-sessions/{session['id']}")).json()
+    assert reloaded["slots"][0]["exercise_id"] == exercise_id
+    assert D(reloaded["slots"][0]["sets"][0]["e1rm"]) == 125
 
 
 async def test_catalog_changes_update_plan_and_leave_session_snapshot_intact(
     client: AsyncClient,
 ) -> None:
     plan = await configured_plan(client)
-    session = await start_session(client, plan)
+    session = await start_training_session(client, plan)
     slot = session["slots"][0]
 
     renamed = await client.put(
@@ -32,7 +36,7 @@ async def test_catalog_changes_update_plan_and_leave_session_snapshot_intact(
     )
     assert renamed.status_code == 200
     current_plan = (await client.get(f"/api/v1/plans/{plan['id']}")).json()
-    current_session = (await client.get(f"/api/v1/sessions/{session['id']}")).json()
+    current_session = (await client.get(f"/api/v1/training-sessions/{session['id']}")).json()
     assert current_plan["days"][0]["slots"][0]["exercise_name"] == "Squat renamed"
     assert current_plan["days"][0]["slots"][0]["category"] == "legs"
     assert current_session["slots"][0]["exercise_name"] == slot["exercise_name"]
@@ -55,10 +59,11 @@ async def test_custom_exercise_without_references_can_be_deleted(client: AsyncCl
 
 async def test_captured_exercise_is_retained_before_first_set(client: AsyncClient) -> None:
     plan = await configured_plan(client)
-    session = await start_session(client, plan)
+    session = await start_training_session(client, plan)
     slot = session["slots"][0]
     await client.delete(f"/api/v1/plans/{plan['id']}/days/{session['day_id']}/slots/{slot['id']}")
     assert (await client.delete(f"/api/v1/exercises/{slot['exercise_id']}")).status_code == 204
     feedback = await record_set(client, session)
     assert feedback["new_personal_record"]
-    assert len((await client.get("/api/v1/statistics")).json()["records"]) == 1
+    reloaded = (await client.get(f"/api/v1/training-sessions/{session['id']}")).json()
+    assert len(reloaded["slots"][0]["sets"]) == 1

@@ -3,13 +3,13 @@ from collections.abc import AsyncIterator
 import httpx
 from dishka import Provider, Scope, provide
 
-from backend.features.athletes.domain import AthleteRepository
 from backend.features.auth.application import AuthService
 from backend.features.auth.domain import AuthRepository, IdentityProvider
 from backend.features.auth.infrastructure.google_oauth import GoogleOAuthClient
 from backend.features.auth.infrastructure.repository import SqlAuthRepository
 from backend.features.auth.presentation.cookies import AuthCookies
 from backend.features.exercises.domain import ExerciseRepository
+from backend.features.users.domain import UserRepository
 from backend.settings import AppSettings
 
 
@@ -30,14 +30,14 @@ class AuthProvider(Provider):
     def auth_service(
         self,
         auth_repository: AuthRepository,
-        athlete_repository: AthleteRepository,
+        user_repository: UserRepository,
         exercise_repository: ExerciseRepository,
         identity_provider: IdentityProvider,
         settings: AppSettings,
     ) -> AuthService:
         return AuthService(
             auth_repository,
-            athlete_repository,
+            user_repository,
             exercise_repository,
             identity_provider,
             settings.session_days,

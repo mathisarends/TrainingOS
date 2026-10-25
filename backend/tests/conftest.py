@@ -88,5 +88,5 @@ async def other_client(app: FastAPI) -> AsyncIterator[httpx.AsyncClient]:
         base_url="http://test",
         headers={"Origin": "http://localhost:5173"},
     ) as client:
-        await sign_in(client, "athlete-b")
+        await sign_in(client, "user-b")
         yield client

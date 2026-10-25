@@ -15,7 +15,7 @@ from backend.features.plans.domain import (
     Slot,
     TrainingDay,
 )
-from backend.features.sessions.domain import SessionRepository
+from backend.features.training_sessions.domain import TrainingSessionRepository
 from backend.shared import Conflict, InvalidInput, NotFound
 
 
@@ -31,7 +31,7 @@ class NextTraining:
     day_id: UUID
     week: int
     scheduled_date: date
-    running_session_id: UUID | None = None
+    running_training_session_id: UUID | None = None
 
 
 class PlanService:
@@ -39,19 +39,19 @@ class PlanService:
         self,
         plan_repository: PlanRepository,
         exercise_repository: ExerciseRepository,
-        session_repository: SessionRepository,
+        training_session_repository: TrainingSessionRepository,
     ) -> None:
-        self._plans, self._exercises, self._sessions = (
+        self._plans, self._exercises, self._training_sessions = (
             plan_repository,
             exercise_repository,
-            session_repository,
+            training_session_repository,
         )
 
-    async def list(self, *, athlete_id: UUID) -> list[Plan]:
-        return await self._plans.list(athlete_id=athlete_id)
+    async def list(self, *, user_id: UUID) -> list[Plan]:
+        return await self._plans.list(user_id=user_id)
 
-    async def get(self, *, athlete_id: UUID, plan_id: UUID) -> Plan:
-        plan = await self._plans.get(athlete_id=athlete_id, plan_id=plan_id)
+    async def get(self, *, user_id: UUID, plan_id: UUID) -> Plan:
+        plan = await self._plans.get(user_id=user_id, plan_id=plan_id)
         if plan is None:
             raise NotFound
         return plan
@@ -59,7 +59,7 @@ class PlanService:
     async def create(
         self,
         *,
-        athlete_id: UUID,
+        user_id: UUID,
         title: str,
         start_date: date,
         weeks: int,
@@ -69,7 +69,7 @@ class PlanService:
             TrainingDay(id=uuid4(), name=day.name, weekday=day.weekday) for day in days
         )
         plan = Plan(
-            athlete_id=athlete_id,
+            user_id=user_id,
             title=title,
             start_date=start_date,
             weeks=weeks,
@@ -81,21 +81,21 @@ class PlanService:
     async def configure(
         self,
         *,
-        athlete_id: UUID,
+        user_id: UUID,
         plan_id: UUID,
         title: str,
         start_date: date,
         recommendations: bool,
     ) -> Plan:
-        plan = await self.get(athlete_id=athlete_id, plan_id=plan_id)
+        plan = await self.get(user_id=user_id, plan_id=plan_id)
         plan.configure(title=title, start_date=start_date, recommendations=recommendations)
         await self._plans.save(plan=plan)
         return plan
 
-    async def set_status(self, *, athlete_id: UUID, plan_id: UUID, status: PlanStatus) -> Plan:
-        plan = await self.get(athlete_id=athlete_id, plan_id=plan_id)
+    async def set_status(self, *, user_id: UUID, plan_id: UUID, status: PlanStatus) -> Plan:
+        plan = await self.get(user_id=user_id, plan_id=plan_id)
         if status == PlanStatus.ACTIVE:
-            for current in await self._plans.list(athlete_id=athlete_id):
+            for current in await self._plans.list(user_id=user_id):
                 if current.status == PlanStatus.ACTIVE and current.id != plan.id:
                     current.set_status(PlanStatus.ENDED)
                     await self._plans.save(plan=current)
@@ -104,11 +104,11 @@ class PlanService:
         return plan
 
     async def add_slot(
-        self, *, athlete_id: UUID, plan_id: UUID, day_id: UUID, exercise_id: UUID, rest_seconds: int
+        self, *, user_id: UUID, plan_id: UUID, day_id: UUID, exercise_id: UUID, rest_seconds: int
     ) -> Plan:
-        plan = await self.get(athlete_id=athlete_id, plan_id=plan_id)
+        plan = await self.get(user_id=user_id, plan_id=plan_id)
         day = plan.day(day_id)
-        exercise = await self._exercises.get(athlete_id=athlete_id, exercise_id=exercise_id)
+        exercise = await self._exercises.get(user_id=user_id, exercise_id=exercise_id)
         if exercise is None:
             raise NotFound
         if exercise.archived:
@@ -126,9 +126,9 @@ class PlanService:
         return plan
 
     async def reorder(
-        self, *, athlete_id: UUID, plan_id: UUID, day_id: UUID, slot_ids: tuple[UUID, ...]
+        self, *, user_id: UUID, plan_id: UUID, day_id: UUID, slot_ids: tuple[UUID, ...]
     ) -> Plan:
-        plan = await self.get(athlete_id=athlete_id, plan_id=plan_id)
+        plan = await self.get(user_id=user_id, plan_id=plan_id)
         day = plan.day(day_id)
         if len(slot_ids) != len(day.slots) or set(slot_ids) != {slot.id for slot in day.slots}:
             raise InvalidInput("Supply each existing slot exactly once")
@@ -138,9 +138,9 @@ class PlanService:
         return plan
 
     async def edit_day(
-        self, *, athlete_id: UUID, plan_id: UUID, day_id: UUID, definition: DayDefinition
+        self, *, user_id: UUID, plan_id: UUID, day_id: UUID, definition: DayDefinition
     ) -> Plan:
-        plan = await self.get(athlete_id=athlete_id, plan_id=plan_id)
+        plan = await self.get(user_id=user_id, plan_id=plan_id)
         day = plan.day(day_id)
         plan.replace_day(replace(day, name=definition.name, weekday=definition.weekday))
         await self._plans.save(plan=plan)
@@ -149,13 +149,13 @@ class PlanService:
     async def edit_slot(
         self,
         *,
-        athlete_id: UUID,
+        user_id: UUID,
         plan_id: UUID,
         day_id: UUID,
         slot_id: UUID,
         rest_seconds: int | None,
     ) -> Plan:
-        plan = await self.get(athlete_id=athlete_id, plan_id=plan_id)
+        plan = await self.get(user_id=user_id, plan_id=plan_id)
         day = plan.day(day_id)
         if not any(slot.id == slot_id for slot in day.slots):
             raise NotFound
@@ -172,15 +172,15 @@ class PlanService:
         return plan
 
     async def prescribe(
-        self, *, athlete_id: UUID, plan_id: UUID, slot_id: UUID, prescription: Prescription
+        self, *, user_id: UUID, plan_id: UUID, slot_id: UUID, prescription: Prescription
     ) -> Plan:
-        plan = await self.get(athlete_id=athlete_id, plan_id=plan_id)
+        plan = await self.get(user_id=user_id, plan_id=plan_id)
         plan.prescribe(slot_id=slot_id, prescription=prescription)
         await self._plans.save(plan=plan)
         return plan
 
-    async def copy_week(self, *, athlete_id: UUID, plan_id: UUID, week: int) -> Plan:
-        plan = await self.get(athlete_id=athlete_id, plan_id=plan_id)
+    async def copy_week(self, *, user_id: UUID, plan_id: UUID, week: int) -> Plan:
+        plan = await self.get(user_id=user_id, plan_id=plan_id)
         plan.copy_week(week)
         await self._plans.save(plan=plan)
         return plan
@@ -188,13 +188,13 @@ class PlanService:
     async def progression(
         self,
         *,
-        athlete_id: UUID,
+        user_id: UUID,
         plan_id: UUID,
         increment: Decimal,
         deload: bool,
         expected_revision: int | None = None,
     ) -> Plan:
-        plan = copy.deepcopy(await self.get(athlete_id=athlete_id, plan_id=plan_id))
+        plan = copy.deepcopy(await self.get(user_id=user_id, plan_id=plan_id))
         if expected_revision is not None and expected_revision != plan.revision:
             raise Conflict("Plan changed; request a new progression preview")
         plan.progress(increment=increment, deload=deload)
@@ -203,38 +203,38 @@ class PlanService:
         return plan
 
     async def duplicate(
-        self, *, athlete_id: UUID, plan_id: UUID, title: str, start_date: date
+        self, *, user_id: UUID, plan_id: UUID, title: str, start_date: date
     ) -> Plan:
-        original = await self.get(athlete_id=athlete_id, plan_id=plan_id)
-        plan = original.duplicate(athlete_id=athlete_id, title=title, start_date=start_date)
+        original = await self.get(user_id=user_id, plan_id=plan_id)
+        plan = original.duplicate(user_id=user_id, title=title, start_date=start_date)
         await self._plans.save(plan=plan)
         return plan
 
-    async def remove(self, *, athlete_id: UUID, plan_id: UUID) -> None:
-        await self.get(athlete_id=athlete_id, plan_id=plan_id)
-        await self._plans.delete(athlete_id=athlete_id, plan_id=plan_id)
+    async def remove(self, *, user_id: UUID, plan_id: UUID) -> None:
+        await self.get(user_id=user_id, plan_id=plan_id)
+        await self._plans.delete(user_id=user_id, plan_id=plan_id)
 
-    async def share(self, *, athlete_id: UUID, plan_id: UUID) -> str:
-        plan = await self.get(athlete_id=athlete_id, plan_id=plan_id)
+    async def share(self, *, user_id: UUID, plan_id: UUID) -> str:
+        plan = await self.get(user_id=user_id, plan_id=plan_id)
         token = secrets.token_urlsafe(32)
         await self._plans.share(
-            athlete_id=athlete_id, token_hash=hashlib.sha256(token.encode()).hexdigest(), plan=plan
+            user_id=user_id, token_hash=hashlib.sha256(token.encode()).hexdigest(), plan=plan
         )
         return token
 
-    async def revoke_share(self, *, athlete_id: UUID, token: str) -> None:
+    async def revoke_share(self, *, user_id: UUID, token: str) -> None:
         await self._plans.revoke(
-            athlete_id=athlete_id, token_hash=hashlib.sha256(token.encode()).hexdigest()
+            user_id=user_id, token_hash=hashlib.sha256(token.encode()).hexdigest()
         )
 
     async def import_template(
-        self, *, athlete_id: UUID, token: str, title: str, start_date: date
+        self, *, user_id: UUID, token: str, title: str, start_date: date
     ) -> Plan:
         template = await self._plans.template(token_hash=hashlib.sha256(token.encode()).hexdigest())
         if template is None:
             raise NotFound
-        plan = template.duplicate(athlete_id=athlete_id, title=title, start_date=start_date)
-        catalog = await self._exercises.list(athlete_id=athlete_id)
+        plan = template.duplicate(user_id=user_id, title=title, start_date=start_date)
+        catalog = await self._exercises.list(user_id=user_id)
         mapped: dict[UUID, Exercise] = {}
         for day in plan.days:
             slots: list[Slot] = []
@@ -253,7 +253,7 @@ class PlanService:
                     )
                     if exercise is None:
                         exercise = Exercise(
-                            athlete_id=athlete_id,
+                            user_id=user_id,
                             name=slot.exercise_name,
                             category=slot.category,
                             main=slot.main,
@@ -266,25 +266,32 @@ class PlanService:
         await self._plans.save(plan=plan)
         return plan
 
-    async def next_training(self, *, athlete_id: UUID) -> NextTraining | None:
-        sessions = await self._sessions.list(athlete_id=athlete_id)
-        running = next((session for session in sessions if session.ended_at is None), None)
+    async def next_training(self, *, user_id: UUID) -> NextTraining | None:
+        training_sessions = await self._training_sessions.list(user_id=user_id)
+        running = next(
+            (
+                training_session
+                for training_session in training_sessions
+                if training_session.ended_at is None
+            ),
+            None,
+        )
         if running:
             return NextTraining(
                 plan_id=running.plan_id,
                 day_id=running.day_id,
                 week=running.week,
                 scheduled_date=running.started_at.date(),
-                running_session_id=running.id,
+                running_training_session_id=running.id,
             )
-        plans = await self._plans.list(athlete_id=athlete_id)
+        plans = await self._plans.list(user_id=user_id)
         active = next((plan for plan in plans if plan.status == PlanStatus.ACTIVE), None)
         if active is None:
             return None
         completed = {
-            (session.day_id, session.week)
-            for session in sessions
-            if session.plan_id == active.id and session.ended_at is not None
+            (training_session.day_id, training_session.week)
+            for training_session in training_sessions
+            if training_session.plan_id == active.id and training_session.ended_at is not None
         }
         # Week 1 is the seven-day interval beginning on start_date. Weekdays wrap within it.
         days = sorted(active.days, key=lambda day: (day.weekday - active.start_date.weekday()) % 7)

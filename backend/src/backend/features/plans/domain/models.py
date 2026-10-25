@@ -59,7 +59,7 @@ class Plan(Aggregate):
     def __init__(
         self,
         *,
-        athlete_id: UUID,
+        user_id: UUID,
         title: str,
         start_date: date,
         weeks: int,
@@ -72,8 +72,8 @@ class Plan(Aggregate):
         super().__init__(id=id)
         if not 1 <= weeks <= 104 or not days:
             raise InvalidInput("A plan needs 1–104 weeks and at least one training day")
-        self._athlete_id, self._title, self._start_date, self._weeks = (
-            athlete_id,
+        self._user_id, self._title, self._start_date, self._weeks = (
+            user_id,
             title,
             start_date,
             weeks,
@@ -82,8 +82,8 @@ class Plan(Aggregate):
         self._recommendations, self._revision = recommendations, revision
 
     @property
-    def athlete_id(self) -> UUID:
-        return self._athlete_id
+    def user_id(self) -> UUID:
+        return self._user_id
 
     @property
     def title(self) -> str:
@@ -186,13 +186,13 @@ class Plan(Aggregate):
                         prescription=replace(source, week=week, sets=sets, target_rpe=target),
                     )
 
-    def duplicate(self, *, athlete_id: UUID, title: str, start_date: date) -> "Plan":
+    def duplicate(self, *, user_id: UUID, title: str, start_date: date) -> "Plan":
         days = tuple(
             replace(day, id=uuid4(), slots=tuple(replace(slot, id=uuid4()) for slot in day.slots))
             for day in self.days
         )
         return Plan(
-            athlete_id=athlete_id,
+            user_id=user_id,
             title=title,
             start_date=start_date,
             weeks=self.weeks,

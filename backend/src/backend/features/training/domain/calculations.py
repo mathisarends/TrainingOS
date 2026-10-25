@@ -1,6 +1,6 @@
 from decimal import ROUND_CEILING, ROUND_HALF_UP, Decimal
 
-from backend.features.athletes.domain import Preferences
+from backend.features.users.domain import Preferences
 from backend.shared import InvalidInput
 
 

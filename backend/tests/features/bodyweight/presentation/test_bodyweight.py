@@ -9,7 +9,7 @@ pytestmark = pytest.mark.integration
 async def test_bodyweight_is_unique_per_date_with_target_in_selected_unit(
     client: AsyncClient,
 ) -> None:
-    await client.put("/api/v1/athlete/preferences", json={"target_weight": 85})
+    await client.put("/api/v1/users/me/preferences", json={"target_weight": 85})
     first = await client.put("/api/v1/bodyweight", json={"date": "2026-10-25", "weight": 80})
     second = await client.put("/api/v1/bodyweight", json={"date": "2026-10-25", "weight": "80.5"})
     assert first.status_code == second.status_code == 200

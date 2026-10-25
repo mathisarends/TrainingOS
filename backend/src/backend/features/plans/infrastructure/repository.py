@@ -16,7 +16,7 @@ days_adapter = TypeAdapter(tuple[TrainingDay, ...])
 def to_payload(plan: Plan) -> dict[str, object]:
     return {
         "id": str(plan.id),
-        "athlete_id": str(plan.athlete_id),
+        "user_id": str(plan.user_id),
         "title": plan.title,
         "start_date": plan.start_date.isoformat(),
         "weeks": plan.weeks,
@@ -30,7 +30,7 @@ def to_payload(plan: Plan) -> dict[str, object]:
 def from_payload(data: dict[str, object]) -> Plan:
     return Plan(
         id=UUID(str(data["id"])),
-        athlete_id=UUID(str(data["athlete_id"])),
+        user_id=UUID(str(data["user_id"])),
         title=str(data["title"]),
         start_date=date.fromisoformat(str(data["start_date"])),
         weeks=cast(int, data["weeks"]),
@@ -45,43 +45,41 @@ class SqlPlanRepository(PlanRepository):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    async def templates(self, *, athlete_id: UUID) -> list[Plan]:
+    async def templates(self, *, user_id: UUID) -> list[Plan]:
         rows = await self._session.exec(
-            select(TemplateRow).where(col(TemplateRow.athlete_id) == athlete_id)
+            select(TemplateRow).where(col(TemplateRow.user_id) == user_id)
         )
         return [from_payload(row.payload) for row in rows]
 
-    async def list(self, *, athlete_id: UUID) -> list[Plan]:
+    async def list(self, *, user_id: UUID) -> list[Plan]:
         rows = await self._session.exec(
-            select(PlanRow).where(col(PlanRow.athlete_id) == athlete_id).order_by(col(PlanRow.id))
+            select(PlanRow).where(col(PlanRow.user_id) == user_id).order_by(col(PlanRow.id))
         )
         return [from_payload(row.payload) for row in rows]
 
-    async def get(self, *, athlete_id: UUID, plan_id: UUID) -> Plan | None:
+    async def get(self, *, user_id: UUID, plan_id: UUID) -> Plan | None:
         row = (
             await self._session.exec(
-                select(PlanRow).where(
-                    col(PlanRow.athlete_id) == athlete_id, col(PlanRow.id) == plan_id
-                )
+                select(PlanRow).where(col(PlanRow.user_id) == user_id, col(PlanRow.id) == plan_id)
             )
         ).one_or_none()
         return from_payload(row.payload) if row else None
 
     async def save(self, *, plan: Plan) -> None:
         row = PlanRow(
-            id=plan.id, athlete_id=plan.athlete_id, status=plan.status, payload=to_payload(plan)
+            id=plan.id, user_id=plan.user_id, status=plan.status, payload=to_payload(plan)
         )
         await self._session.merge(row)
         await self._session.flush()
 
-    async def delete(self, *, athlete_id: UUID, plan_id: UUID) -> None:
+    async def delete(self, *, user_id: UUID, plan_id: UUID) -> None:
         await self._session.exec(
-            delete(PlanRow).where(col(PlanRow.athlete_id) == athlete_id, col(PlanRow.id) == plan_id)
+            delete(PlanRow).where(col(PlanRow.user_id) == user_id, col(PlanRow.id) == plan_id)
         )
 
-    async def share(self, *, athlete_id: UUID, token_hash: str, plan: Plan) -> None:
+    async def share(self, *, user_id: UUID, token_hash: str, plan: Plan) -> None:
         self._session.add(
-            TemplateRow(token_hash=token_hash, athlete_id=athlete_id, payload=to_payload(plan))
+            TemplateRow(token_hash=token_hash, user_id=user_id, payload=to_payload(plan))
         )
         await self._session.flush()
 
@@ -89,9 +87,9 @@ class SqlPlanRepository(PlanRepository):
         row = await self._session.get(TemplateRow, token_hash)
         return from_payload(row.payload) if row else None
 
-    async def revoke(self, *, athlete_id: UUID, token_hash: str) -> None:
+    async def revoke(self, *, user_id: UUID, token_hash: str) -> None:
         await self._session.exec(
             delete(TemplateRow).where(
-                col(TemplateRow.athlete_id) == athlete_id, col(TemplateRow.token_hash) == token_hash
+                col(TemplateRow.user_id) == user_id, col(TemplateRow.token_hash) == token_hash
             )
         )

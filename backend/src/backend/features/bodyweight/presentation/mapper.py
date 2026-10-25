@@ -1,5 +1,5 @@
-from backend.features.athletes.domain import Preferences
 from backend.features.bodyweight.domain import WeighIn
+from backend.features.users.domain import Preferences
 
 from .schemas import BodyweightResponse, WeighInResponse
 

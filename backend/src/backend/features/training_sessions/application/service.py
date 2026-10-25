@@ -1,0 +1,258 @@
+from dataclasses import dataclass
+from datetime import UTC, datetime
+from decimal import Decimal
+from uuid import UUID
+
+from backend.features.exercises.domain import ExerciseRepository
+from backend.features.plans.domain import PlanRepository, PlanStatus
+from backend.features.training.domain import backoff, e1rm
+from backend.features.training_sessions.domain import (
+    TrainingSession,
+    TrainingSessionRepository,
+    TrainingSessionSlot,
+    WorkSet,
+)
+from backend.features.users.domain import Preferences
+from backend.shared import Conflict, InvalidInput, NotFound
+
+
+@dataclass(frozen=True)
+class SlotGuidance:
+    recommended_weight_kg: Decimal | None
+    backoff_weight_kg: Decimal | None
+    last_sets: tuple[WorkSet, ...]
+    last_performed_at: datetime | None
+
+
+@dataclass(frozen=True)
+class SetFeedback:
+    training_session: TrainingSession
+    work_set: WorkSet
+    e1rm_kg: Decimal
+    backoff_weight_kg: Decimal
+    new_personal_record: bool
+
+
+class TrainingSessionService:
+    def __init__(
+        self,
+        training_session_repository: TrainingSessionRepository,
+        plan_repository: PlanRepository,
+        exercise_repository: ExerciseRepository,
+    ) -> None:
+        self._training_sessions, self._plans = training_session_repository, plan_repository
+        self._exercises = exercise_repository
+
+    async def get(self, *, user_id: UUID, training_session_id: UUID) -> TrainingSession:
+        training_session = await self._training_sessions.get(
+            user_id=user_id, training_session_id=training_session_id
+        )
+        if training_session is None:
+            raise NotFound
+        return training_session
+
+    async def list(self, *, user_id: UUID, offset: int, limit: int) -> list[TrainingSession]:
+        training_sessions = await self._training_sessions.list(user_id=user_id)
+        return list(reversed(training_sessions))[offset : offset + limit]
+
+    async def start(
+        self, *, user_id: UUID, plan_id: UUID, day_id: UUID, week: int
+    ) -> TrainingSession:
+        plan = await self._plans.get(user_id=user_id, plan_id=plan_id)
+        if plan is None:
+            raise NotFound
+        if plan.status in (PlanStatus.ARCHIVED, PlanStatus.ENDED):
+            raise Conflict("This plan has ended or is archived")
+        if not 1 <= week <= plan.weeks:
+            raise InvalidInput("Week exceeds plan length")
+        day = plan.day(day_id)
+        if not day.slots:
+            raise Conflict("The training day has no exercise slots")
+        training_sessions = await self._training_sessions.list(user_id=user_id)
+        if any(item.ended_at is None for item in training_sessions):
+            raise Conflict("Finish the running session before starting another")
+        if any(
+            item.plan_id == plan_id and item.day_id == day_id and item.week == week
+            for item in training_sessions
+        ):
+            raise Conflict("A session already exists for this training day and week")
+        slots = tuple(
+            TrainingSessionSlot(
+                id=slot.id,
+                exercise_id=slot.exercise_id,
+                exercise_name=slot.exercise_name,
+                category=slot.category,
+                main=slot.main,
+                rest_seconds=slot.rest_seconds,
+                prescription=slot.prescription(week),
+            )
+            for slot in day.slots
+        )
+        training_session = TrainingSession(
+            user_id=user_id,
+            plan_id=plan.id,
+            plan_title=plan.title,
+            day_id=day.id,
+            day_name=day.name,
+            week=week,
+            slots=slots,
+        )
+        await self._training_sessions.save(training_session=training_session)
+        return training_session
+
+    async def record(
+        self,
+        *,
+        user_id: UUID,
+        training_session_id: UUID,
+        slot_id: UUID,
+        weight_kg: Decimal,
+        reps: int,
+        rpe: Decimal,
+        preferences: Preferences,
+        set_id: UUID | None = None,
+    ) -> SetFeedback:
+        training_session = await self.get(user_id=user_id, training_session_id=training_session_id)
+        slot = training_session.slot(slot_id)
+        all_training_sessions = await self._training_sessions.list(user_id=user_id)
+        historical = [
+            e1rm(weight_kg=item.weight_kg, reps=item.reps, rpe=item.rpe, preferences=preferences)
+            for previous in all_training_sessions
+            for old_slot in previous.slots
+            if old_slot.exercise_id == slot.exercise_id
+            for item in old_slot.sets
+            if item.id != set_id
+        ]
+        work_set = training_session.record(
+            slot_id=slot_id,
+            weight_kg=weight_kg,
+            reps=reps,
+            rpe=rpe,
+            now=datetime.now(UTC),
+            set_id=set_id,
+        )
+        maximum = e1rm(weight_kg=weight_kg, reps=reps, rpe=rpe, preferences=preferences)
+        top = max(
+            e1rm(weight_kg=item.weight_kg, reps=item.reps, rpe=item.rpe, preferences=preferences)
+            for item in training_session.slot(slot_id).sets
+        )
+        backoff_weight = backoff(
+            maximum_kg=top,
+            reps=slot.prescription.reps,
+            rpe=slot.prescription.target_rpe,
+            preferences=preferences,
+        )
+        await self._training_sessions.save(training_session=training_session)
+        exercise = await self._exercises.get(user_id=user_id, exercise_id=slot.exercise_id)
+        new_personal_record = (
+            exercise is not None and exercise.main and maximum > max(historical, default=Decimal(0))
+        )
+        return SetFeedback(
+            training_session=training_session,
+            work_set=work_set,
+            e1rm_kg=maximum,
+            backoff_weight_kg=backoff_weight,
+            new_personal_record=new_personal_record,
+        )
+
+    async def guidance(
+        self, *, user_id: UUID, training_session_id: UUID, slot_id: UUID, preferences: Preferences
+    ) -> SlotGuidance:
+        training_session = await self.get(user_id=user_id, training_session_id=training_session_id)
+        slot = training_session.slot(slot_id)
+        history = await self._training_sessions.list(user_id=user_id)
+        previous = [
+            (item, old_slot)
+            for item in reversed(history)
+            if item.id != training_session.id and item.started_at <= training_session.started_at
+            for old_slot in item.slots
+            if old_slot.id == slot.id and old_slot.sets
+        ]
+        matching = next(
+            (
+                (item, old_slot)
+                for item, old_slot in previous
+                if old_slot.prescription.reps == slot.prescription.reps
+            ),
+            None,
+        )
+        plan = await self._plans.get(user_id=user_id, plan_id=training_session.plan_id)
+        recommended = None
+        if matching and (plan is None or plan.recommendations):
+            top = max(
+                e1rm(
+                    weight_kg=item.weight_kg, reps=item.reps, rpe=item.rpe, preferences=preferences
+                )
+                for item in matching[1].sets
+            )
+            recommended = backoff(
+                maximum_kg=top,
+                reps=slot.prescription.reps,
+                rpe=slot.prescription.target_rpe,
+                preferences=preferences,
+            )
+        backoff_weight = None
+        if slot.sets:
+            top = max(
+                e1rm(
+                    weight_kg=item.weight_kg, reps=item.reps, rpe=item.rpe, preferences=preferences
+                )
+                for item in slot.sets
+            )
+            backoff_weight = backoff(
+                maximum_kg=top,
+                reps=slot.prescription.reps,
+                rpe=slot.prescription.target_rpe,
+                preferences=preferences,
+            )
+        return SlotGuidance(
+            recommended_weight_kg=recommended,
+            backoff_weight_kg=backoff_weight,
+            last_sets=previous[0][1].sets if previous else (),
+            last_performed_at=previous[0][0].started_at if previous else None,
+        )
+
+    async def remove_set(
+        self, *, user_id: UUID, training_session_id: UUID, slot_id: UUID, set_id: UUID
+    ) -> TrainingSession:
+        training_session = await self.get(user_id=user_id, training_session_id=training_session_id)
+        training_session.remove_set(slot_id=slot_id, set_id=set_id)
+        await self._training_sessions.save(training_session=training_session)
+        return training_session
+
+    async def skip(
+        self, *, user_id: UUID, training_session_id: UUID, slot_id: UUID, skipped: bool
+    ) -> TrainingSession:
+        training_session = await self.get(user_id=user_id, training_session_id=training_session_id)
+        training_session.skip(slot_id=slot_id, skipped=skipped)
+        await self._training_sessions.save(training_session=training_session)
+        return training_session
+
+    async def finish(self, *, user_id: UUID, training_session_id: UUID) -> TrainingSession:
+        training_session = await self.get(user_id=user_id, training_session_id=training_session_id)
+        training_session.finish(datetime.now(UTC))
+        await self._training_sessions.save(training_session=training_session)
+        return training_session
+
+    async def correct_times(
+        self,
+        *,
+        user_id: UUID,
+        training_session_id: UUID,
+        started_at: datetime,
+        ended_at: datetime | None,
+    ) -> TrainingSession:
+        training_session = await self.get(user_id=user_id, training_session_id=training_session_id)
+        training_session.correct_times(
+            started_at=started_at, ended_at=ended_at, now=datetime.now(UTC)
+        )
+        await self._training_sessions.save(training_session=training_session)
+        return training_session
+
+    async def timer(
+        self, *, user_id: UUID, training_session_id: UUID, delta_seconds: int | None
+    ) -> TrainingSession:
+        training_session = await self.get(user_id=user_id, training_session_id=training_session_id)
+        training_session.adjust_timer(delta_seconds=delta_seconds, now=datetime.now(UTC))
+        await self._training_sessions.save(training_session=training_session)
+        return training_session

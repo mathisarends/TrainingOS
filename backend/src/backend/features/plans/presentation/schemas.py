@@ -115,7 +115,7 @@ class NextTrainingResponse(Schema):
     day_id: UUID | None = None
     week: int | None = None
     scheduled_date: date | None = None
-    running_session_id: UUID | None = None
+    running_training_session_id: UUID | None = None
 
 
 class ProgressionPreviewResponse(Schema):

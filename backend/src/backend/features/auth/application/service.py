@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
-from backend.features.athletes.domain import Athlete, AthleteRepository
 from backend.features.auth.domain import (
     AuthRepository,
     IdentityProvider,
@@ -13,6 +12,7 @@ from backend.features.auth.domain import (
     LoginSession,
 )
 from backend.features.exercises.domain import STANDARD_CATALOG, Exercise, ExerciseRepository
+from backend.features.users.domain import User, UserRepository
 from backend.shared import AuthenticationRequired
 
 
@@ -28,7 +28,7 @@ class Authorization:
 
 @dataclass(frozen=True)
 class SignedIn:
-    athlete: Athlete
+    user: User
     token: str
 
 
@@ -36,14 +36,14 @@ class AuthService:
     def __init__(
         self,
         auth_repository: AuthRepository,
-        athlete_repository: AthleteRepository,
+        user_repository: UserRepository,
         exercise_repository: ExerciseRepository,
         identity_provider: IdentityProvider,
         session_days: int,
     ) -> None:
-        self._auth, self._athletes, self._exercises = (
+        self._auth, self._users, self._exercises = (
             auth_repository,
-            athlete_repository,
+            user_repository,
             exercise_repository,
         )
         self._google, self._session_days = identity_provider, session_days
@@ -70,35 +70,35 @@ class AuthService:
             code=code, verifier=attempt.verifier, nonce=attempt.nonce
         )
         candidate_id = uuid4()
-        athlete_id = await self._auth.resolve_identity(identity=identity, candidate_id=candidate_id)
-        athlete = await self._athletes.get(athlete_id=athlete_id, lock=True)
-        if athlete is None:
+        user_id = await self._auth.resolve_identity(identity=identity, candidate_id=candidate_id)
+        user = await self._users.get(user_id=user_id, lock=True)
+        if user is None:
             raise AuthenticationRequired
-        if candidate_id == athlete_id:
+        if candidate_id == user_id:
             for name, category, main in STANDARD_CATALOG:
-                exercise = Exercise(athlete_id=athlete_id, name=name, category=category, main=main)
+                exercise = Exercise(user_id=user_id, name=name, category=category, main=main)
                 await self._exercises.save(exercise=exercise)
         token = secrets.token_urlsafe(48)
         login_session = LoginSession(
             token_hash=token_hash(token),
-            athlete_id=athlete_id,
+            user_id=user_id,
             expires_at=datetime.now(UTC) + timedelta(days=self._session_days),
         )
         await self._auth.save_session(login_session=login_session)
-        return SignedIn(athlete=athlete, token=token)
+        return SignedIn(user=user, token=token)
 
-    async def current(self, *, token: str) -> Athlete:
+    async def current(self, *, token: str) -> User:
         login_session = await self._auth.get_session(token_hash=token_hash(token))
         if login_session is None or login_session.expires_at <= datetime.now(UTC):
             raise AuthenticationRequired
         # Serialize owner mutations, including active-plan transitions and account deletion.
-        athlete = await self._athletes.get(athlete_id=login_session.athlete_id, lock=True)
-        if athlete is None:
+        user = await self._users.get(user_id=login_session.user_id, lock=True)
+        if user is None:
             raise AuthenticationRequired
         login_session = await self._auth.get_session(token_hash=token_hash(token))
         if login_session is None or login_session.expires_at <= datetime.now(UTC):
             raise AuthenticationRequired
-        return athlete
+        return user
 
     async def logout(self, *, token: str) -> None:
         await self._auth.revoke(token_hash=token_hash(token))

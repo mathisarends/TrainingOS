@@ -2,8 +2,8 @@ from decimal import Decimal as D
 
 import pytest
 
-from backend.features.athletes.domain import Preferences, WeightUnit
 from backend.features.training.domain import backoff, e1rm, effort_to_rpe
+from backend.features.users.domain import Preferences, WeightUnit
 from backend.shared import InvalidInput
 
 pytestmark = pytest.mark.unit
@@ -13,7 +13,7 @@ pytestmark = pytest.mark.unit
     "weight,reps,rpe,expected",
     [("100", 5, "8", "125"), ("140", 5, "8", "175"), ("101", 1, "10", "105"), ("0", 8, "7", "0")],
 )
-def test_epley_rounds_up_to_athlete_step(weight: str, reps: int, rpe: str, expected: str) -> None:
+def test_epley_rounds_up_to_user_step(weight: str, reps: int, rpe: str, expected: str) -> None:
     assert e1rm(weight_kg=D(weight), reps=reps, rpe=D(rpe), preferences=Preferences()) == D(
         expected
     )

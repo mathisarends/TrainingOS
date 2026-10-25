@@ -4,7 +4,7 @@ from dishka.integrations.fastapi import FromDishka
 from fastapi_canon import Feature
 
 from backend.app import create_app
-from backend.features.auth.presentation import CurrentAthlete
+from backend.features.auth.presentation import CurrentUser
 from backend.features.exercises.application import ExerciseService
 from backend.features.exercises.domain import Category
 from backend.platform.api.router import protected_router
@@ -20,10 +20,10 @@ async def test_failed_request_rolls_back_already_flushed_writes(database_url: st
 
     @router.post("", operation_id="test_rollback_probe", status_code=204, response_model=None)
     async def failing_write(
-        athlete: CurrentAthlete, exercise_service: FromDishka[ExerciseService]
+        user: CurrentUser, exercise_service: FromDishka[ExerciseService]
     ) -> None:
         await exercise_service.create(
-            athlete_id=athlete.id, name="Must roll back", category=Category.BACK, main=False
+            user_id=user.id, name="Must roll back", category=Category.BACK, main=False
         )
         raise Conflict("Deliberate failure after database flush")
 

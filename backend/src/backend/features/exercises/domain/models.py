@@ -21,7 +21,7 @@ class Exercise(Aggregate):
     def __init__(
         self,
         *,
-        athlete_id: UUID,
+        user_id: UUID,
         name: str,
         category: Category,
         main: bool = False,
@@ -29,15 +29,15 @@ class Exercise(Aggregate):
         id: UUID | None = None,
     ) -> None:
         super().__init__(id=id)
-        self._athlete_id = athlete_id
+        self._user_id = user_id
         self._name = name
         self._category = category
         self._main = main
         self._archived = archived
 
     @property
-    def athlete_id(self) -> UUID:
-        return self._athlete_id
+    def user_id(self) -> UUID:
+        return self._user_id
 
     @property
     def name(self) -> str:

@@ -1,3 +1,3 @@
-from .dependencies import CurrentAthlete
+from .dependencies import CurrentUser
 
-__all__ = ["CurrentAthlete"]
+__all__ = ["CurrentUser"]

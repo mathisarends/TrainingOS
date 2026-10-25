@@ -11,7 +11,7 @@ from backend.platform.database.orm import ExerciseRow
 def to_domain(row: ExerciseRow) -> Exercise:
     return Exercise(
         id=row.id,
-        athlete_id=row.athlete_id,
+        user_id=row.user_id,
         name=row.name,
         category=Category(row.category),
         main=row.main,
@@ -23,19 +23,19 @@ class SqlExerciseRepository(ExerciseRepository):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    async def list(self, *, athlete_id: UUID) -> list[Exercise]:
+    async def list(self, *, user_id: UUID) -> list[Exercise]:
         rows = await self._session.exec(
             select(ExerciseRow)
-            .where(col(ExerciseRow.athlete_id) == athlete_id)
+            .where(col(ExerciseRow.user_id) == user_id)
             .order_by(col(ExerciseRow.name), col(ExerciseRow.id))
         )
         return [to_domain(row) for row in rows]
 
-    async def get(self, *, athlete_id: UUID, exercise_id: UUID) -> Exercise | None:
+    async def get(self, *, user_id: UUID, exercise_id: UUID) -> Exercise | None:
         row = (
             await self._session.exec(
                 select(ExerciseRow).where(
-                    col(ExerciseRow.athlete_id) == athlete_id, col(ExerciseRow.id) == exercise_id
+                    col(ExerciseRow.user_id) == user_id, col(ExerciseRow.id) == exercise_id
                 )
             )
         ).one_or_none()
@@ -44,7 +44,7 @@ class SqlExerciseRepository(ExerciseRepository):
     async def save(self, *, exercise: Exercise) -> None:
         row = ExerciseRow(
             id=exercise.id,
-            athlete_id=exercise.athlete_id,
+            user_id=exercise.user_id,
             name=exercise.name,
             category=exercise.category,
             main=exercise.main,
@@ -53,9 +53,9 @@ class SqlExerciseRepository(ExerciseRepository):
         await self._session.merge(row)
         await self._session.flush()
 
-    async def delete(self, *, athlete_id: UUID, exercise_id: UUID) -> None:
+    async def delete(self, *, user_id: UUID, exercise_id: UUID) -> None:
         await self._session.exec(
             delete(ExerciseRow).where(
-                col(ExerciseRow.athlete_id) == athlete_id, col(ExerciseRow.id) == exercise_id
+                col(ExerciseRow.user_id) == user_id, col(ExerciseRow.id) == exercise_id
             )
         )

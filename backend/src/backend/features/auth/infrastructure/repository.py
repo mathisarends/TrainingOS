@@ -6,15 +6,15 @@ from sqlalchemy.exc import IntegrityError
 from sqlmodel import col, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from backend.features.athletes.domain import Preferences
-from backend.features.athletes.infrastructure.repository import preferences_adapter
 from backend.features.auth.domain import (
     AuthRepository,
     ExternalIdentity,
     LoginAttempt,
     LoginSession,
 )
-from backend.platform.database.orm import AthleteRow, AttemptRow, IdentityRow, LoginRow
+from backend.features.users.domain import Preferences
+from backend.features.users.infrastructure.repository import preferences_adapter
+from backend.platform.database.orm import AttemptRow, IdentityRow, LoginRow, UserRow
 
 
 def aware(value: datetime) -> datetime:
@@ -25,9 +25,9 @@ class SqlAuthRepository(AuthRepository):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    async def identities(self, *, athlete_id: UUID) -> list[ExternalIdentity]:
+    async def identities(self, *, user_id: UUID) -> list[ExternalIdentity]:
         rows = await self._session.exec(
-            select(IdentityRow).where(col(IdentityRow.athlete_id) == athlete_id)
+            select(IdentityRow).where(col(IdentityRow.user_id) == user_id)
         )
         return [ExternalIdentity(issuer=row.issuer, subject=row.subject) for row in rows]
 
@@ -74,11 +74,11 @@ class SqlAuthRepository(AuthRepository):
         )
         existing = (await self._session.exec(query)).one_or_none()
         if existing:
-            return existing.athlete_id
+            return existing.user_id
         try:
             async with self._session.begin_nested():
                 self._session.add(
-                    AthleteRow(
+                    UserRow(
                         id=candidate_id,
                         preferences=preferences_adapter.dump_python(Preferences(), mode="json"),
                     )
@@ -87,7 +87,7 @@ class SqlAuthRepository(AuthRepository):
                 self._session.add(
                     IdentityRow(
                         id=uuid4(),
-                        athlete_id=candidate_id,
+                        user_id=candidate_id,
                         issuer=identity.issuer,
                         subject=identity.subject,
                     )
@@ -96,7 +96,7 @@ class SqlAuthRepository(AuthRepository):
             return candidate_id
         except IntegrityError:
             existing = (await self._session.exec(query)).one()
-            return existing.athlete_id
+            return existing.user_id
 
     async def save_session(self, *, login_session: LoginSession) -> None:
         await self._session.exec(
@@ -105,7 +105,7 @@ class SqlAuthRepository(AuthRepository):
         self._session.add(
             LoginRow(
                 token_hash=login_session.token_hash,
-                athlete_id=login_session.athlete_id,
+                user_id=login_session.user_id,
                 expires_at=login_session.expires_at,
             )
         )
@@ -116,7 +116,7 @@ class SqlAuthRepository(AuthRepository):
         return (
             LoginSession(
                 token_hash=row.token_hash,
-                athlete_id=row.athlete_id,
+                user_id=row.user_id,
                 expires_at=aware(row.expires_at),
             )
             if row

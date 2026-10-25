@@ -22,6 +22,16 @@ async def test_openapi_has_unique_operations_and_named_problem_contracts(
     ]
     ids = [operation["operationId"] for operation in operations]
     assert len(ids) == len(set(ids))
+    assert "/api/v1/training-sessions" in schema["paths"]
+    assert "/api/v1/users/me/preferences" in schema["paths"]
+    assert "/api/v1/users/me/export" in schema["paths"]
+    assert "/api/v1/users/me" in schema["paths"]
+    assert not any(path.startswith("/api/v1/statistics") for path in schema["paths"])
+    assert "/api/v1/sessions" not in schema["paths"]
+    assert not any("Athlete" in name for name in schema["components"]["schemas"])
+    assert schema["components"]["schemas"]["SetFeedbackResponse"]["properties"].keys() >= {
+        "training_session"
+    }
     create = schema["paths"]["/api/v1/plans"]["post"]
     for status in ("401", "404", "409", "422"):
         assert "application/problem+json" in create["responses"][status]["content"]

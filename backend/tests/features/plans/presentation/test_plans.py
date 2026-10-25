@@ -3,7 +3,7 @@ from decimal import Decimal as D
 import pytest
 from httpx import AsyncClient
 
-from tests.support import configured_plan, start_session
+from tests.support import configured_plan, start_training_session
 
 pytestmark = pytest.mark.integration
 
@@ -64,19 +64,19 @@ async def test_activating_another_plan_ends_previous_and_selects_next_day(
     assert training["plan_id"] == second["id"]
     assert training["week"] == 1
     assert training["scheduled_date"] == "2026-10-26"
-    session = await start_session(client, second)
+    session = await start_training_session(client, second)
     assert (await client.get("/api/v1/plans/next-training")).json()[
-        "running_session_id"
+        "running_training_session_id"
     ] == session["id"]
-    await client.post(f"/api/v1/sessions/{session['id']}/finish")
+    await client.post(f"/api/v1/training-sessions/{session['id']}/finish")
     assert (await client.get("/api/v1/plans/next-training")).json()["week"] == 2
 
 
-async def test_template_import_is_an_independent_copy_without_sessions(
+async def test_template_import_is_an_independent_copy_without_training_sessions(
     client: AsyncClient, other_client: AsyncClient
 ) -> None:
     original = await configured_plan(client)
-    await start_session(client, original)
+    await start_training_session(client, original)
     share = (await client.post(f"/api/v1/plans/{original['id']}/shares")).json()["token"]
     imported = await other_client.post(
         f"/api/v1/templates/{share}/import", json={"title": "Mine", "start_date": "2026-11-02"}
@@ -90,7 +90,7 @@ async def test_template_import_is_an_independent_copy_without_sessions(
         copied["days"][0]["slots"][0]["exercise_id"]
         != original["days"][0]["slots"][0]["exercise_id"]
     )
-    assert (await other_client.get("/api/v1/sessions")).json()["items"] == []
+    assert (await other_client.get("/api/v1/training-sessions")).json()["items"] == []
     await client.delete(f"/api/v1/plans/{original['id']}")
     await client.delete(f"/api/v1/templates/{share}")
     assert (await other_client.get(f"/api/v1/plans/{copied['id']}")).json() == copied

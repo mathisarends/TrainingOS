@@ -4,7 +4,7 @@ from uuid import UUID
 
 from pydantic import Field
 
-from backend.features.athletes.domain import WeightUnit
+from backend.features.users.domain import WeightUnit
 from backend.platform.api.schema import Schema
 
 

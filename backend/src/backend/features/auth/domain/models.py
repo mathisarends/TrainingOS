@@ -20,5 +20,5 @@ class LoginAttempt:
 @dataclass(frozen=True)
 class LoginSession:
     token_hash: str
-    athlete_id: UUID
+    user_id: UUID
     expires_at: datetime
