@@ -1,0 +1,42 @@
+name: trainingos
+services:
+  database:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: trainingos
+      POSTGRES_PASSWORD: ${TRAININGOS_POSTGRES_PASSWORD:-trainingos}
+      POSTGRES_DB: trainingos
+    ports:
+      - "127.0.0.1:54329:5432"
+    volumes:
+      - database:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U trainingos -d trainingos"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  migrate:
+    build: .
+    environment:
+      TRAININGOS_DATABASE_URL: postgresql+asyncpg://trainingos:${TRAININGOS_POSTGRES_PASSWORD:-trainingos}@database:5432/trainingos
+    command: ["trainingos-migrate"]
+    depends_on:
+      database:
+        condition: service_healthy
+  api:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      TRAININGOS_DATABASE_URL: postgresql+asyncpg://trainingos:${TRAININGOS_POSTGRES_PASSWORD:-trainingos}@database:5432/trainingos
+      TRAININGOS_GOOGLE_CLIENT_ID: ${TRAININGOS_GOOGLE_CLIENT_ID:-}
+      TRAININGOS_GOOGLE_CLIENT_SECRET: ${TRAININGOS_GOOGLE_CLIENT_SECRET:-}
+      TRAININGOS_GOOGLE_REDIRECT_URI: ${TRAININGOS_GOOGLE_REDIRECT_URI:-http://localhost:8000/api/v1/auth/google/callback}
+      TRAININGOS_ALLOWED_ORIGINS: ${TRAININGOS_ALLOWED_ORIGINS:-["http://localhost:5173"]}
+      TRAININGOS_ENVIRONMENT: ${TRAININGOS_ENVIRONMENT:-local}
+      TRAININGOS_SECURE_COOKIES: ${TRAININGOS_SECURE_COOKIES:-false}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+volumes:
+  database:

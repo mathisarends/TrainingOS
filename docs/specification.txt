@@ -1,0 +1,133 @@
+TrainingSystems – Fachliche Spezifikation
+25. Okt. 2026 · @Mathis Arends
+Ziel und Scope
+Die Anwendung ist der schlanke Nachfolger von TrainingSystems. Kraftsportler planen damit ihr Training in Wochen, erfassen es im Gym Satz für Satz und überladen RPE-basiert progressiv. Mehrere Nutzer können sie unabhängig voneinander verwenden.
+Im Scope der ersten Version
+• Übungskatalog mit Standardübungen und eigenen Übungen
+• Trainingspläne aus Wochen, Trainingstagen und Übungen mit Vorgaben je Woche
+• Training durchführen: Sätze erfassen, Pausentimer, Bildschirm bleibt an
+• Gewichtsempfehlung, e1RM- und Backoff-Berechnung
+• Auto-Progression mit optionaler Deload-Woche
+• Statistiken, Bestleistungen, Körpergewicht
+Bewusst später
+Ausdauertraining wie Laufen, Blockperiodisierung mit Blocktypen, KI-Funktionen, Kalender- und andere externe Integrationen sowie soziale Funktionen gehören nicht in die erste Version.
+Name
+Die Anwendung heißt TrainingOS. Der Name ist an TrainingSystems angelehnt und versteht sich als Betriebssystem fürs Krafttraining.
+Rollen und Nutzer
+Es gibt genau eine fachliche Rolle, den Athleten. Jeder Athlet sieht und bearbeitet ausschließlich seine eigenen Daten.
+• N-01 Anmeldung: Der Athlet meldet sich über ein bestehendes Konto an, etwa Google, und braucht kein eigenes Passwort.
+• N-02 Erstnutzung: Beim ersten Anmelden bekommt der Athlet den Standard-Übungskatalog und kann direkt einen Plan anlegen.
+• N-03 Datentrennung: Pläne, Sessions, Statistiken, Bestleistungen und Körpergewicht gehören immer genau einem Athleten.
+• N-04 Einstellungen: Der Athlet legt seine Gewichtseinheit, die Rundungsschritte für Gewichtsvorschläge und die Anstrengungsskala fest. Zur Wahl stehen RPE oder RIR, und er kann jederzeit umschalten. Voreinstellung ist kg in 2,5er-Schritten.
+• N-05 Konto löschen: Löscht der Athlet sein Konto, werden alle seine Daten vollständig entfernt.
+• N-06 Datenexport: Der Athlet kann alle seine Daten exportieren.
+Fachbegriffe
+Die fachliche Grundidee: Der Plan beschreibt das Soll, die Session das Ist. Ein Übungsslot behält über alle Wochen dieselbe Identität. Nur dadurch funktionieren Empfehlung und Progression auch dann, wenn Übungen umsortiert werden.
+Begriff
+Bedeutung
+Plan
+Ein Trainingsabschnitt über eine feste Anzahl Wochen mit Titel und Startdatum
+Woche
+Ein Durchlauf aller Trainingstage des Plans. Die Woche wird über ihre Nummer im Plan angesprochen.
+Trainingstag
+Ein wiederkehrender Tag im Plan, z. B. „Unterkörper A“, mit festem Wochentag
+Übungsslot
+Ein Platz für eine Übung an einem Trainingstag, mit Reihenfolge und Pausenzeit. Der Slot ist über alle Wochen derselbe.
+Vorgabe
+Das Soll eines Slots in einer bestimmten Woche: Sätze, Wiederholungen, Ziel-RPE
+Session
+Ein tatsächlich absolviertes Training eines Trainingstags in einer Woche, mit Start und Ende
+Satz
+Eine erfasste Ausführung in einer Session: Gewicht, Wiederholungen, Ist-RPE
+Hauptübung
+Eine als besonders wichtig markierte Übung, z. B. Kniebeuge, Bankdrücken, Kreuzheben. Für sie gelten eigene Progressionsgrenzen, und sie fließt in die Bestleistungen ein.
+RPE
+Rating of Perceived Exertion auf einer Skala von 1 bis 10 in 0,5er-Schritten. 10 bedeutet, dass keine Wiederholung mehr möglich wäre. Alternativ ist die Anstrengung als RIR (Wiederholungen in Reserve) erfassbar.
+e1RM
+Das geschätzte Maximalgewicht für eine Wiederholung, abgeleitet aus Gewicht, Wiederholungen und RPE
+Backoff-Satz
+Ein leichterer Satz nach dem schwersten Satz, dessen Gewicht sich aus dem e1RM ableitet
+Deload
+Eine Woche mit reduzierter Belastung zur Erholung
+Fachliche Anforderungen
+Die Anforderungen sind nach Bereichen gegliedert und durchnummeriert. So können sie einzeln referenziert, ergänzt oder gestrichen werden.
+Übungskatalog
+• F-01 Jeder Athlet startet mit einem Standardkatalog. Er ist nach Kategorien gegliedert: Kniebeuge, Bankdrücken, Kreuzheben, Überkopfdrücken, Rücken, Brust, Schultern, Beine, Bizeps, Trizeps.
+• F-02 Der Athlet kann eigene Übungen anlegen, umbenennen und einer Kategorie zuordnen.
+• F-03 Der Athlet kann eine Übung als Hauptübung markieren.
+• F-04 Eine Übung mit erfasster Historie wird nicht gelöscht, sondern archiviert. Ihre Historie bleibt in Statistiken und Bestleistungen erhalten.
+Pläne
+• F-10 Der Athlet legt einen Plan an. Dazu gehören ein Titel, ein Startdatum, die Anzahl der Wochen und die Wochentage, an denen trainiert wird.
+• F-11 Der Athlet bestückt jeden Trainingstag mit Übungsslots und legt pro Slot eine Pausenzeit fest.
+• F-12 Der Athlet kann Slots umsortieren, hinzufügen und entfernen. Bereits erfasste Sessions bleiben davon unberührt.
+• F-13 Pro Slot und Woche pflegt der Athlet eine Vorgabe aus Sätzen, Wiederholungen und Ziel-RPE, optional mit einer Notiz.
+• F-14 Der Athlet kann die Vorgaben einer Woche in alle Folgewochen übernehmen.
+• F-15 Der Athlet kann einen Plan als Vorlage für einen neuen Plan duplizieren.
+• F-16 Der Athlet kann einen Plan archivieren oder löschen.
+• F-17 Die Anwendung zeigt, welcher Trainingstag als Nächstes dran ist, und öffnet ihn direkt.
+• F-18 Ein Athlet hat höchstens einen aktiven Plan. Wird ein anderer Plan aktiviert, endet der bisherige.
+• F-19 Der Athlet kann einen Plan als Vorlage für andere Athleten freigeben. Wer sie übernimmt, erhält eine eigene Kopie aus Trainingstagen, Slots und Vorgaben, aber ohne Sessions. Spätere Änderungen am Original wirken nicht auf Kopien.
+Training durchführen
+1. F-20 Der Athlet startet eine Session für den anstehenden oder einen frei gewählten Trainingstag.
+2. F-21 Pro Slot erfasst er jeden Satz einzeln mit Gewicht, Wiederholungen und Ist-RPE. Die Wiederholungen sind mit der Vorgabe vorbelegt, das Gewicht mit der Empfehlung.
+3. F-22 Abweichungen von der Vorgabe sind erlaubt: mehr oder weniger Sätze, andere Wiederholungen, ein Slot kann übersprungen werden.
+4. F-23 Zu jedem Slot sieht der Athlet seine letzte Leistung, z. B. „letzte Woche: 140 × 5 @ 8“.
+5. F-24 Nach jedem erfassten Satz zeigt die Anwendung den e1RM. Für die Folgesätze schlägt sie ein Backoff-Gewicht vor.
+6. F-25 Während einer laufenden Session bleibt der Bildschirm an.
+7. F-26 Der Athlet beendet die Session. Die Anwendung hält die Dauer fest.
+8. F-27 Der Athlet kann eine Session nachträglich korrigieren. Statistiken und Bestleistungen passen sich an.
+Pausentimer
+• F-30 Nach einem erfassten Satz startet der Pausentimer automatisch mit der Pausenzeit des Slots.
+• F-31 Der Athlet kann die laufende Pause verlängern, verkürzen oder überspringen.
+• F-32 Bei Ablauf gibt es ein Signal. Das gilt auch, wenn die Anwendung im Hintergrund läuft oder der Bildschirm gesperrt ist.
+• F-33 Der Timer läuft korrekt weiter, wenn der Athlet die Ansicht verlässt oder neu lädt.
+Gewichtsempfehlung
+• F-40 Pro Slot schlägt die Anwendung ein Gewicht vor. Grundlage ist die letzte Leistung im selben Slot bei gleichen Vorgabe-Wiederholungen.
+• F-41 Die Empfehlung belegt das Gewichtsfeld vor. Erst die Bestätigung durch den Athleten macht sie zum erfassten Wert.
+• F-42 Die Empfehlung lässt sich pro Plan abschalten.
+Auto-Progression
+• F-50 Auf Wunsch erzeugt die Anwendung die Vorgaben aller Folgewochen aus Woche 1. Die Ziel-RPE steigt dabei pro Woche wahlweise um 0,5 oder 1.
+• F-51 Die Ziel-RPE ist bei Hauptübungen auf 9 begrenzt, bei allen anderen Übungen auf 10.
+• F-52 Optional wird die letzte Woche eine Deload-Woche: ein Satz weniger als in der Vorwoche und Ziel-RPE 6 bei Hauptübungen bzw. 7 bei allen anderen.
+• F-53 Der Athlet sieht das Ergebnis vor der Übernahme als Vorschau und bestätigt es. Bei der Übernahme werden die bestehenden Vorgaben der Folgewochen überschrieben, auch manuell gepflegte.
+Statistiken
+• F-60 Tonnage pro Woche, gesamt und je Kategorie
+• F-61 Anzahl der Arbeitssätze pro Woche je Kategorie
+• F-62 e1RM-Verlauf je Hauptübung über einen Plan und über mehrere Pläne hinweg
+• F-63 Dauer der Sessions im Verlauf
+• F-64 Vergleich zweier Pläne nach Volumen und e1RM
+• F-65 Aktivitätsübersicht, an welchen Tagen trainiert wurde
+Bestleistungen
+• F-70 Die Anwendung erkennt Bestleistungen automatisch als höchsten e1RM je Hauptübung, mit Datum und Verlauf.
+• F-71 Während der Session gibt es einen Hinweis, sobald ein Satz eine neue Bestleistung ist.
+Körpergewicht
+• F-80 Der Athlet erfasst sein Körpergewicht mit Datum.
+• F-81 Er sieht den Verlauf und optional ein Zielgewicht.
+Fachliche Regeln und Berechnungen
+Alle Berechnungen gelten einheitlich an jeder Stelle der Anwendung. Es gibt also genau eine Definition pro Kennzahl.
+R-01 e1RM. Die Formel ist Epley, wobei die Wiederholungen um die Reserve bis RPE 10 ergänzt werden. Das Ergebnis wird auf den Rundungsschritt des Athleten aufgerundet, standardmäßig 2,5 kg.
+\text{e1RM} = \text{Gewicht} \cdot \left(1 + \frac{\text{Wdh} + (10 - \text{RPE})}{30}\right)
+R-02 Backoff-Gewicht. Es ist die Umkehrung von R-01. Eingesetzt werden der e1RM des schwersten Satzes und die Vorgabe des Folgesatzes. Das Ergebnis wird auf den Rundungsschritt gerundet.
+\text{Gewicht} = \frac{\text{e1RM}}{1 + \frac{\text{Wdh}_{\text{Vorgabe}} + (10 - \text{RPE}_{\text{Vorgabe}})}{30}}
+R-03 Tonnage. Summe aus Gewicht × Wiederholungen über alle erfassten Arbeitssätze.
+R-04 Arbeitssatz. Jeder erfasste Satz mit Gewicht, Wiederholungen und RPE zählt als Arbeitssatz. Aufwärmsätze werden nicht erfasst.
+R-05 Mehrere Sätze. Bei mehreren Sätzen eines Slots gilt für e1RM und Bestleistung der Satz mit dem höchsten e1RM.
+R-06 Historie bleibt stabil. Erfasste Sätze behalten ihre Übung und ihre Werte. Das gilt auch, wenn der Plan später geändert, umsortiert oder archiviert wird.
+R-07 Empfehlungsbasis. Die Gewichtsempfehlung nutzt die jüngste Session desselben Slots, in der die Vorgabe-Wiederholungen gleich waren. Gibt es keine solche Session, bleibt das Feld leer.
+R-08 RPE und RIR. Wer in RIR erfasst, dessen Eingabe wird als RPE = 10 − RIR umgerechnet. Alle Berechnungen arbeiten intern mit RPE, angezeigt wird in der gewählten Skala.
+Gegenüber dem Altsystem entfallen
+Sechs Funktionen aus TrainingSystems fallen weg, weil sie nicht zum Kern Planen, Erfassen und Progressieren gehören.
+Funktion
+Grund
+Freunde und Freundschaftsanfragen
+Gehört zu den sozialen Funktionen, kommt frühestens später
+Profil und Profilbild
+Kein fachlicher Nutzen für das Training
+Gym-Ticket
+Hat mit dem Trainingsprozess nichts zu tun
+Cover-Bilder für Pläne
+Rein dekorativ
+Routines mit Versionen
+Wird durch „Plan als Vorlage duplizieren“ (F-15) ersetzt
+Trainings-Log-Benachrichtigungen
+Der Hinweis auf Bestleistungen (F-71) deckt den sinnvollen Teil ab

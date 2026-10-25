@@ -1,0 +1,44 @@
+name: Backend checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  portable:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.13", "3.14"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: "0.9.2"
+          python-version: ${{ matrix.python }}
+      - run: uv sync --locked --all-packages --all-groups
+      - run: uv run --locked --package backend python scripts/check.py all
+  postgres:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: trainingos
+          POSTGRES_PASSWORD: trainingos_test
+          POSTGRES_DB: trainingos_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U trainingos -d trainingos_test"
+          --health-interval 3s --health-timeout 3s --health-retries 20
+    env:
+      TRAININGOS_TEST_POSTGRES_URL: postgresql+asyncpg://trainingos:trainingos_test@localhost:5432/trainingos_test
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: "0.9.2"
+          python-version: "3.14"
+      - run: uv sync --locked --all-packages --all-groups
+      - run: uv run --locked --package backend pytest -q -m "integration or contract or postgres"
+      - run: uv build --package backend
+      - run: docker build -t trainingos-ci .
