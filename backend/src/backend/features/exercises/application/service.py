@@ -1,3 +1,4 @@
+from dataclasses import replace
 from uuid import UUID
 
 from backend.features.exercises.domain import Category, Exercise, ExerciseRepository
@@ -37,6 +38,20 @@ class ExerciseService:
             raise NotFound
         exercise.revise(name=name, category=category, main=main)
         await self._exercises.save(exercise=exercise)
+        for plan in await self._plans.list(athlete_id=athlete_id):
+            changed = False
+            for day in plan.days:
+                if any(slot.exercise_id == exercise_id for slot in day.slots):
+                    slots = tuple(
+                        replace(slot, exercise_name=name, category=category, main=main)
+                        if slot.exercise_id == exercise_id
+                        else slot
+                        for slot in day.slots
+                    )
+                    plan.replace_day(replace(day, slots=slots))
+                    changed = True
+            if changed:
+                await self._plans.save(plan=plan)
         return exercise
 
     async def remove(self, *, athlete_id: UUID, exercise_id: UUID) -> None:

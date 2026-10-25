@@ -1,6 +1,6 @@
 from typing import Literal, Self
 
-from pydantic import SecretStr, model_validator
+from pydantic import Field, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -14,7 +14,8 @@ class AppSettings(BaseSettings):
     google_client_id: str = ""
     google_client_secret: SecretStr = SecretStr("")
     google_redirect_uri: str = "http://localhost:8000/api/v1/auth/google/callback"
-    session_days: int = 30
+    session_days: int = Field(default=30, ge=1, le=90)
+    oauth_timeout_seconds: float = Field(default=10, gt=0, le=60)
     host: str = "127.0.0.1"
     port: int = 8000
 

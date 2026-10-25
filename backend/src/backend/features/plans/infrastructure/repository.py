@@ -69,7 +69,7 @@ class SqlPlanRepository(PlanRepository):
         await self._session.flush()
 
     async def delete(self, *, athlete_id: UUID, plan_id: UUID) -> None:
-        await self._session.execute(
+        await self._session.exec(
             delete(PlanRow).where(col(PlanRow.athlete_id) == athlete_id, col(PlanRow.id) == plan_id)
         )
 
@@ -84,7 +84,7 @@ class SqlPlanRepository(PlanRepository):
         return from_payload(row.payload) if row else None
 
     async def revoke(self, *, athlete_id: UUID, token_hash: str) -> None:
-        await self._session.execute(
+        await self._session.exec(
             delete(TemplateRow).where(
                 col(TemplateRow.athlete_id) == athlete_id, col(TemplateRow.token_hash) == token_hash
             )

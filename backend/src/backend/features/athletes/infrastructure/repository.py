@@ -39,4 +39,4 @@ class SqlAthleteRepository(AthleteRepository):
         await self._session.flush()
 
     async def delete(self, *, athlete_id: UUID) -> None:
-        await self._session.execute(delete(AthleteRow).where(col(AthleteRow.id) == athlete_id))
+        await self._session.exec(delete(AthleteRow).where(col(AthleteRow.id) == athlete_id))

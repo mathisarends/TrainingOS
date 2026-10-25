@@ -60,4 +60,3 @@ errors = ErrorRegistry(
         provider_unavailable,
     ],
 )
-protected_errors = [authentication_required, not_found, conflict, invalid_input, forbidden]

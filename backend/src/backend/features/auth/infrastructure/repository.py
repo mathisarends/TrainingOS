@@ -26,7 +26,7 @@ class SqlAuthRepository(AuthRepository):
         self._session = session
 
     async def save_attempt(self, *, attempt: LoginAttempt) -> None:
-        await self._session.execute(
+        await self._session.exec(
             delete(AttemptRow).where(col(AttemptRow.expires_at) < datetime.now(UTC))
         )
         self._session.add(
@@ -48,7 +48,7 @@ class SqlAuthRepository(AuthRepository):
         if row is None:
             return None
         # DELETE RETURNING makes consumption single-use on both PostgreSQL and SQLite.
-        removed = await self._session.execute(
+        removed = await self._session.exec(
             delete(AttemptRow)
             .where(col(AttemptRow.state_hash) == state_hash)
             .returning(col(AttemptRow.state_hash))
@@ -93,7 +93,7 @@ class SqlAuthRepository(AuthRepository):
             return existing.athlete_id
 
     async def save_session(self, *, login_session: LoginSession) -> None:
-        await self._session.execute(
+        await self._session.exec(
             delete(LoginRow).where(col(LoginRow.expires_at) < datetime.now(UTC))
         )
         self._session.add(
@@ -118,4 +118,4 @@ class SqlAuthRepository(AuthRepository):
         )
 
     async def revoke(self, *, token_hash: str) -> None:
-        await self._session.execute(delete(LoginRow).where(col(LoginRow.token_hash) == token_hash))
+        await self._session.exec(delete(LoginRow).where(col(LoginRow.token_hash) == token_hash))

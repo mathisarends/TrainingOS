@@ -5,6 +5,8 @@ from backend.features.athletes.domain import Preferences, WeightUnit
 from backend.features.training.domain import backoff, e1rm, effort_to_rpe
 from backend.shared import InvalidInput
 
+pytestmark = pytest.mark.unit
+
 
 @pytest.mark.parametrize(
     "weight,reps,rpe,expected",

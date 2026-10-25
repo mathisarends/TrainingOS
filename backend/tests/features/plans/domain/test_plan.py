@@ -3,8 +3,11 @@ from datetime import date
 from decimal import Decimal as D
 from uuid import uuid4
 
+import pytest
 from backend.features.exercises.domain import Category
 from backend.features.plans.domain import Plan, Prescription, Slot, TrainingDay
+
+pytestmark = pytest.mark.unit
 
 
 def test_progression_caps_effort_and_preserves_identity() -> None:

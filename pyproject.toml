@@ -14,6 +14,12 @@ dev = ["ruff>=0.14", "mypy>=1.18", "pytest>=9", "pytest-asyncio>=1", "httpx>=0.2
 asyncio_mode = "auto"
 testpaths = ["backend/tests"]
 addopts = "--strict-config --strict-markers"
+markers = [
+  "unit: deterministic framework-free domain or application tests",
+  "integration: real application, database and resource lifetimes",
+  "contract: HTTP and OpenAPI public contract",
+  "postgres: PostgreSQL-specific locking or concurrency guarantee",
+]
 
 [tool.ruff]
 target-version = "py313"

@@ -34,7 +34,7 @@ class SqlBodyweightRepository(BodyweightRepository):
         await self._session.flush()
 
     async def delete(self, *, athlete_id: UUID, weigh_in_id: UUID) -> None:
-        await self._session.execute(
+        await self._session.exec(
             delete(WeighInRow).where(
                 col(WeighInRow.athlete_id) == athlete_id, col(WeighInRow.id) == weigh_in_id
             )
