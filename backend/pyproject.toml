@@ -1,0 +1,28 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "TrainingOS strength training backend"
+requires-python = ">=3.13,<3.15"
+dependencies = [
+  "fastapi-canon==0.7.0",
+  "dishka>=1.10,<2",
+  "fastapi>=0.141,<1",
+  "sqlmodel>=0.0.31",
+  "sqlalchemy[asyncio]>=2.0,<3",
+  "asyncpg>=0.31",
+  "alembic>=1.19",
+  "pydantic-settings>=2.14",
+  "httpx>=0.28,<1",
+  "pyjwt[crypto]>=2.10,<3",
+  "tzdata>=2025.2",
+  "uvicorn[standard]>=0.40",
+]
+
+[project.scripts]
+trainingos-api = "backend.main:main"
+trainingos-migrate = "backend.platform.database.migrations:main"
+
+[build-system]
+requires = ["uv_build>=0.9.2,<0.10"]
+build-backend = "uv_build"
+
