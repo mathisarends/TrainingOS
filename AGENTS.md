@@ -1,7 +1,8 @@
 # TrainingOS backend
 
-Use the current Canon guides and the architecture in `docs/architecture.md`.
-Keep documentation in English. Product terminology follows `docs/specification.txt`.
+Use the current Canon guides and the architecture in `README.md`.
+Keep documentation in English. Product terminology follows `SPECIFICATION.txt`.
+Keep project documentation in the root README instead of a separate docs directory.
 
 - Own business code by `backend/src/backend/features/<feature>/<layer>`.
 - Domain is framework-free; application depends on nominal domain ports, never adapters.
@@ -11,7 +12,7 @@ Keep documentation in English. Product terminology follows `docs/specification.t
 - Inject dependencies with Dishka. The function request scope owns commit/rollback.
 - Every owned query includes `athlete_id`. Keep owner row locks for aggregate mutations.
 - Never mutate recorded session snapshots when editing a plan or exercise catalog.
-- Mirror test subjects under `backend/tests/<production path>`; see `docs/testing.md`.
+- Mirror test subjects under `backend/tests/<production path>`; see the README's test concept.
 - Verify persistence from another request/session after the producing scope closes.
 - Use PostgreSQL for locking/concurrency claims. SQLite does not establish these guarantees.
 - Run `uv run --locked --package backend python scripts/check.py all` before finishing.

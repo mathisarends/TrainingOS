@@ -83,13 +83,104 @@ switching preferences never rewrites historical set values.
 The backend persists absolute timer deadlines and returns `server_now`. Wake locks,
 OS/background timer notifications and audible signals belong to a future frontend.
 
-## Verification and design
+## Architecture
+
+`backend/src/backend` follows the Maximus feature layout:
+
+```text
+backend/
+  src/backend/
+    app.py / composition.py       # Canon composition and feature registration
+    features/<feature>/
+      domain/                    # Framework-free entities, rules and ABC ports
+      application/               # Constructor-injected use cases
+      infrastructure/            # SQL and Google adapters, Dishka providers
+      presentation/              # HTTP schemas, mappers and routers
+      feature.py                 # Feature assembly
+    platform/                    # Shared API and database mechanisms
+  tests/features/<feature>/<layer>/
+  tests/platform/
+```
+
+Dependencies point inward: presentation calls application, application uses domain
+ports, and infrastructure implements those ports. Package facades do not assemble
+the application. Canon owns Problem Details and OpenAPI; route operation IDs and
+success statuses are explicit.
+
+PostgreSQL stores relational ownership and indexes. Nested plan and session contents
+are JSON aggregate snapshots with explicit codecs and Decimal weights. Every owned
+query includes the athlete ID. Request-scoped owner row locks serialize aggregate
+mutations; database constraints additionally enforce one active plan, one running
+session and one session per training day/week.
+
+Repositories flush without committing. The function-scoped Dishka transaction commits
+before a successful response is sent and rolls back on failure. Alembic owns schema
+changes and ships inside the installed package; runtime never calls `create_all`.
+Deleting an athlete cascades their data. Deleting a plan preserves recorded sessions.
+Exercises referenced by captured sessions are archived rather than removed.
+
+Week 1 spans seven days beginning at the plan's start date; weekday offsets wrap
+within it. Recommendations use the latest preceding performance of the same slot
+with matching prescribed reps. e1RM rounds upward; backoff rounds half up to the
+nearest increment. Deload reduces sets by one, with a minimum of one. Statistics
+include running sessions and recalculate from stored sets after corrections. Weekly
+buckets follow plan weeks; activity dates use the athlete's IANA timezone.
+
+The original requirements are preserved in [SPECIFICATION.txt](SPECIFICATION.txt).
+
+## Test concept
+
+Tests mirror the production feature and layer under `backend/tests`. The path names
+the subject; pytest markers identify the boundary:
+
+| Marker | Boundary and guarantees |
+| --- | --- |
+| `unit` | Domain rules, calculations, timers and configuration; Google adapter tests use scripted HTTP and real RSA/JWT verification. |
+| `integration` | Actual Canon composition, Dishka providers, services, repositories, Alembic migrations and transactions; only the external Google provider is replaced. |
+| `contract` | HTTP/OpenAPI, unique operation IDs, named Problem Details and rejected-write behavior. |
+| `postgres` | Concurrent plan activation, session starts and set recording against real PostgreSQL and separate request transactions. |
+
+`conftest.py` owns databases, application lifespans and HTTP clients; shared setup is
+in `support.py`, provider doubles in `fakes.py`. Assertions observe committed data
+through another request or connection. Tests verify rollback after flushed writes,
+athlete isolation, account deletion, immutable session history, independent template
+copies and recalculated personal records. Domain timers use explicit timestamps;
+concurrency checks use bounded waits without arbitrary sleeps.
+
+The default database is a fresh SQLite file per test, created through the production
+migration. PostgreSQL-only cases explicitly skip in this lane. SQLite does not
+establish PostgreSQL locking guarantees.
 
 ```console
 uv run --locked --package backend python scripts/check.py all
+uv run --locked --package backend pytest -m unit
+uv run --locked --package backend pytest -m "integration and not postgres"
+uv run --locked --package backend pytest -m contract
 ```
 
-See [test concept and commands](docs/testing.md), [architecture and decisions](docs/architecture.md)
-and the [original specification](docs/specification.txt). SQLite tests run without
-Docker; the PostgreSQL lane exercises actual row locks, migrations and concurrent
-requests. CI runs both lanes, Python 3.13/3.14, and a production container build.
+For the PostgreSQL lane, start a disposable test database:
+
+```console
+docker run --rm -d --name trainingos-test-db -e POSTGRES_USER=trainingos -e POSTGRES_PASSWORD=trainingos_test -e POSTGRES_DB=trainingos_test -p 127.0.0.1:55439:5432 postgres:18-alpine
+docker exec trainingos-test-db pg_isready -U trainingos -d trainingos_test
+```
+
+Once PostgreSQL is ready, set its URL and run the suite (PowerShell):
+
+```powershell
+$env:TRAININGOS_TEST_POSTGRES_URL = 'postgresql+asyncpg://trainingos:trainingos_test@localhost:55439/trainingos_test'
+uv run --locked --package backend pytest -q
+docker stop trainingos-test-db
+```
+
+The role needs `CREATEDB`, and the source database name must contain `test`. Each
+test creates and drops a uniquely named database. CI requires the PostgreSQL lane
+and configures the portable lane for Windows/Linux and Python 3.13/3.14, plus a
+production container build.
+
+Initial verification on 2026-10-25: **61 passed against PostgreSQL 18**; SQLite:
+**58 passed, 3 PostgreSQL-only cases skipped**. Ruff, strict mypy, package builds,
+packaged migrations and the Linux container's migration/HTTP smoke checks passed.
+Python 3.13 and the hosted CI matrix were configured rather than locally executed.
+Live Google consent needs the owner's OAuth credentials. Wake locks and background
+timer signals require a future browser/OS integration suite.
