@@ -76,6 +76,7 @@
   --navigation-width: 31rem;
   --navigation-inset: 1.25rem;
   --page-content-max: 87.5rem;
+  --plan-card-min-width: 22rem;
   --page-inline-inset: 15%;
   --page-gutter: max(var(--page-inline-inset), calc((100% - var(--page-content-max)) / 2));
   --settings-control-width: 18rem;

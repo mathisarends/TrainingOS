@@ -62,8 +62,11 @@ shifts when only some pages need scrolling. Mobile layouts use full-width stacke
 safe-area-aware navigation.
 
 Home cards show the real completed training days in each plan week; an active
-plan highlights its current calendar week. The training preview uses a desktop
-table and labeled exercise cards on mobile, with day/week controls above the
+plan highlights its current calendar week.
+The card grid uses `--plan-card-min-width` (22rem) and wraps before titles or metadata
+become cramped. Card titles omit the redundant Plan prefix; preview block names
+do not imply different strength/hypertrophy plan types.
+The training preview uses a desktop table and labeled exercise cards on mobile, with day/week controls above the
 content and a floating mobile start action. Logs uses desktop calendar entries and
 mobile completion dots plus a monthly session list. Account follows the Maximus
 settings structure: two prominent Account/Settings sections, profile identity and quiet rows with
@@ -131,8 +134,8 @@ Logout has its own pending state, blocks duplicate requests and waits for server
 confirmation before clearing cached user state and navigating to login. A failed
 request keeps the account visible for explicit retry; an expired session completes
 sign-out. Late dashboard responses cannot restore state after sign-out. The isolated
-preview offers **Leave preview**, which opens `/login` without calling real
-authentication or changing an existing real session.
+preview offers **Leave preview**, which opens `/login` without issuing a real
+logout request or changing an existing real session.
 All production calculations and persistence remain there. Failed writes preserve
 form input and never appear saved. Mutations and failed reads are not retried
 automatically; ambiguous network writes require checking the server state before
@@ -207,8 +210,13 @@ plus real local registration, cookie restoration, logout and subsequent login.
 Google consent and locked-screen device signals were not tested against a real
 account/device.
 
-The latest [account/layout checkpoints](frontend/screenshots/account-layout/index.html)
-include the simplified account, Maximus-style preferences and data screens. Nine
+The latest [navigation checkpoints](frontend/screenshots/navigation-polish/index.html)
+include two larger account tabs, integrated data controls, secondary month headings,
+direct date links and wider plan cards. Browser checks cover 320, 390, 1024, 1440
+and 1600 pixels, including export download, deletion confirmation/cancellation,
+desktop/mobile date clicks, real logout followed by a protected-route visit, and
+leaving the preview. Earlier [account/layout checkpoints](frontend/screenshots/account-layout/index.html)
+document the shared content column. Nine
 application pages share identical header and content edges at 320, 390, 1024, 1440
 and 2560 pixels; the wide layout respects the shared maximum width. Earlier
 [UI polish checkpoints](frontend/screenshots/ui-polish/index.html) cover the empty

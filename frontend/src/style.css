@@ -2025,8 +2025,8 @@ summary {
 }
 .training-plan-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-3);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--plan-card-min-width)), 1fr));
+  gap: var(--space-4);
   align-items: start;
 }
 .training-plan-card {
@@ -2141,14 +2141,6 @@ summary {
   font-weight: var(--weight-semibold);
   line-height: 1.4;
   margin-bottom: var(--space-1);
-}
-.title-prefix {
-  color: var(--color-text-subtle);
-  text-transform: uppercase;
-  font-size: var(--font-sm);
-  font-weight: var(--weight-normal);
-  letter-spacing: 0.04em;
-  margin-right: var(--space-2);
 }
 .card-body p {
   color: var(--color-text-muted);
@@ -2355,9 +2347,6 @@ summary {
 .calendar-day:last-child {
   border-bottom-right-radius: var(--radius-md);
 }
-.calendar-day:hover {
-  background: var(--color-surface);
-}
 .calendar-day-number {
   width: 1.875rem;
   height: 1.875rem;
@@ -2409,7 +2398,7 @@ summary {
   outline: 2px solid var(--color-focus);
   outline-offset: -3px;
 }
-.calendar-day:has(.calendar-event):hover {
+.calendar-day.single-training:hover {
   background: var(--color-surface-muted);
 }
 .calendar-event span {
@@ -2432,6 +2421,16 @@ summary {
   margin: var(--space-5) 0 var(--space-3);
   color: var(--color-text-muted);
   font-size: var(--font-sm);
+}
+.history-empty .empty {
+  padding: var(--space-6) var(--space-4);
+}
+.history-empty .empty-icon {
+  display: none;
+}
+.history-empty .empty h3 {
+  font-size: var(--font-base);
+  font-weight: var(--weight-normal);
 }
 .month-history-list {
   border: 1px solid var(--color-border-strong);
@@ -2719,11 +2718,6 @@ summary {
 }
 .danger-button {
   background: var(--color-error);
-}
-@media (max-width: 1199px) and (min-width: 769px) {
-  .training-plan-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 @media (max-width: 768px) {
   .training-plan-grid {

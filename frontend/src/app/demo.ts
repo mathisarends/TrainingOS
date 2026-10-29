@@ -66,7 +66,7 @@ export class DemoTransport implements Transport {
   }
   private plan: Plan = {
     id: 'preview-plan',
-    title: 'Kraftaufbau · Block 01',
+    title: 'Block 01',
     start_date: today(),
     weeks: 6,
     status: 'active',
@@ -102,7 +102,7 @@ export class DemoTransport implements Transport {
     const start = new Date();
     start.setDate(start.getDate() - 21);
     this.plan.start_date = start.toLocaleDateString('sv-SE');
-    for (const [i, title] of ['Hypertrophie · Block 02', 'Grundlagen · 4 Wochen'].entries()) {
+    for (const [i, title] of ['Block 02', 'Grundlagen · 4 Wochen'].entries()) {
       const plan = this.duplicate(this.plan, title, today());
       plan.status = i === 0 ? 'draft' : 'archived';
       if (i === 1) {

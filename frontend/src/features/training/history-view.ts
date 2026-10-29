@@ -93,7 +93,12 @@ export class HistoryView extends LitElement {
       })
       .sort((a, b) => Date.parse(b.started_at) - Date.parse(a.started_at));
     return html`<div class="history-toolbar">
-        <h2 class="history-month" aria-live="polite" aria-atomic="true">
+        <h2
+          class="history-month"
+          aria-live="polite"
+          aria-atomic="true"
+          aria-label=${first.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' })}
+        >
           <span>${first.toLocaleDateString('de-DE', { month: 'long' })}</span
           ><span class="history-year">${this.year}</span>
         </h2>
@@ -151,15 +156,20 @@ export class HistoryView extends LitElement {
                   </div>`;
                 })}
               </div>
-              <div class="mobile-month-history">
-                <p class="month-session-count">
-                  ${monthSessions.length} ${monthSessions.length === 1 ? 'Einheit' : 'Einheiten'} im
-                  ${first.toLocaleDateString('de-DE', { month: 'long' })}
-                </p>
-                ${monthSessions.length ? this.monthList(monthSessions) : nothing}
-              </div>`
+              ${
+                monthSessions.length
+                  ? html`<div class="mobile-month-history">
+                      <p class="month-session-count">
+                        ${monthSessions.length}
+                        ${monthSessions.length === 1 ? 'Einheit' : 'Einheiten'} im
+                        ${first.toLocaleDateString('de-DE', { month: 'long' })}
+                      </p>
+                      ${this.monthList(monthSessions)}
+                    </div>`
+                  : nothing
+              }`
       }
-      ${!monthSessions.length && !this.busy ? empty('Keine Trainings in diesem Monat', 'Wechsle den Monat oder starte dein nächstes Training.') : nothing}`;
+      ${!monthSessions.length && !this.busy ? html`<div class="history-empty">${empty('Keine Trainings in diesem Monat', 'Wechsle den Monat oder starte dein nächstes Training.')}</div>` : nothing}`;
   }
 }
 customElements.define('history-view', HistoryView);

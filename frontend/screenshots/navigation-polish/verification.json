@@ -1,0 +1,305 @@
+{
+  "layouts": [
+    {
+      "name": "home",
+      "alerts": [],
+      "backLinks": 0,
+      "cardWidths": [
+        490.75,
+        490.75,
+        490.75
+      ],
+      "overflow": false,
+      "tabs": [],
+      "width": 1440
+    },
+    {
+      "name": "account",
+      "alerts": [],
+      "backLinks": 0,
+      "cardWidths": [],
+      "overflow": false,
+      "tabs": [
+        {
+          "font": "20px",
+          "label": "Konto"
+        },
+        {
+          "font": "20px",
+          "label": "Einstellungen"
+        }
+      ],
+      "width": 1440
+    },
+    {
+      "name": "settings",
+      "alerts": [],
+      "backLinks": 0,
+      "cardWidths": [],
+      "overflow": false,
+      "tabs": [
+        {
+          "font": "20px",
+          "label": "Konto"
+        },
+        {
+          "font": "20px",
+          "label": "Einstellungen"
+        }
+      ],
+      "width": 1440
+    },
+    {
+      "name": "logs",
+      "alerts": [],
+      "backLinks": 0,
+      "cardWidths": [],
+      "overflow": false,
+      "tabs": [],
+      "width": 1440
+    },
+    {
+      "name": "home",
+      "alerts": [],
+      "backLinks": 0,
+      "cardWidths": [
+        341.25,
+        341.25,
+        341.25
+      ],
+      "overflow": false,
+      "tabs": [],
+      "width": 390
+    },
+    {
+      "name": "account",
+      "alerts": [],
+      "backLinks": 0,
+      "cardWidths": [],
+      "overflow": false,
+      "tabs": [
+        {
+          "font": "20px",
+          "label": "Konto"
+        },
+        {
+          "font": "20px",
+          "label": "Einstellungen"
+        }
+      ],
+      "width": 390
+    },
+    {
+      "name": "settings",
+      "alerts": [],
+      "backLinks": 0,
+      "cardWidths": [],
+      "overflow": false,
+      "tabs": [
+        {
+          "font": "20px",
+          "label": "Konto"
+        },
+        {
+          "font": "20px",
+          "label": "Einstellungen"
+        }
+      ],
+      "width": 390
+    },
+    {
+      "name": "logs",
+      "alerts": [],
+      "backLinks": 0,
+      "cardWidths": [],
+      "overflow": false,
+      "tabs": [],
+      "width": 390
+    },
+    {
+      "name": "home",
+      "alerts": [],
+      "backLinks": 0,
+      "cardWidths": [
+        277.5625,
+        277.5625,
+        277.5625
+      ],
+      "overflow": false,
+      "tabs": [],
+      "width": 320
+    },
+    {
+      "name": "account",
+      "alerts": [],
+      "backLinks": 0,
+      "cardWidths": [],
+      "overflow": false,
+      "tabs": [
+        {
+          "font": "20px",
+          "label": "Konto"
+        },
+        {
+          "font": "20px",
+          "label": "Einstellungen"
+        }
+      ],
+      "width": 320
+    },
+    {
+      "name": "settings",
+      "alerts": [],
+      "backLinks": 0,
+      "cardWidths": [],
+      "overflow": false,
+      "tabs": [
+        {
+          "font": "20px",
+          "label": "Konto"
+        },
+        {
+          "font": "20px",
+          "label": "Einstellungen"
+        }
+      ],
+      "width": 320
+    },
+    {
+      "name": "logs",
+      "alerts": [],
+      "backLinks": 0,
+      "cardWidths": [],
+      "overflow": false,
+      "tabs": [],
+      "width": 320
+    },
+    {
+      "name": "home",
+      "alerts": [],
+      "backLinks": 0,
+      "cardWidths": [
+        425.875,
+        425.875,
+        425.875
+      ],
+      "overflow": false,
+      "tabs": [],
+      "width": 1024
+    },
+    {
+      "name": "account",
+      "alerts": [],
+      "backLinks": 0,
+      "cardWidths": [],
+      "overflow": false,
+      "tabs": [
+        {
+          "font": "20px",
+          "label": "Konto"
+        },
+        {
+          "font": "20px",
+          "label": "Einstellungen"
+        }
+      ],
+      "width": 1024
+    },
+    {
+      "name": "settings",
+      "alerts": [],
+      "backLinks": 0,
+      "cardWidths": [],
+      "overflow": false,
+      "tabs": [
+        {
+          "font": "20px",
+          "label": "Konto"
+        },
+        {
+          "font": "20px",
+          "label": "Einstellungen"
+        }
+      ],
+      "width": 1024
+    },
+    {
+      "name": "logs",
+      "alerts": [],
+      "backLinks": 0,
+      "cardWidths": [],
+      "overflow": false,
+      "tabs": [],
+      "width": 1024
+    },
+    {
+      "name": "home",
+      "alerts": [],
+      "backLinks": 0,
+      "cardWidths": [
+        359.15625,
+        359.171875,
+        359.15625
+      ],
+      "overflow": false,
+      "tabs": [],
+      "width": 1600
+    },
+    {
+      "name": "account",
+      "alerts": [],
+      "backLinks": 0,
+      "cardWidths": [],
+      "overflow": false,
+      "tabs": [
+        {
+          "font": "20px",
+          "label": "Konto"
+        },
+        {
+          "font": "20px",
+          "label": "Einstellungen"
+        }
+      ],
+      "width": 1600
+    },
+    {
+      "name": "settings",
+      "alerts": [],
+      "backLinks": 0,
+      "cardWidths": [],
+      "overflow": false,
+      "tabs": [
+        {
+          "font": "20px",
+          "label": "Konto"
+        },
+        {
+          "font": "20px",
+          "label": "Einstellungen"
+        }
+      ],
+      "width": 1600
+    },
+    {
+      "name": "logs",
+      "alerts": [],
+      "backLinks": 0,
+      "cardWidths": [],
+      "overflow": false,
+      "tabs": [],
+      "width": 1600
+    }
+  ],
+  "behavior": {
+    "realLogoutOpensLogin": true,
+    "protectedRouteRequiresLoginAfterLogout": true,
+    "previewExitOpensLogin": true,
+    "legacyDataRouteShowsIntegratedAccount": true,
+    "exportFormat": 3,
+    "exportedPreviewSessions": 6,
+    "deleteRequiresConfirmation": true,
+    "desktopDateClickOpensRecordedTraining": true,
+    "mobileDateClickOpensRecordedTraining": true
+  }
+}

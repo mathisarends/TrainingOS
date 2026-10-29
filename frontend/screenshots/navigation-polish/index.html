@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TrainingOS · Navigation polish</title>
+<style>
+@import '../../src/tokens.css';
+*{box-sizing:border-box}html{color-scheme:dark;background:var(--color-background);color:var(--color-text);font:15px Arial,sans-serif}body{max-width:1440px;margin:auto;padding:40px 24px}h1{font-size:26px;letter-spacing:-.03em}p{max-width:850px;color:var(--color-text-muted);line-height:1.7}a{color:inherit}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr));gap:24px;margin-top:32px}main a{display:block;text-decoration:none;overflow:hidden;border:1px solid var(--color-border-strong);border-radius:16px;background:var(--color-surface)}img{display:block;width:100%;height:340px;object-fit:contain;background:#181818}h2{font-size:15px;font-weight:400;margin:18px 20px}a:focus-visible{outline:2px solid var(--color-focus);outline-offset:4px}
+</style>
+<h1>TrainingOS · Navigation polish</h1>
+<p>29 October 2026. Account and Settings are the two primary sections, with 20px labels and larger hit targets. Export and account deletion live directly under Account. The shared Account header has no extra back link. Preview exit is distinct from real sign-out.</p>
+<p>Logs has a secondary month heading and muted year. A date with one recorded session is clickable across its entire cell and opens that training day; multiple sessions retain individual links. Home cards wrap at a shared 352px minimum, clamped to the available mobile width. The Plan prefix and strength/hypertrophy preview names have been removed.</p>
+<p>Verified at 320, 390, 1024, 1440 and 1600px: no horizontal overflow. Browser checks covered real sign-in/sign-out, protected-route rejection after logout, preview exit, export download, deletion confirmation/cancellation, and desktop/mobile date clicks. Screenshots use isolated sample data, except the blank login captured after signing out of a temporary local test account. 44 frontend tests and 85 backend tests passed; four PostgreSQL-only tests were skipped.</p>
+<p><a href="verification.json">Verification results</a> · <a href="/?demo=1">Live Home</a> · <a href="/profile?demo=1">Live Account</a> · <a href="/logs?demo=1">Live Logs</a></p>
+<main>
+<a href="home-desktop.jpg"><img src="home-desktop.jpg" alt="Wider neutral plan cards, desktop"><h2>Home · Desktop</h2></a>
+<a href="home-mobile.jpg"><img src="home-mobile.jpg" alt="Stacked plan cards, mobile"><h2>Home · Mobile</h2></a>
+<a href="account-desktop.jpg"><img src="account-desktop.jpg" alt="Two account sections and integrated data controls"><h2>Account · Desktop</h2></a>
+<a href="account-mobile.jpg"><img loading="lazy" src="account-mobile.jpg" alt="Larger account navigation, mobile"><h2>Account · Mobile</h2></a>
+<a href="account-data-mobile.jpg"><img loading="lazy" src="account-data-mobile.jpg" alt="Export and account deletion under Account"><h2>Account data · Mobile</h2></a>
+<a href="settings-desktop.jpg"><img loading="lazy" src="settings-desktop.jpg" alt="Settings without redundant header navigation"><h2>Settings · Desktop</h2></a>
+<a href="settings-mobile.jpg"><img loading="lazy" src="settings-mobile.jpg" alt="Two clear sections, mobile"><h2>Settings · Mobile</h2></a>
+<a href="logs-desktop.jpg"><img loading="lazy" src="logs-desktop.jpg" alt="Secondary month heading and clickable dates"><h2>Logs · Desktop</h2></a>
+<a href="logs-mobile.jpg"><img loading="lazy" src="logs-mobile.jpg" alt="Mobile calendar linking directly to training days"><h2>Logs · Mobile</h2></a>
+<a href="logs-empty-mobile.jpg"><img loading="lazy" src="logs-empty-mobile.jpg" alt="Quiet empty month state"><h2>Empty month · Mobile</h2></a>
+<a href="login-after-logout.jpg"><img loading="lazy" src="login-after-logout.jpg" alt="Login after signing out of a local test account"><h2>Real logout · Login</h2></a>
+</main>
+</html>

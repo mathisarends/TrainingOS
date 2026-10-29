@@ -341,7 +341,7 @@ export class TrainingApp extends LitElement {
                       this.homeDay = '';
                       this.homeWeek = plan.status === 'active' ? this.currentWeek(plan) : 1;
                     }}
-                    ><span class="title-prefix">Plan</span>${plan.title}</a
+                    >${plan.title}</a
                   >
                 </h2>
                 <p>
@@ -679,6 +679,8 @@ export class TrainingApp extends LitElement {
           <div class="header-title">
             ${['catalog', 'records', 'plans'].includes(this.page) ? html`<a class="bare-icon back-link" href=${this.href(['catalog', 'records'].includes(this.page) ? 'account' : 'home')} aria-label="Zurück">${icon('arrow-left')}</a>` : nothing}${context ? html`<span class="context">${context}</span>` : nothing}<span
               class="current"
+              role=${this.page === 'history' ? 'heading' : nothing}
+              aria-level=${this.page === 'history' ? '1' : nothing}
               >${heading}</span
             >
           </div>
