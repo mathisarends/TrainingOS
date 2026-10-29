@@ -1,6 +1,7 @@
 # TrainingOS
 
-Backend for strength training plans, set-by-set logging and RPE-based progression.
+Strength training plans, set-by-set logging and RPE-based progression, with a
+responsive Lit/TypeScript frontend and a feature-oriented Python backend.
 Built with **fastapi-canon 0.7.0**, FastAPI, Dishka, SQLModel, PostgreSQL and Alembic.
 The repository follows the feature/layer structure of Maximus Trading.
 
@@ -14,7 +15,7 @@ docker compose up --build
 ```
 
 The database becomes healthy first; a dedicated migration container applies Alembic
-before the API starts. API: `http://localhost:8000`; interactive contracts:
+before the API starts. Frontend: `http://localhost:5173`; API: `http://localhost:8000`; interactive contracts:
 `http://localhost:8000/docs`; OpenAPI: `http://localhost:8000/openapi.json`.
 `/health` is a public liveness check.
 
@@ -27,12 +28,169 @@ uv run --locked --package backend trainingos-migrate
 uv run --locked --package backend trainingos-api
 ```
 
+In a second terminal, with Node.js 24 and npm:
+
+```console
+cd frontend
+npm ci
+npm run dev
+```
+
+The frontend proxies `/api` to `http://127.0.0.1:8000`, including cookie-authenticated
+requests. Keep port 5173 available, or update `TRAININGOS_FRONTEND_URL` and
+`TRAININGOS_ALLOWED_ORIGINS` to match the browser origin when choosing another port.
+Vite fails on a port conflict instead of silently changing the origin.
+
+## Frontend
+
+The frontend follows the eight supplied desktop/mobile design references, preserved
+unchanged in [`frontend/references`](frontend/references/index.html). The reference
+gallery identifies Home, Training, Logs and Account at both viewport sizes. System
+notifications and the decorative phone frame in those images are capture artifacts;
+they are not application UI.
+
+The visual contract lives in [`frontend/src/tokens.css`](frontend/src/tokens.css):
+charcoal backgrounds (`#202020`), subtly raised surfaces, fine neutral borders,
+light text, green completion indicators, a system sans-serif with monospaced progress
+labels, shared spacing, rounded panels and a floating four-item navigation. The
+header and main content share a centered content column; Account has a narrower
+column. Mobile layouts use full-width stacked cards with safe-area-aware navigation.
+
+Home cards show the real completed training days in each plan week; an active
+plan highlights its current calendar week. The training preview uses a desktop
+table and labeled exercise cards on mobile, with day/week controls above the
+content and a floating mobile start action. Logs uses desktop calendar entries and
+mobile completion dots plus a monthly session list. Account groups its menu into
+outlined panels below the activity year, with a 30-day completion count and legend.
+Dashboard history is paginated completely so plan progress and activity counts do
+not stop at the first API page. Recorded history remains the source of completion.
+
+The remaining screens infer the same design language: outlined category tables,
+rounded plan/set editors, neutral charts and record cards, grouped settings and
+data forms, and dark dialogs. This includes authentication, plan creation,
+progression, sharing, exercise editing, bodyweight and recorded training sessions.
+The creation dialog collects title and block length, then training days and start
+date; plan cover images are not part of the interface.
+
+Pages and flows:
+
+- `/getting-started`: the original wordmark/start-circle sign-in structure.
+
+- `/`: plan cards; create, open, edit and delete plans while retaining training history.
+- `/plans`, `/plans/new` and `/plans/:id`: plan settings, named weekdays, exercise slots,
+  reordering/removal, rest times and per-week prescriptions. Duplicate, activate,
+  archive, copy forward, share/import/revoke templates, and preview/apply progression
+  with the backend's revision check.
+  Creation uses a two-step dialog: title/block length in
+  General, then weekday selection and start date in Calendar. Day names can be
+  customized without leaving the calendar step; moving back preserves the form.
+- `/training` and `/training/:id`: day/week navigation, start/resume, explicit set
+  recording, previous performance, backend e1RM/backoff feedback, skipping exercises,
+  completion, set correction/deletion and training-time correction.
+- `/logs`: monthly calendar, month navigation, list view and reopening recorded sessions.
+- `/profile`: account menu and a recent-training activity calendar.
+- `/profile/exercises`: inline name editing and the original category tables with
+  rest, set, repetition and effort defaults. Search/filter and create/edit/remove
+  remain available. Failed inline changes retain their drafts for explicit retry.
+- `/profile/best-performance`: main-exercise best values and history using the
+  backend-returned e1RM values; no separate statistics or plan-comparison feature.
+- `/profile/body-weight`: dated entries, corrections/removal, target and history chart.
+- `/profile/settings`: kg/lb, RPE/RIR, rounding step, target weight and timezone.
+- `/profile/data`: JSON export and explicitly confirmed account deletion.
+
+Google sign-in, cookie session restoration and logout use the existing backend.
+All production calculations and persistence remain there. Failed writes preserve
+form input and never appear saved. Mutations and failed reads are not retried
+automatically; ambiguous network writes require checking the server state before
+resubmitting. Authentication and training data are not stored in local storage.
+`/?demo=1` explicitly selects isolated in-memory sample data for all pages. Reloading
+resets this preview; it never substitutes for unavailable real data. Old hash links
+are migrated to the corresponding pathname, including recorded-session links.
+
+### Lit Canon conventions and generated API
+
+The app uses `createApp`, `defineFeature`, `definePage` and `provide` from
+[lit-canon](https://github.com/mathisarends/lit-canon). Each feature owns `feature.ts`
+with explicit, lazy page registration. Composition supplies a single TanStack
+`QueryClient`, the server-state store, navigation and the transport through Lit
+context. Cache invalidation uses generated key factories; logout clears the cache.
+Structural sharing is disabled to preserve response receipt timestamps for timers.
+
+The not-yet-published `lit-canon-api`, `lit-canon-fetch` and
+`lit-canon-composition` packages are vendored from the local upstream snapshot
+`d1838b16ac06d70fefc540400a96fe752281b9e9` under `frontend/vendor/lit-canon` and
+installed through relative npm `file:` dependencies. Their source, compiled runtime
+and MIT notices are included. Only packaging metadata was adapted (`dist` is called
+`lib`, development dependencies and upstream build scripts are omitted); runtime
+and generator source are unchanged. No sibling checkout or published Canon package
+is required to install or build this repository.
+
+`frontend/openapi.json` comes from the actual backend composition. The upstream
+Canon generator owns `frontend/src/api/generated`: typed resource clients, DTOs,
+query keys/options, mutation factories and Problem Details unions. Application DTOs
+are aliases of those contracts. `src/api/request.ts` is the single injectable
+request boundary; production uses `lit-canon-fetch`, while preview/tests supply an
+isolated transport. UI code calls generated operations rather than handwritten URLs.
+
+Regenerate after backend contract changes:
+
+```console
+uv run --locked --package backend python scripts/export_openapi.py
+cd frontend
+npm run api:generate
+```
+
+On Windows, stop Vite before generation: its watcher can prevent the generator's
+atomic directory replacement. The read-only `api:check` works while Vite is running.
+Checks:
+
+```console
+uv run --locked --package backend python scripts/export_openapi.py --check
+cd frontend
+npm ci
+npm run api:check
+npm test
+npm run build
+npm run format:check
+```
+
+Tests mirror subjects under `frontend/tests`. They cover request credentials,
+decimal serialization, errors/cancellation, explicit set entry, duplicate submission,
+late guidance, server-deadline timers, plan creation and revision-checked progression,
+calendar navigation and failed catalog/bodyweight writes. CI checks both the exported
+OpenAPI contract and regenerated client. The latest visual checkpoints are saved under
+[`frontend/screenshots/reference-redesign`](frontend/screenshots/reference-redesign/index.html).
+Earlier checkpoints remain in `frontend/screenshots` for comparison.
+
+Local verification on 2026-10-29: 27 frontend tests and 70 backend tests passed
+(3 PostgreSQL-only cases skipped), along with TypeScript/Vite, Prettier, Ruff, mypy
+and both API drift checks. A clean `npm ci` was verified. All eleven page routes were checked
+at 320, 390 and 1600 pixels for visible errors and horizontal overflow; desktop
+and mobile screenshots include the forms and dialogs. Browser checks also covered
+day/week navigation, training start, explicit set recording and the rest timer. Google consent and locked-screen device
+signals were not tested against a real account/device.
+
+The frontend container builds from this checkout, including the vendored packages,
+then serves through nginx and proxies `/api` to the API container. Its SPA fallback
+supports direct page URLs. OAuth query strings are excluded from access logs.
+The manifest supplies standalone metadata; there is no service worker or offline
+write queue. Start locally with Node.js 24 and `npm ci && npm run dev` in `frontend`.
+
+For a real phone, use one reachable hostname for frontend and OAuth callback,
+register the exact callback with Google, and configure that frontend origin in
+`TRAININGOS_FRONTEND_URL` and `TRAININGOS_ALLOWED_ORIGINS`. HTTPS enables secure
+cookies and Screen Wake Lock. Compose binds to localhost by default. Mobile browsers
+can suspend background pages, so locked-screen audio/vibration is browser-dependent;
+the server deadline remains correct after returning or reloading.
+
 ## Google sign-in
 
 Register this exact redirect URI on the Google OAuth web client:
 `http://localhost:8000/api/v1/auth/google/callback`.
 Open `GET /api/v1/auth/google/login` in the browser. The callback returns the
-user and sets the HTTP-only application session cookie. There is no password
+user and sets the HTTP-only application session cookie. Browser navigations accepting
+HTML receive a 303 redirect to `TRAININGOS_FRONTEND_URL`; JSON API clients retain the
+200 user response. The redirect target must be an explicitly allowed origin. There is no password
 registration or development authentication bypass.
 
 The auth layout, identity port, server-side callback and cookie helper are adapted
@@ -82,8 +240,10 @@ Input `weight` and output weights use the user's selected unit. Input
 canonical RPE. Decimal values serialize as JSON strings. Stored weights are kg;
 switching preferences never rewrites historical set values.
 
-The backend persists absolute timer deadlines and returns `server_now`. Wake locks,
-OS/background timer notifications and audible signals belong to a future frontend.
+The backend persists absolute timer deadlines and returns `server_now`. The frontend
+anchors these to response receipt time and a monotonic clock, including cached
+snapshots after navigation. Native OS background notifications remain outside the
+browser implementation.
 
 ## Architecture
 
@@ -136,6 +296,14 @@ The database migration from `0001` to `0002` renames account ownership to `user_
 and updates stored plan/template payloads without replacing IDs or training values.
 Account export format 2 uses `user` and `training_sessions`; set feedback returns
 `training_session`. Login sessions remain authentication infrastructure.
+
+Migration `0003` adds owned exercise-category defaults. Missing overrides resolve
+to the original TrainingSystems values; changing defaults never rewrites existing
+plan prescriptions or captured training sessions. Adding a new slot uses its
+category defaults for every week, with an optional explicit rest override. Effort
+is stored as RPE and mapped to the user's RPE/RIR preference at the API boundary.
+Account exports include the resolved category defaults; account deletion cascades
+stored overrides. Apply the normal migration command before starting the new API.
 
 ## Test concept
 

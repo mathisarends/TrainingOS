@@ -1,0 +1,200 @@
+[
+  {
+    "page": "home",
+    "size": "mobile",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "training",
+    "size": "mobile",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "logs",
+    "size": "mobile",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "account",
+    "size": "mobile",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "plan-editor",
+    "size": "mobile",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "catalog",
+    "size": "mobile",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "records",
+    "size": "mobile",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "bodyweight",
+    "size": "mobile",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "settings",
+    "size": "mobile",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "data",
+    "size": "mobile",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "login",
+    "size": "mobile",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "home",
+    "size": "desktop",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "training",
+    "size": "desktop",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "logs",
+    "size": "desktop",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "account",
+    "size": "desktop",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "plan-editor",
+    "size": "desktop",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "catalog",
+    "size": "desktop",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "records",
+    "size": "desktop",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "bodyweight",
+    "size": "desktop",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "settings",
+    "size": "desktop",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "data",
+    "size": "desktop",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "login",
+    "size": "desktop",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "home",
+    "size": "narrow",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "training",
+    "size": "narrow",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "logs",
+    "size": "narrow",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "account",
+    "size": "narrow",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "plan-editor",
+    "size": "narrow",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "catalog",
+    "size": "narrow",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "records",
+    "size": "narrow",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "bodyweight",
+    "size": "narrow",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "settings",
+    "size": "narrow",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "data",
+    "size": "narrow",
+    "alerts": [],
+    "overflow": false
+  },
+  {
+    "page": "login",
+    "size": "narrow",
+    "alerts": [],
+    "overflow": false
+  }
+]
