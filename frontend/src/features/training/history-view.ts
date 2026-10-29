@@ -8,6 +8,7 @@ export class HistoryView extends LitElement {
     api: { attribute: false },
     sessions: { attribute: false },
     more: { attribute: false },
+    demo: { type: Boolean },
     month: { state: true },
     year: { state: true },
     busy: { state: true },
@@ -17,6 +18,7 @@ export class HistoryView extends LitElement {
   api!: Transport;
   sessions: TrainingSession[] = [];
   more = false;
+  demo = false;
   private month = new Date().getMonth();
   private year = new Date().getFullYear();
   private busy = false;
@@ -52,14 +54,18 @@ export class HistoryView extends LitElement {
     this.month = date.getMonth();
     this.year = date.getFullYear();
   }
-  private open(id: string) {
-    this.dispatchEvent(new CustomEvent('open-training', { detail: id, bubbles: true }));
+  private trainingHref(id: string) {
+    return `/training/${encodeURIComponent(id)}${this.demo ? '?demo=1' : ''}`;
   }
   private monthList(sessions: TrainingSession[]) {
     return html`<div class="history-list month-history-list">
       ${sessions.map((s) => {
         const date = new Date(s.started_at);
-        return html`<button class="history-row" @click=${() => this.open(s.id)}>
+        return html`<a
+          class="history-row"
+          href=${this.trainingHref(s.id)}
+          aria-label=${`${s.day_name}, ${dateLabel(s.started_at)}`}
+        >
           <span class="history-date"
             ><small
               >${date.toLocaleDateString('de-DE', { weekday: 'short' }).replace('.', '')}</small
@@ -71,7 +77,7 @@ export class HistoryView extends LitElement {
             aria-label=${s.ended_at ? 'Abgeschlossen' : 'Läuft'}
             >${icon(s.ended_at ? 'check' : 'activity')}</span
           >
-        </button>`;
+        </a>`;
       })}
     </div>`;
   }
@@ -87,7 +93,10 @@ export class HistoryView extends LitElement {
       })
       .sort((a, b) => Date.parse(b.started_at) - Date.parse(a.started_at));
     return html`<div class="history-toolbar">
-        <h1>${first.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' })}</h1>
+        <h2 class="history-month" aria-live="polite" aria-atomic="true">
+          <span>${first.toLocaleDateString('de-DE', { month: 'long' })}</span
+          ><span class="history-year">${this.year}</span>
+        </h2>
         <div class="history-controls">
           <button
             class="secondary today-button"
@@ -129,7 +138,7 @@ export class HistoryView extends LitElement {
                     (s) => new Date(s.started_at).toLocaleDateString('sv-SE') === key,
                   );
                   return html`<div
-                    class="calendar-day ${date.getMonth() !== this.month ? 'other-month' : ''}"
+                    class="calendar-day ${sessions.length === 1 ? 'single-training' : ''} ${date.getMonth() !== this.month ? 'other-month' : ''}"
                   >
                     <span
                       class="calendar-day-number ${key === today() ? 'current-day' : ''}"
@@ -137,7 +146,7 @@ export class HistoryView extends LitElement {
                       >${date.getDate()}</span
                     >
                     <div class="calendar-events">
-                      ${sessions.map((s) => html`<button class="calendar-event ${s.ended_at ? 'completed' : ''}" @click=${() => this.open(s.id)} aria-label=${`${s.day_name}, ${dateLabel(s.started_at)}`}>${icon(s.ended_at ? 'check' : 'activity')}<span>${s.day_name}</span></button>`)}
+                      ${sessions.map((s) => html`<a class="calendar-event ${s.ended_at ? 'completed' : ''}" href=${this.trainingHref(s.id)} aria-label=${`${s.day_name}, ${dateLabel(s.started_at)}`}>${icon(s.ended_at ? 'check' : 'activity')}<span>${s.day_name}</span></a>`)}
                     </div>
                   </div>`;
                 })}

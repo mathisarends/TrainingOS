@@ -2295,19 +2295,29 @@ summary {
 
 .history-toolbar {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   gap: var(--space-3);
   margin-bottom: var(--space-6);
 }
-.history-toolbar h1 {
-  font-size: var(--font-xl);
+.history-month {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-size: var(--font-card);
+  font-weight: var(--weight-normal);
   white-space: nowrap;
+}
+.history-year {
+  color: var(--color-text-muted);
+  font-size: var(--font-base);
 }
 .history-controls {
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  margin-left: auto;
 }
 .today-button {
   border-radius: var(--radius-pill);
@@ -2385,6 +2395,22 @@ summary {
 }
 .calendar-event:hover {
   background: var(--color-surface-hover);
+}
+.single-training .calendar-event::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+.single-training .calendar-event:focus-visible {
+  outline: 0;
+}
+.single-training .calendar-event:focus-visible::after {
+  outline: 2px solid var(--color-focus);
+  outline-offset: -3px;
+}
+.calendar-day:has(.calendar-event):hover {
+  background: var(--color-surface-muted);
 }
 .calendar-event span {
   overflow: hidden;
@@ -2833,9 +2859,6 @@ summary {
     margin-bottom: var(--space-4);
     gap: var(--space-1);
   }
-  .history-toolbar h1 {
-    font-size: var(--font-xl);
-  }
   .history-controls {
     gap: 0;
   }
@@ -2891,6 +2914,9 @@ summary {
   }
   .calendar-event.completed::before {
     background: var(--color-success);
+  }
+  .calendar-day:not(.single-training) .calendar-event {
+    min-height: 1.5rem;
   }
   .calendar-event > .icon,
   .calendar-event > span {
@@ -3140,9 +3166,6 @@ summary {
 }
 
 @media (max-width: 380px) {
-  .history-toolbar h1 {
-    font-size: var(--font-lg);
-  }
   .history-controls .bare-icon {
     min-width: 2rem;
     padding: var(--space-1);

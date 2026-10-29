@@ -38,6 +38,7 @@ export class TrainingApp extends LitElement {
     homeWeek: { state: true },
     selectedPlan: { state: true },
     deleting: { state: true },
+    signingOut: { state: true },
   };
   page: Page = 'home';
   routeId = '';
@@ -56,7 +57,9 @@ export class TrainingApp extends LitElement {
   private homeWeek = 0;
   private selectedPlan = '';
   private deleting: Plan | null = null;
+  private signingOut = false;
   private sessionRequest = 0;
+  private userRevision = 0;
   private refreshPending = false;
   private refreshing?: Promise<void>;
   private readonly demo = new URLSearchParams(location.search).get('demo') === '1';
@@ -145,7 +148,10 @@ export class TrainingApp extends LitElement {
     }
   }
   private async loadDashboard() {
+    const revision = this.userRevision;
+    const userId = this.user?.id;
     const state = await this.store.value!.dashboard();
+    if (!this.user || this.user.id !== userId || revision !== this.userRevision) return;
     this.plans = state.plans;
     this.exercises = state.exercises;
     this.sessions = state.sessions;
@@ -154,11 +160,13 @@ export class TrainingApp extends LitElement {
     if (
       state.next.running_training_session_id &&
       (!this.routeId || this.routeId === state.next.running_training_session_id)
-    )
-      this.session = await trainingSessions.getTrainingSession(
+    ) {
+      const session = await trainingSessions.getTrainingSession(
         state.next.running_training_session_id,
         { transport: this.api },
       );
+      if (this.user && revision === this.userRevision) this.session = session;
+    }
   }
   private async restoreSessionRoute() {
     if (this.page === 'training' && this.routeId && this.session?.id !== this.routeId) {
@@ -227,22 +235,46 @@ export class TrainingApp extends LitElement {
     this.sessions = this.sessions.map((s) => (s.id === event.detail.id ? event.detail : s));
     if (this.session?.id === event.detail.id) this.session = event.detail;
   }
-  private logout() {
-    if (this.demo) {
-      location.assign('/');
-      return;
-    }
-    void this.act(async () => {
-      await auth.logoutUser({ transport: this.api });
-      this.store.value!.clear();
-      this.user = null;
-      this.session = null;
-      this.plans = [];
-      this.sessions = [];
-      this.exercises = [];
-      this.next = null;
+  private clearUserState() {
+    ++this.userRevision;
+    ++this.sessionRequest;
+    this.refreshPending = false;
+    this.store.value!.clear();
+    this.user = null;
+    this.session = null;
+    this.plans = [];
+    this.sessions = [];
+    this.exercises = [];
+    this.next = null;
+    this.deleting = null;
+    this.selectedPlan = '';
+    this.homeDay = '';
+    this.homeWeek = 0;
+    this.historyMore = false;
+  }
+  private async logout() {
+    if (this.signingOut) return;
+    this.signingOut = true;
+    this.error = '';
+    try {
+      if (this.demo) {
+        this.clearUserState();
+        location.replace('/login');
+        return;
+      }
+      try {
+        await auth.logoutUser({ transport: this.api });
+      } catch (error) {
+        // An expired session is already signed out; other failures need explicit retry.
+        if (!(error instanceof ApiError && error.status === 401)) throw error;
+      }
+      this.clearUserState();
       this.navigate('login');
-    });
+    } catch {
+      this.error = 'Abmelden fehlgeschlagen. Bitte prüfe die Verbindung und versuche es erneut.';
+    } finally {
+      this.signingOut = false;
+    }
   }
   private currentWeek(plan: Plan) {
     const days = (Date.parse(today()) - Date.parse(plan.start_date)) / 86400000;
@@ -577,10 +609,11 @@ export class TrainingApp extends LitElement {
           .user=${this.user}
           .api=${this.api}
           .demo=${this.demo}
+          .signingOut=${this.signingOut}
           @logout=${this.logout}
           @account-deleted=${() => {
-            this.store.value!.clear();
-            location.assign('/login');
+            this.clearUserState();
+            location.replace('/login');
           }}
         ></profile-view>`;
       case 'settings':
@@ -601,7 +634,7 @@ export class TrainingApp extends LitElement {
           .api=${this.api}
           .sessions=${this.sessions}
           .more=${this.historyMore}
-          @open-training=${(e: CustomEvent<string>) => this.navigate('training', e.detail)}
+          .demo=${this.demo}
         ></history-view>`;
       case 'training':
         return this.routeId && this.session?.id === this.routeId

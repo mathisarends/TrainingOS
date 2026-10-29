@@ -9,10 +9,12 @@ export class ProfileView extends LitElement {
     user: { attribute: false },
     api: { attribute: false },
     demo: { type: Boolean },
+    signingOut: { type: Boolean },
   };
   user!: User;
   api!: Transport;
   demo = false;
+  signingOut = false;
   createRenderRoot() {
     return this;
   }
@@ -46,10 +48,14 @@ export class ProfileView extends LitElement {
           </p>
         </div>
         <button
+          type="button"
           class="secondary profile-logout"
+          ?disabled=${this.signingOut}
+          aria-busy=${this.signingOut}
           @click=${() => this.dispatchEvent(new CustomEvent('logout', { bubbles: true }))}
         >
-          ${icon('logout')} Abmelden
+          ${icon('logout')}
+          ${this.signingOut ? 'Wird abgemeldet …' : this.demo ? 'Vorschau verlassen' : 'Abmelden'}
         </button>
       </div>
       <section class="settings-section" aria-labelledby="account-training-title">

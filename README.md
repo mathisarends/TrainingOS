@@ -101,6 +101,10 @@ Pages and flows:
   recording, previous performance, backend e1RM/backoff feedback, skipping exercises,
   completion, set correction/deletion and training-time correction.
 - `/logs`: monthly calendar, month navigation, list view and reopening recorded sessions.
+  The month is a secondary heading with a muted year beneath the Logs page header.
+  Calendar entries and list rows link directly to their recorded training day. A
+  date containing exactly one session uses the entire cell as its hit target;
+  dates with multiple sessions retain separate links.
 - `/profile`: account identity, logout, exercise catalog and best-performance links,
   JSON export and explicitly confirmed account deletion.
 - `/profile/exercises`: inline name editing and the original category tables with
@@ -123,6 +127,12 @@ and stacked controls on mobile. Failed saves preserve the complete draft for ret
 
 Email/password registration, login, cookie session restoration and logout use the
 backend. The existing Google OAuth endpoints remain available.
+Logout has its own pending state, blocks duplicate requests and waits for server
+confirmation before clearing cached user state and navigating to login. A failed
+request keeps the account visible for explicit retry; an expired session completes
+sign-out. Late dashboard responses cannot restore state after sign-out. The isolated
+preview offers **Leave preview**, which opens `/login` without calling real
+authentication or changing an existing real session.
 All production calculations and persistence remain there. Failed writes preserve
 form input and never appear saved. Mutations and failed reads are not retried
 automatically; ambiguous network writes require checking the server state before
@@ -186,7 +196,7 @@ OpenAPI contract and regenerated client. The latest visual checkpoints are saved
 [`frontend/screenshots/reference-redesign`](frontend/screenshots/reference-redesign/index.html).
 Earlier checkpoints remain in `frontend/screenshots` for comparison.
 
-Local verification on 2026-10-29: 37 frontend tests and 85 backend tests passed
+Local verification on 2026-10-29: 44 frontend tests and 85 backend tests passed
 (4 PostgreSQL-only cases skipped), along with TypeScript/Vite, Prettier, Ruff, mypy
 and both API drift checks. A clean `npm ci` was verified. Application routes were checked
 at 320, 390 and 1600 pixels for visible errors and horizontal overflow; desktop
