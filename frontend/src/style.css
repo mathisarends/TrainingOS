@@ -788,8 +788,7 @@ summary {
   grid-column: 2/-1;
 }
 .add-slot-form,
-.progression-form,
-.bodyweight-form {
+.progression-form {
   display: flex;
   align-items: end;
   gap: var(--space-3);
@@ -878,19 +877,7 @@ summary {
 .account-grid form > .primary {
   align-self: start;
 }
-.bodyweight-form > label {
-  flex: 1;
-  min-width: 6rem;
-}
-.weigh-ins > div {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  padding: var(--space-2) 0;
-  border-bottom: 1px dashed var(--color-border);
-  font-size: var(--font-sm);
-}
+
 .training-sheet {
   --sheet-columns: minmax(7rem, 1.2fr) minmax(9rem, 1.6fr) repeat(2, minmax(3rem, 0.45fr))
     minmax(4.25rem, 0.65fr) repeat(3, minmax(3.25rem, 0.5fr)) minmax(9rem, 2fr);
@@ -2495,66 +2482,7 @@ summary {
 .settings-wrapper .primary {
   align-self: start;
 }
-.bodyweight-layout {
-  display: grid;
-  grid-template-columns: 1.85fr 1fr;
-  gap: var(--space-5);
-}
-.weight-table-heading,
-.weight-table-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  margin: 0;
-}
-.weight-table-heading > span,
-.weight-table-row > span,
-.weight-table-row > input,
-.weight-table-row > div {
-  padding: var(--space-2) var(--space-3);
-  border-bottom: 1px solid var(--color-border);
-}
-.weight-table-heading > span:first-child,
-.weight-table-row > span:first-child {
-  border-right: 1px solid var(--color-border);
-}
-.weight-table-heading {
-  font-weight: var(--weight-medium);
-}
-.inline-weight {
-  display: flex;
-  gap: var(--space-1);
-  align-items: center;
-}
-.inline-weight input {
-  border: 0;
-  padding: 0;
-  min-height: 2rem;
-}
-.inline-weight .bare-icon {
-  min-width: 2rem;
-  min-height: 2rem;
-  padding: var(--space-1);
-}
-.inline-weight .icon {
-  width: 1rem;
-  height: 1rem;
-}
-.add-row {
-  background: var(--color-surface-muted);
-  border: 0;
-  width: 100%;
-  height: 1.75rem;
-  display: grid;
-  place-items: center;
-  color: var(--color-text-muted);
-}
-.add-row .icon {
-  width: 1rem;
-  height: 1rem;
-}
-.weight-target {
-  margin-top: var(--space-3);
-}
+
 .value-chart {
   margin: 0;
   padding: var(--space-2) 0;
@@ -2862,20 +2790,10 @@ summary {
     font-size: var(--font-md);
   }
 
-  .bodyweight-layout,
   .records-grid {
     grid-template-columns: 1fr;
   }
-  .weight-table-heading {
-    font-size: var(--font-sm);
-  }
-  .weight-table-row > span {
-    align-self: center;
-    font-size: var(--font-sm);
-  }
-  .add-row {
-    height: 2.25rem;
-  }
+
   .record-section {
     min-width: 0;
   }
@@ -3179,19 +3097,7 @@ select:hover {
 .catalog-table .catalog-default-first td {
   border-top-width: 1px;
 }
-.weight-table-heading {
-  color: var(--color-text-muted);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-md) var(--radius-md) 0 0;
-}
-.weight-table-row {
-  border-inline: 1px solid var(--color-border-strong);
-  border-bottom: 1px solid var(--color-border);
-}
-.bodyweight-layout > section {
-  min-width: 0;
-}
+
 .record-section {
   padding: var(--space-5);
   border: 1px solid var(--color-border-strong);
@@ -3270,10 +3176,7 @@ select:hover {
   .plan-sheet-row .sheet-exercise-heading {
     width: 100%;
   }
-  .weight-table-row > span:first-child,
-  .weight-table-heading > span:first-child {
-    border-right: 0;
-  }
+
   .plan-progress-summary {
     font-size: var(--font-xs);
   }

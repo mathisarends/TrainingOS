@@ -69,7 +69,7 @@ not stop at the first API page. Recorded history remains the source of completio
 The remaining screens infer the same design language: outlined category tables,
 rounded plan/set editors, neutral charts and record cards, grouped settings and
 data forms, and dark dialogs. This includes authentication, plan creation,
-progression, sharing, exercise editing, bodyweight and recorded training sessions.
+progression, sharing, exercise editing and recorded training sessions.
 The creation dialog collects title and block length, then training days and start
 date; plan cover images are not part of the interface.
 
@@ -100,8 +100,7 @@ Pages and flows:
   remain available. Failed inline changes retain their drafts for explicit retry.
 - `/profile/best-performance`: main-exercise best values and history using the
   backend-returned e1RM values; no separate statistics or plan-comparison feature.
-- `/profile/body-weight`: dated entries, corrections/removal, target and history chart.
-- `/profile/settings`: kg/lb, RPE/RIR, rounding step, target weight and timezone.
+- `/profile/settings`: kg/lb, RPE/RIR, rounding step and timezone.
 - `/profile/data`: JSON export and explicitly confirmed account deletion.
 
 Email/password registration, login, cookie session restoration and logout use the
@@ -164,7 +163,7 @@ npm run format:check
 Tests mirror subjects under `frontend/tests`. They cover request credentials,
 decimal serialization, errors/cancellation, explicit set entry, duplicate submission,
 late guidance, server-deadline timers, plan creation and revision-checked progression,
-calendar navigation and failed catalog/bodyweight writes. CI checks both the exported
+calendar navigation and failed catalog writes. CI checks both the exported
 OpenAPI contract and regenerated client. The latest visual checkpoints are saved under
 [`frontend/screenshots/reference-redesign`](frontend/screenshots/reference-redesign/index.html).
 Earlier checkpoints remain in `frontend/screenshots` for comparison.
@@ -266,7 +265,7 @@ All business resources are under `/api/v1`, authenticated and user-owned.
 7. Adjust `/training-sessions/{training_session_id}/timer` or finish the training
    session. Sets and times can be corrected afterwards; e1RM and record detection
    use the corrected values.
-8. Read `/bodyweight` and `/users/me/export`; manage preferences through
+8. Read `/users/me/export`; manage preferences through
    `/users/me/preferences` and delete the account through `/users/me`.
 
 Plan duplication generates new day/slot IDs and copies no training sessions. Sharing creates
@@ -332,7 +331,7 @@ and plan-comparison feature has been removed.
 
 The database migration from `0001` to `0002` renames account ownership to `user_id`
 and updates stored plan/template payloads without replacing IDs or training values.
-Account export format 2 uses `user` and `training_sessions`; set feedback returns
+Account exports use `user` and `training_sessions`; set feedback returns
 `training_session`. Login sessions remain authentication infrastructure.
 
 Migration `0003` adds owned exercise-category defaults. Missing overrides resolve
@@ -349,6 +348,13 @@ password whitespace, session replacement/revocation, origin checks, throttling,
 secret-free validation/export, and account deletion are covered through the real
 composition and separate request/database scopes. Concurrent registration is
 covered in the PostgreSQL test lane.
+
+Migration `0005` completely removes bodyweight tracking: it drops stored measurements
+and removes target-weight preferences. Downgrading recreates an empty table; deleted
+measurements cannot be recovered by a downgrade. The API and frontend no longer expose
+these fields or routes. Export format 3 omits bodyweight and target weight. Recorded
+training-session weights and plan prescriptions are preserved and verified after
+the migration from a separate database scope.
 
 ## Test concept
 

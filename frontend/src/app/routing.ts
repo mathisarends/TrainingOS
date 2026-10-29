@@ -9,7 +9,6 @@ export type Page =
   | 'history'
   | 'catalog'
   | 'account'
-  | 'bodyweight'
   | 'records'
   | 'settings'
   | 'data';
@@ -23,7 +22,6 @@ export const paths: Record<Page, string> = {
   history: '/logs',
   catalog: '/profile/exercises',
   account: '/profile',
-  bodyweight: '/profile/body-weight',
   records: '/profile/best-performance',
   settings: '/profile/settings',
   data: '/profile/data',
@@ -38,7 +36,6 @@ export const titles: Record<Page, string> = {
   history: 'Logs',
   catalog: 'Übungen',
   account: 'Konto',
-  bodyweight: 'Körpergewicht',
   records: 'Bestleistungen',
   settings: 'Einstellungen',
   data: 'Meine Daten',

@@ -1,5 +1,4 @@
 import type {
-  Bodyweight,
   Category,
   CategoryDefaults,
   Exercise,
@@ -22,7 +21,6 @@ export class DemoTransport implements Transport {
     unit: 'kg',
     rounding_step: '2.5',
     effort_scale: 'rpe',
-    target_weight: null,
     timezone: 'Europe/Berlin',
   };
   private exercises: Exercise[] = [
@@ -98,7 +96,6 @@ export class DemoTransport implements Transport {
   };
   private sessions: TrainingSession[] = [];
   private plans: Plan[] = [this.plan];
-  private weights: Bodyweight['items'] = [];
   private shares = new Map<string, Plan>();
   constructor(options: { seedHistory?: boolean } = {}) {
     if (!options.seedHistory) return;
@@ -155,15 +152,6 @@ export class DemoTransport implements Transport {
       };
       this.sessions.unshift(session);
     }
-    this.weights = Array.from({ length: 8 }, (_, i) => {
-      const date = new Date();
-      date.setDate(date.getDate() - (7 - i) * 3);
-      return {
-        id: `weight-${i}`,
-        date: date.toLocaleDateString('sv-SE'),
-        weight: String(Number((82.4 - i * 0.2).toFixed(1))),
-      };
-    });
     const more: [string, Category][] = [
       ['Frontkniebeuge', 'squat'],
       ['Pausenkniebeuge', 'squat'],
@@ -273,8 +261,6 @@ export class DemoTransport implements Transport {
           )
           .map((s) => this.snapshot(s)),
       };
-    if (path === '/bodyweight' && method === 'GET')
-      return { unit: 'kg', target_weight: null, items: [] } satisfies Bodyweight;
     if (path === '/training-sessions' && method === 'POST') {
       if (this.sessions.some((s) => !s.ended_at))
         throw new ApiError(409, 'Ein Training läuft bereits. Öffne es über die Übersicht.');
@@ -404,7 +390,7 @@ export class DemoTransport implements Transport {
     }
     throw new ApiError(
       400,
-      'Die Vorschau zeigt den Trainingsablauf. Melde dich mit Google an, um deine eigenen Pläne und Daten zu speichern.',
+      'Die Vorschau zeigt den Trainingsablauf. Melde dich an, um deine eigenen Pläne und Daten zu speichern.',
     );
   }
   private async manage(
@@ -420,9 +406,6 @@ export class DemoTransport implements Transport {
       const factor =
         old.unit === this.user.unit ? 1 : this.user.unit === 'lb' ? 2.2046226218 : 1 / 2.2046226218;
       const convert = (v: string) => String(Number((Number(v) * factor).toFixed(4)));
-      this.weights.forEach((w) => {
-        w.weight = convert(w.weight);
-      });
       this.plans.forEach((p) =>
         p.days.forEach((d) =>
           d.slots.forEach((s) =>
@@ -452,41 +435,21 @@ export class DemoTransport implements Transport {
     }
     if (path === '/users/me/export')
       return {
-        format_version: 2,
+        format_version: 3,
         user: this.user,
         exercises: this.exercises,
         category_defaults: this.categoryDefaults.map((d) => this.defaultsFor(d.category)),
         plans: this.plans,
         training_sessions: this.sessions.map((s) => this.snapshot(s)),
-        bodyweight: this.weights,
         identities: [],
+        login_email: null,
         shared_templates: [...this.shares.values()],
       };
     if (path === '/users/me' && method === 'DELETE') {
       this.plans = [];
       this.sessions = [];
-      this.weights = [];
       this.exercises = [];
       return undefined;
-    }
-    if (parts[0] === 'bodyweight') {
-      if (method === 'GET')
-        return {
-          unit: this.user.unit,
-          target_weight: this.user.target_weight,
-          items: this.weights,
-        };
-      if (method === 'DELETE') {
-        this.weights = this.weights.filter((w) => w.id !== parts[1]);
-        return undefined;
-      }
-      const entry = {
-        id: this.weights.find((w) => w.date === body.date)?.id ?? crypto.randomUUID(),
-        date: String(body.date),
-        weight: String(body.weight),
-      };
-      this.weights = [...this.weights.filter((w) => w.date !== entry.date), entry];
-      return entry;
     }
     if (parts[0] === 'exercises' && parts[1] === 'category-defaults') {
       if (method === 'GET')

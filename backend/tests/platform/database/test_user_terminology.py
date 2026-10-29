@@ -163,7 +163,6 @@ def test_rename_preserves_existing_user_training_and_template_data(database_url:
                 assert user.preferences.unit == WeightUnit.LB
                 assert user.preferences.effort_scale == EffortScale.RIR
                 assert user.preferences.rounding_step == Decimal(5)
-                assert user.preferences.target_weight_kg == Decimal(85)
                 plan = await SqlPlanRepository(sql_session).get(user_id=user_id, plan_id=plan_id)
                 assert plan is not None and plan.user_id == user_id and plan.revision == 7
                 assert plan.days[0].slots[0].id == slot_id
@@ -190,7 +189,6 @@ def test_rename_preserves_existing_user_training_and_template_data(database_url:
                     "plans",
                     "plan_templates",
                     "training_sessions",
-                    "bodyweights",
                 ):
                     owner_table = sa.table(name, sa.column("user_id", sa.Uuid()))
                     owners = (await sql_session.exec(sa.select(owner_table.c.user_id))).all()

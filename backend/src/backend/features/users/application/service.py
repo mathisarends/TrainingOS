@@ -3,7 +3,6 @@ from uuid import UUID
 
 from backend.features.auth.domain import AuthRepository, ExternalIdentity
 from backend.features.auth.domain.credentials import CredentialRepository
-from backend.features.bodyweight.domain import BodyweightRepository, WeighIn
 from backend.features.exercises.domain import (
     CategoryDefaults,
     Exercise,
@@ -22,7 +21,6 @@ class AccountExport:
     exercises: list[Exercise]
     plans: list[Plan]
     training_sessions: list[TrainingSession]
-    bodyweight: list[WeighIn]
     identities: list[ExternalIdentity]
     shared_templates: list[Plan]
     category_defaults: list[CategoryDefaults]
@@ -36,7 +34,6 @@ class UserService:
         exercise_repository: ExerciseRepository,
         plan_repository: PlanRepository,
         training_session_repository: TrainingSessionRepository,
-        bodyweight_repository: BodyweightRepository,
         auth_repository: AuthRepository,
         credentials: CredentialRepository,
     ) -> None:
@@ -45,10 +42,7 @@ class UserService:
             exercise_repository,
             plan_repository,
         )
-        self._training_sessions, self._bodyweight = (
-            training_session_repository,
-            bodyweight_repository,
-        )
+        self._training_sessions = training_session_repository
         self._auth = auth_repository
         self._credentials = credentials
 
@@ -72,7 +66,6 @@ class UserService:
             exercises=await self._exercises.list(user_id=user_id),
             plans=await self._plans.list(user_id=user_id),
             training_sessions=await self._training_sessions.list(user_id=user_id),
-            bodyweight=await self._bodyweight.list(user_id=user_id),
             identities=await self._auth.identities(user_id=user_id),
             shared_templates=await self._plans.templates(user_id=user_id),
             category_defaults=resolve_defaults(

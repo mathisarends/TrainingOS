@@ -42,12 +42,6 @@
     "overflow": false
   },
   {
-    "page": "bodyweight",
-    "size": "mobile",
-    "alerts": [],
-    "overflow": false
-  },
-  {
     "page": "settings",
     "size": "mobile",
     "alerts": [],
@@ -108,12 +102,6 @@
     "overflow": false
   },
   {
-    "page": "bodyweight",
-    "size": "desktop",
-    "alerts": [],
-    "overflow": false
-  },
-  {
     "page": "settings",
     "size": "desktop",
     "alerts": [],
@@ -169,12 +157,6 @@
   },
   {
     "page": "records",
-    "size": "narrow",
-    "alerts": [],
-    "overflow": false
-  },
-  {
-    "page": "bodyweight",
     "size": "narrow",
     "alerts": [],
     "overflow": false

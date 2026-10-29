@@ -1,5 +1,3 @@
-from decimal import Decimal as D
-
 import pytest
 from httpx import AsyncClient
 from sqlalchemy import func
@@ -17,7 +15,6 @@ async def test_owned_resources_are_hidden_from_another_user(
     plan = await configured_plan(client)
     session = await start_training_session(client, plan)
     await record_set(client, session)
-    await client.put("/api/v1/bodyweight", json={"date": "2026-10-25", "weight": 80})
 
     assert (await other_client.get(f"/api/v1/plans/{plan['id']}")).status_code == 404
     assert (await other_client.delete(f"/api/v1/plans/{plan['id']}")).status_code == 404
@@ -29,7 +26,6 @@ async def test_owned_resources_are_hidden_from_another_user(
     assert denied.status_code == 404
     assert (await other_client.get("/api/v1/plans")).json()["items"] == []
     assert (await other_client.get("/api/v1/training-sessions")).json()["items"] == []
-    assert (await other_client.get("/api/v1/bodyweight")).json()["items"] == []
     assert (await other_client.get("/api/v1/users/me/export")).json()["training_sessions"] == []
     assert (
         len(
@@ -47,17 +43,17 @@ async def test_export_contains_owned_training_and_identity_data_without_credenti
     plan = await configured_plan(client)
     session = await start_training_session(client, plan)
     await record_set(client, session)
-    await client.put("/api/v1/bodyweight", json={"date": "2026-10-25", "weight": 80})
     await client.post(f"/api/v1/plans/{plan['id']}/shares")
 
     response = await client.get("/api/v1/users/me/export")
     assert response.status_code == 200
     assert response.headers["cache-control"] == "no-store"
     exported = response.json()
-    assert exported["format_version"] == 2
+    assert exported["format_version"] == 3
     assert exported["plans"][0]["id"] == plan["id"]
     assert exported["training_sessions"][0]["id"] == session["id"]
-    assert D(exported["bodyweight"][0]["weight"]) == 80
+    assert "bodyweight" not in exported
+    assert "target_weight" not in exported["user"]
     assert len(exported["shared_templates"]) == 1
     assert exported["identities"] == [
         {"issuer": "https://accounts.google.com", "subject": "user-a"}
@@ -72,7 +68,6 @@ async def test_account_delete_cascades_all_owned_rows_and_revokes_login(
     plan = await configured_plan(client)
     session = await start_training_session(client, plan)
     await record_set(client, session)
-    await client.put("/api/v1/bodyweight", json={"date": "2026-10-25", "weight": 80})
     await client.post(f"/api/v1/plans/{plan['id']}/shares")
     defaults = await client.put(
         "/api/v1/exercises/category-defaults/squat",

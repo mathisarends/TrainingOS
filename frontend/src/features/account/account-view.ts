@@ -31,7 +31,6 @@ export class AccountView extends LitElement {
           unit: v.unit as 'kg' | 'lb',
           effort_scale: v.effort_scale as 'rpe' | 'rir',
           rounding_step: String(v.rounding_step),
-          target_weight: v.target_weight ? String(v.target_weight) : null,
           timezone: String(v.timezone),
         },
         { transport: this.api },
@@ -73,16 +72,6 @@ export class AccountView extends LitElement {
             step="0.01"
             required
             .value=${this.user.rounding_step}
-        /></label>
-        <label
-          >Zielgewicht (${this.user.unit})<input
-            type="number"
-            name="target_weight"
-            min="0.1"
-            max="1000"
-            step="0.1"
-            placeholder="Optional"
-            .value=${this.user.target_weight ?? ''}
         /></label>
         <label
           >Zeitzone<input name="timezone" required maxlength="100" .value=${this.user.timezone}

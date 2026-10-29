@@ -53,7 +53,7 @@ export class AccountDataView extends LitElement {
         ${this.error ? html`<div class="notice error" role="alert">${this.error}</div>` : nothing}
         <section class="data-section">
           <h2>Daten exportieren</h2>
-          <p>Deine Pläne, erfassten Trainings und Körpergewichtseinträge als JSON-Datei.</p>
+          <p>Deine Pläne, erfassten Trainings und Einstellungen als JSON-Datei.</p>
           <button class="secondary" ?disabled=${this.busy} @click=${this.download}>
             ${icon('download')} Export herunterladen
           </button>
@@ -83,8 +83,8 @@ export class AccountDataView extends LitElement {
             >
               <h2 id="delete-account-title">Konto endgültig löschen?</h2>
               <p>
-                Alle Pläne, Trainings und Körpergewichtseinträge werden entfernt. Das lässt sich
-                nicht rückgängig machen.
+                Alle Pläne, Trainings und Einstellungen werden entfernt. Das lässt sich nicht
+                rückgängig machen.
               </p>
               <label class="check-label"
                 ><input

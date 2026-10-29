@@ -32,7 +32,6 @@ export interface UserResponse {
   unit: WeightUnit;
   rounding_step: string;
   effort_scale: EffortScale;
-  target_weight: string | null;
   timezone: string;
 }
 

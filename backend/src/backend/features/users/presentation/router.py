@@ -23,14 +23,10 @@ router = protected_router(prefix="/users/me", tag="users")
 async def configure_user(
     body: PreferencesRequest, user: CurrentUser, user_service: FromDishka[UserService]
 ) -> UserResponse:
-    unit_preferences = Preferences(unit=body.unit)
     preferences = Preferences(
         unit=body.unit,
         rounding_step=body.rounding_step,
         effort_scale=body.effort_scale,
-        target_weight_kg=unit_preferences.to_kg(body.target_weight)
-        if body.target_weight is not None
-        else None,
         timezone=body.timezone,
     )
     updated = await user_service.configure(user_id=user.id, preferences=preferences)

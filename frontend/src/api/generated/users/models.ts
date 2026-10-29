@@ -21,7 +21,6 @@ export interface PreferencesRequest {
   unit?: WeightUnit;
   rounding_step?: number | string;
   effort_scale?: EffortScale;
-  target_weight?: number | string | null;
   /** @maxLength 100 */
   timezone?: string;
 }
@@ -31,7 +30,6 @@ export interface UserResponse {
   unit: WeightUnit;
   rounding_step: string;
   effort_scale: EffortScale;
-  target_weight: string | null;
   timezone: string;
 }
 
@@ -219,12 +217,6 @@ export interface TrainingSessionResponse {
   rest_remaining_seconds: number;
 }
 
-export interface WeighInResponse {
-  id: string;
-  date: string;
-  weight: string;
-}
-
 export interface IdentityExportResponse {
   issuer: string;
   subject: string;
@@ -240,12 +232,11 @@ export interface CategoryDefaultsResponse {
 }
 
 export interface AccountExportResponse {
-  format_version?: 2;
+  format_version?: 3;
   user: UserResponse;
   exercises: ExerciseResponse[];
   plans: PlanResponse[];
   training_sessions: TrainingSessionResponse[];
-  bodyweight: WeighInResponse[];
   identities: IdentityExportResponse[];
   shared_templates: PlanResponse[];
   category_defaults: CategoryDefaultsResponse[];

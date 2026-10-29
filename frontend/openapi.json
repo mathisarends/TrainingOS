@@ -4148,247 +4148,6 @@
           }
         }
       }
-    },
-    "/api/v1/bodyweight": {
-      "get": {
-        "tags": ["bodyweight"],
-        "summary": "List Bodyweight",
-        "operationId": "list_bodyweight",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BodyweightResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Authentication required",
-            "headers": {
-              "WWW-Authenticate": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Resource not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NotFoundProblem"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "State conflict",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StateConflictProblem"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Invalid input",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InvalidInputProblem"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Request forbidden",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ForbiddenProblem"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": ["bodyweight"],
-        "summary": "Record Bodyweight",
-        "operationId": "record_bodyweight",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/WeighInRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/WeighInResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Authentication required",
-            "headers": {
-              "WWW-Authenticate": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Resource not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NotFoundProblem"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "State conflict",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StateConflictProblem"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Invalid input",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InvalidInputProblem"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Request forbidden",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ForbiddenProblem"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v1/bodyweight/{weigh_in_id}": {
-      "delete": {
-        "tags": ["bodyweight"],
-        "summary": "Delete Bodyweight",
-        "operationId": "delete_bodyweight",
-        "parameters": [
-          {
-            "name": "weigh_in_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid",
-              "title": "Weigh In Id"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Successful Response"
-          },
-          "401": {
-            "description": "Authentication required",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
-                }
-              }
-            },
-            "headers": {
-              "WWW-Authenticate": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Resource not found",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/NotFoundProblem"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "State conflict",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StateConflictProblem"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Invalid input",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InvalidInputProblem"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Request forbidden",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ForbiddenProblem"
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components": {
@@ -4397,9 +4156,9 @@
         "properties": {
           "format_version": {
             "type": "integer",
-            "const": 2,
+            "const": 3,
             "title": "Format Version",
-            "default": 2
+            "default": 3
           },
           "user": {
             "$ref": "#/components/schemas/UserResponse"
@@ -4424,13 +4183,6 @@
             },
             "type": "array",
             "title": "Training Sessions"
-          },
-          "bodyweight": {
-            "items": {
-              "$ref": "#/components/schemas/WeighInResponse"
-            },
-            "type": "array",
-            "title": "Bodyweight"
           },
           "identities": {
             "items": {
@@ -4472,7 +4224,6 @@
           "exercises",
           "plans",
           "training_sessions",
-          "bodyweight",
           "identities",
           "shared_templates",
           "category_defaults",
@@ -4535,35 +4286,6 @@
         "type": "object",
         "required": ["expected_revision"],
         "title": "ApplyProgressionRequest"
-      },
-      "BodyweightResponse": {
-        "properties": {
-          "unit": {
-            "$ref": "#/components/schemas/WeightUnit"
-          },
-          "target_weight": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Target Weight"
-          },
-          "items": {
-            "items": {
-              "$ref": "#/components/schemas/WeighInResponse"
-            },
-            "type": "array",
-            "title": "Items"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": ["unit", "target_weight", "items"],
-        "title": "BodyweightResponse"
       },
       "Category": {
         "type": "string",
@@ -5182,22 +4904,6 @@
             "$ref": "#/components/schemas/EffortScale",
             "default": "rpe"
           },
-          "target_weight": {
-            "anyOf": [
-              {
-                "type": "number",
-                "maximum": 1000.0,
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Target Weight"
-          },
           "timezone": {
             "type": "string",
             "maxLength": 100,
@@ -5730,17 +5436,6 @@
           "effort_scale": {
             "$ref": "#/components/schemas/EffortScale"
           },
-          "target_weight": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Target Weight"
-          },
           "timezone": {
             "type": "string",
             "title": "Timezone"
@@ -5748,7 +5443,7 @@
         },
         "additionalProperties": false,
         "type": "object",
-        "required": ["id", "unit", "rounding_step", "effort_scale", "target_weight", "timezone"],
+        "required": ["id", "unit", "rounding_step", "effort_scale", "timezone"],
         "title": "UserResponse"
       },
       "ValidationError": {
@@ -5786,54 +5481,6 @@
         "type": "object",
         "required": ["loc", "msg", "type"],
         "title": "ValidationError"
-      },
-      "WeighInRequest": {
-        "properties": {
-          "date": {
-            "type": "string",
-            "format": "date",
-            "title": "Date"
-          },
-          "weight": {
-            "anyOf": [
-              {
-                "type": "number",
-                "maximum": 1000.0,
-                "exclusiveMinimum": 0.0
-              },
-              {
-                "type": "string"
-              }
-            ],
-            "title": "Weight"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": ["date", "weight"],
-        "title": "WeighInRequest"
-      },
-      "WeighInResponse": {
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Id"
-          },
-          "date": {
-            "type": "string",
-            "format": "date",
-            "title": "Date"
-          },
-          "weight": {
-            "type": "string",
-            "title": "Weight"
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "required": ["id", "date", "weight"],
-        "title": "WeighInResponse"
       },
       "WeightUnit": {
         "type": "string",

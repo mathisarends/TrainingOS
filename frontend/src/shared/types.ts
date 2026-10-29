@@ -20,7 +20,6 @@ export type {
   GuidanceResponse as Guidance,
   SetFeedbackResponse as SetFeedback,
 } from '../api/generated/training-sessions/models';
-export type { BodyweightResponse as Bodyweight } from '../api/generated/bodyweight/models';
 export type Decimal = string;
 
 /** Local preview/test boundary; production HTTP uses lit-canon-fetch. */

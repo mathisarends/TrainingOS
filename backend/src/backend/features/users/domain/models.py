@@ -21,7 +21,6 @@ class Preferences:
     unit: WeightUnit = WeightUnit.KG
     rounding_step: Decimal = Decimal("2.5")
     effort_scale: EffortScale = EffortScale.RPE
-    target_weight_kg: Decimal | None = None
     timezone: str = "Europe/Berlin"
 
     def __post_init__(self) -> None:

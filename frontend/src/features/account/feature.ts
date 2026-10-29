@@ -11,12 +11,6 @@ export const accountFeature = defineFeature({
       render: () => shell('account'),
     }),
     definePage({
-      path: '/profile/body-weight',
-      title: 'Körpergewicht',
-      load: () => import('./bodyweight-view'),
-      render: () => shell('bodyweight'),
-    }),
-    definePage({
       path: '/profile/best-performance',
       title: 'Bestleistungen',
       load: () => import('./records-view'),

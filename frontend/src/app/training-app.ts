@@ -557,8 +557,6 @@ export class TrainingApp extends LitElement {
             void this.act(() => this.refresh());
           }}
         ></account-view>`;
-      case 'bodyweight':
-        return html`<bodyweight-view .api=${this.api} .user=${this.user}></bodyweight-view>`;
       case 'records':
         return html`<records-view .api=${this.api} .user=${this.user}></records-view>`;
       case 'data':
@@ -616,7 +614,7 @@ export class TrainingApp extends LitElement {
       >
         <header class="topbar">
           <div class="header-title">
-            ${['catalog', 'records', 'bodyweight', 'settings', 'data', 'plans'].includes(this.page) ? html`<a class="bare-icon back-link" href=${this.href(['catalog', 'records', 'bodyweight', 'settings', 'data'].includes(this.page) ? 'account' : 'home')} aria-label="Zurück">${icon('arrow-left')}</a>` : nothing}${context ? html`<span class="context">${context}</span>` : nothing}<span
+            ${['catalog', 'records', 'settings', 'data', 'plans'].includes(this.page) ? html`<a class="bare-icon back-link" href=${this.href(['catalog', 'records', 'settings', 'data'].includes(this.page) ? 'account' : 'home')} aria-label="Zurück">${icon('arrow-left')}</a>` : nothing}${context ? html`<span class="context">${context}</span>` : nothing}<span
               class="current"
               >${heading}</span
             >
@@ -633,7 +631,7 @@ export class TrainingApp extends LitElement {
             const active =
               n.page === this.page ||
               (n.page === 'account' &&
-                ['catalog', 'records', 'bodyweight', 'settings', 'data'].includes(this.page)) ||
+                ['catalog', 'records', 'settings', 'data'].includes(this.page)) ||
               (n.page === 'home' && this.page === 'plans');
             return html`<a
               href=${this.href(n.page, n.page === 'training' ? this.runningSession?.id : '')}

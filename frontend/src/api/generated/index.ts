@@ -5,7 +5,6 @@
  */
 
 export * as auth from './auth';
-export * as bodyweight from './bodyweight';
 export * as exercises from './exercises';
 export * as plans from './plans';
 export * as trainingSessions from './training-sessions';

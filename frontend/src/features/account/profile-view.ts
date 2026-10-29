@@ -27,7 +27,6 @@ export class ProfileView extends LitElement {
     const entries = [
       ['Übungen', 'dumbbell', '/profile/exercises'],
       ['Bestleistungen', 'award', '/profile/best-performance'],
-      ['Körpergewicht', 'scale', '/profile/body-weight'],
       ['Trainingspläne', 'plans', '/plans'],
       ['Einstellungen', 'sliders', '/profile/settings'],
       ['Meine Daten', 'download', '/profile/data'],
@@ -98,7 +97,7 @@ export class ProfileView extends LitElement {
         </div>
       </div>
       <div class="profile-links">
-        ${[entries.slice(0, 4), entries.slice(4)].map((group) => html`<div class="profile-link-group">${group.map(([label, name, path]) => html`<a class="profile-link" href=${path + suffix}><span class="profile-link-icon">${icon(name)}</span><span>${label}</span>${icon('chevron-right')}</a>`)}</div>`)}<button
+        ${[entries.slice(0, 3), entries.slice(3)].map((group) => html`<div class="profile-link-group">${group.map(([label, name, path]) => html`<a class="profile-link" href=${path + suffix}><span class="profile-link-icon">${icon(name)}</span><span>${label}</span>${icon('chevron-right')}</a>`)}</div>`)}<button
           class="profile-link profile-logout"
           @click=${() => this.dispatchEvent(new CustomEvent('logout', { bubbles: true }))}
         >

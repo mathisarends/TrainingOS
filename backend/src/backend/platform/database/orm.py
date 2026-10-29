@@ -1,6 +1,6 @@
 """Relational ownership/indexes; plan and session contents are aggregate snapshots."""
 
-from datetime import date, datetime
+from datetime import datetime
 from decimal import Decimal
 from uuid import UUID
 
@@ -114,12 +114,3 @@ class TrainingSessionRow(SQLModel, table=True):
     started_at: datetime = Field(sa_column=Column(DateTime(timezone=True), nullable=False))
     ended_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True)))
     payload: dict[str, object] = Field(sa_column=Column(JSON, nullable=False))
-
-
-class WeighInRow(SQLModel, table=True):
-    __tablename__ = "bodyweights"
-    __table_args__ = (UniqueConstraint("user_id", "date"),)
-    id: UUID = Field(primary_key=True)
-    user_id: UUID = Field(foreign_key="users.id", ondelete="CASCADE", index=True)
-    date: date
-    weight_kg: Decimal = Field(sa_column=Column(Numeric(16, 8), nullable=False))
