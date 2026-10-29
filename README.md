@@ -103,11 +103,16 @@ Pages and flows:
 - `/training` and `/training/:id`: day/week navigation, start/resume, explicit set
   recording, previous performance, backend e1RM/backoff feedback, skipping exercises,
   completion, set correction/deletion and training-time correction.
-- `/logs`: monthly calendar, month navigation, list view and reopening recorded sessions.
+- `/logs`: monthly calendar, month navigation and list view.
   The month is a secondary heading with a muted year beneath the Logs page header.
-  Calendar entries and list rows link directly to their recorded training day. A
-  date containing exactly one session uses the entire cell as its hit target;
-  dates with multiple sessions retain separate links.
+  Calendar entries and list rows open the normal training overview with the exact
+  plan, day and week selected through URL parameters. Reload and browser Back
+  preserve the selection; day/week controls update the URL. Recorded sets remain
+  available through "Training ansehen". An unavailable plan/day/week displays an
+  explicit state instead of silently selecting another training day, and any
+  preserved recording remains accessible. A date containing exactly one session
+  uses the entire cell as its hit target; dates with multiple sessions retain
+  separate links.
 - `/profile`: account identity, logout, exercise catalog and best-performance links,
   JSON export and explicitly confirmed account deletion.
 - `/profile/exercises`: inline name editing and the original category tables with
@@ -199,7 +204,7 @@ OpenAPI contract and regenerated client. The latest visual checkpoints are saved
 [`frontend/screenshots/reference-redesign`](frontend/screenshots/reference-redesign/index.html).
 Earlier checkpoints remain in `frontend/screenshots` for comparison.
 
-Local verification on 2026-10-29: 44 frontend tests and 85 backend tests passed
+Local verification on 2026-10-29: 50 frontend tests and 85 backend tests passed
 (4 PostgreSQL-only cases skipped), along with TypeScript/Vite, Prettier, Ruff, mypy
 and both API drift checks. A clean `npm ci` was verified. Application routes were checked
 at 320, 390 and 1600 pixels for visible errors and horizontal overflow; desktop
@@ -212,7 +217,9 @@ account/device.
 
 The latest [navigation checkpoints](frontend/screenshots/navigation-polish/index.html)
 include two larger account tabs, integrated data controls, secondary month headings,
-direct date links and wider plan cards. Browser checks cover 320, 390, 1024, 1440
+date links to the selected training overview and wider plan cards. All six sample
+calendar entries were checked for the correct plan/day/week, together with list
+navigation, reload, browser Back and mobile date hit targets. Browser checks cover 320, 390, 1024, 1440
 and 1600 pixels, including export download, deletion confirmation/cancellation,
 desktop/mobile date clicks, real logout followed by a protected-route visit, and
 leaving the preview. Earlier [account/layout checkpoints](frontend/screenshots/account-layout/index.html)

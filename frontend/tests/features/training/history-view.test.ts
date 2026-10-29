@@ -23,7 +23,7 @@ it('crosses year boundaries when moving the calendar and returns to the current 
   expect(view.querySelector('.history-month')!.textContent).toContain(String(year));
 });
 
-it('links calendar and list entries to the recorded training day, preserving preview mode', async () => {
+it('links calendar and list entries to the plan day and week, preserving preview mode', async () => {
   const demo = new DemoTransport({ seedHistory: true });
   const sample = (await demo.request<{ items: TrainingSession[] }>('/training-sessions?limit=1'))
     .items[0];
@@ -32,22 +32,26 @@ it('links calendar and list entries to the recorded training day, preserving pre
   view.sessions = [sample];
   document.body.append(view);
   await view.updateComplete;
-  const href = `/training/${sample.id}?demo=1`;
+  const href = `/training?plan=${sample.plan_id}&day=${sample.day_id}&week=${sample.week}&demo=1`;
   expect(view.querySelector('.calendar-event')?.getAttribute('href')).toBe(href);
   view.querySelector<HTMLButtonElement>('[aria-label="Liste anzeigen"]')!.click();
   await view.updateComplete;
   expect(view.querySelector('.history-row')?.getAttribute('href')).toBe(href);
 });
 
-it('retains distinct links for two training sessions on the same date', async () => {
+it('keeps same-date training sessions linked to their own plan day', async () => {
   const demo = new DemoTransport({ seedHistory: true });
-  const sample = (await demo.request<{ items: TrainingSession[] }>('/training-sessions?limit=1'))
-    .items[0];
+  const [sample, second] = (
+    await demo.request<{ items: TrainingSession[] }>('/training-sessions?limit=2')
+  ).items;
   const view = new HistoryView();
-  view.sessions = [sample, { ...sample, id: 'another-session', day_name: 'Weiterer Trainingstag' }];
+  view.sessions = [sample, { ...second, started_at: sample.started_at }];
   document.body.append(view);
   await view.updateComplete;
   expect(
     [...view.querySelectorAll('.calendar-event')].map((link) => link.getAttribute('href')),
-  ).toEqual([`/training/${sample.id}`, '/training/another-session']);
+  ).toEqual([
+    `/training?plan=${sample.plan_id}&day=${sample.day_id}&week=${sample.week}`,
+    `/training?plan=${second.plan_id}&day=${second.day_id}&week=${second.week}`,
+  ]);
 });

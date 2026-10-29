@@ -299,7 +299,69 @@
     "exportFormat": 3,
     "exportedPreviewSessions": 6,
     "deleteRequiresConfirmation": true,
-    "desktopDateClickOpensRecordedTraining": true,
-    "mobileDateClickOpensRecordedTraining": true
+    "desktopDateClickOpensSelectedTrainingOverview": true,
+    "mobileDateClickOpensSelectedTrainingOverview": true
+  },
+  "calendarOverview": {
+    "checkedAt": "2026-10-29",
+    "entries": [
+      {
+        "label": "Ganzkörper A, 11. Okt.",
+        "url": "http://localhost:5173/training?plan=preview-plan&day=day-0&week=1&demo=1",
+        "heading": "Ganzkörper A · Woche 1 von 6",
+        "selected": "A",
+        "action": "Training ansehen",
+        "recordedViewCount": 0
+      },
+      {
+        "label": "Ganzkörper B, 14. Okt.",
+        "url": "http://localhost:5173/training?plan=preview-plan&day=day-1&week=1&demo=1",
+        "heading": "Ganzkörper B · Woche 1 von 6",
+        "selected": "B",
+        "action": "Training ansehen",
+        "recordedViewCount": 0
+      },
+      {
+        "label": "Ganzkörper C, 17. Okt.",
+        "url": "http://localhost:5173/training?plan=preview-plan&day=day-2&week=1&demo=1",
+        "heading": "Ganzkörper C · Woche 1 von 6",
+        "selected": "C",
+        "action": "Training ansehen",
+        "recordedViewCount": 0
+      },
+      {
+        "label": "Ganzkörper A, 20. Okt.",
+        "url": "http://localhost:5173/training?plan=preview-plan&day=day-0&week=2&demo=1",
+        "heading": "Ganzkörper A · Woche 2 von 6",
+        "selected": "A",
+        "action": "Training ansehen",
+        "recordedViewCount": 0
+      },
+      {
+        "label": "Ganzkörper B, 23. Okt.",
+        "url": "http://localhost:5173/training?plan=preview-plan&day=day-1&week=2&demo=1",
+        "heading": "Ganzkörper B · Woche 2 von 6",
+        "selected": "B",
+        "action": "Training ansehen",
+        "recordedViewCount": 0
+      },
+      {
+        "label": "Ganzkörper C, 26. Okt.",
+        "url": "http://localhost:5173/training?plan=preview-plan&day=day-2&week=2&demo=1",
+        "heading": "Ganzkörper C · Woche 2 von 6",
+        "selected": "C",
+        "action": "Training ansehen",
+        "recordedViewCount": 0
+      }
+    ],
+    "reload": true,
+    "queryOnlyDayAndWeekNavigation": true,
+    "browserBack": true,
+    "listEntry": true,
+    "mobileDateHitTarget": true,
+    "recordedSetsAvailableThroughViewTraining": true,
+    "frontendTests": 50,
+    "backendTests": 85,
+    "postgresTestsSkipped": 4
   }
 }

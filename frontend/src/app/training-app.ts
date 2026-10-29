@@ -14,7 +14,7 @@ import {
   weekdays,
 } from '../shared/ui';
 import { transportContext, storeContext, navigationContext } from './context';
-import { paths, titles, type Page } from './routing';
+import { paths, titles, trainingOverviewHref, type Page, type TrainingSelection } from './routing';
 import '../features/training/rest-timer';
 import '../features/auth/auth-view';
 import type { RestTimer } from '../features/training/rest-timer';
@@ -23,6 +23,7 @@ export class TrainingApp extends LitElement {
   static properties = {
     page: { attribute: false },
     routeId: { attribute: false },
+    trainingSelection: { attribute: false },
     user: { state: true },
     plans: { state: true },
     exercises: { state: true },
@@ -42,6 +43,7 @@ export class TrainingApp extends LitElement {
   };
   page: Page = 'home';
   routeId = '';
+  trainingSelection: TrainingSelection | null = null;
   private user: User | null = null;
   private plans: Plan[] = [];
   private exercises: Exercise[] = [];
@@ -78,6 +80,7 @@ export class TrainingApp extends LitElement {
       : this.sessions.find((s) => !s.ended_at);
   }
   private get plan() {
+    if (this.trainingSelection) return this.plans.find((p) => p.id === this.selectedPlan);
     return (
       this.plans.find((p) => p.id === this.selectedPlan) ??
       this.plans.find((p) => p.id === this.next?.plan_id) ??
@@ -99,6 +102,18 @@ export class TrainingApp extends LitElement {
     super.disconnectedCallback();
     window.removeEventListener('online', this.onNetwork);
     window.removeEventListener('offline', this.onNetwork);
+  }
+  protected willUpdate(changes: PropertyValues) {
+    if (!changes.has('trainingSelection')) return;
+    if (this.trainingSelection) {
+      this.selectedPlan = this.trainingSelection.planId;
+      this.homeDay = this.trainingSelection.dayId;
+      this.homeWeek = this.trainingSelection.week;
+    } else if (changes.get('trainingSelection')) {
+      this.selectedPlan = '';
+      this.homeDay = '';
+      this.homeWeek = 0;
+    }
   }
   protected updated(changes: PropertyValues) {
     if (changes.has('page')) this.error = '';
@@ -441,12 +456,30 @@ export class TrainingApp extends LitElement {
           : nothing
       }`;
   }
+  private selectTrainingOverview(planId: string, dayId: string, week: number) {
+    void this.navigation.value!.navigate(trainingOverviewHref({ planId, dayId, week }));
+  }
   private trainingOverview() {
     const plan = this.plan;
-    const day =
-      plan?.days.find((d) => d.id === (this.homeDay || this.next?.day_id)) ?? plan?.days[0];
-    const week = Math.min(this.homeWeek || this.next?.week || 1, plan?.weeks ?? 1);
+    const explicit = this.trainingSelection !== null;
+    const day = explicit
+      ? plan?.days.find((d) => d.id === this.homeDay)
+      : (plan?.days.find((d) => d.id === (this.homeDay || this.next?.day_id)) ?? plan?.days[0]);
+    const week = explicit
+      ? this.homeWeek
+      : Math.min(this.homeWeek || this.next?.week || 1, plan?.weeks ?? 1);
     const running = !!this.runningSession;
+    if (explicit && (!plan || !day || !Number.isInteger(week) || week < 1 || week > plan.weeks)) {
+      const recorded = this.sessions.find(
+        (s) =>
+          s.plan_id === this.selectedPlan && s.day_id === this.homeDay && s.week === this.homeWeek,
+      );
+      return html`${empty('Trainingstag nicht verfügbar', 'Der verlinkte Trainingstag ist in diesem Plan nicht mehr verfügbar.')}
+        <div class="actions">
+          <a class="secondary" href=${this.href('history')}>Zurück zu den Logs</a>
+          ${recorded ? html`<a class="secondary" href=${this.href('training', recorded.id)}>Gespeichertes Training ansehen</a>` : nothing}
+        </div>`;
+    }
     if (!plan || !day)
       return html`${empty('Noch kein Trainingsplan', 'Erstelle zuerst deinen Trainingsplan.')}<a
           class="secondary"
@@ -471,7 +504,7 @@ export class TrainingApp extends LitElement {
             >${icon('edit')}<span>Bearbeiten</span></a
           ><button
             class="primary overview-start"
-            ?disabled=${this.busy || (!valid && !running)}
+            ?disabled=${this.busy || (!recorded && !valid && !running)}
             @click=${() => (recorded ? this.navigate('training', recorded.id) : this.start({ plan_id: plan.id, day_id: day.id, week }))}
           >
             ${icon('play')}${recorded ? 'Training ansehen' : running ? 'Training fortsetzen' : 'Training starten'}
@@ -487,7 +520,7 @@ export class TrainingApp extends LitElement {
                 aria-label=${`${weekdays[d.weekday]} · ${d.name}`}
                 aria-pressed=${d.id === day.id}
                 @click=${() => {
-                  this.homeDay = d.id;
+                  this.selectTrainingOverview(plan.id, d.id, week);
                 }}
               >
                 ${String.fromCharCode(65 + i)}
@@ -500,7 +533,7 @@ export class TrainingApp extends LitElement {
             aria-label="Vorherige Woche"
             ?disabled=${week <= 1}
             @click=${() => {
-              this.homeWeek = week - 1;
+              this.selectTrainingOverview(plan.id, day.id, week - 1);
             }}
           >
             ${icon('chevron-left')}
@@ -511,7 +544,7 @@ export class TrainingApp extends LitElement {
             aria-label="Nächste Woche"
             ?disabled=${week >= plan.weeks}
             @click=${() => {
-              this.homeWeek = week + 1;
+              this.selectTrainingOverview(plan.id, day.id, week + 1);
             }}
           >
             ${icon('chevron-right')}

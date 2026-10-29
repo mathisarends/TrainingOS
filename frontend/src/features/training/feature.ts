@@ -1,5 +1,5 @@
 import { defineFeature, definePage } from 'lit-canon-composition';
-import { shell } from '../../app/routing';
+import { shell, trainingSelectionFromSearch } from '../../app/routing';
 
 export const trainingFeature = defineFeature({
   name: 'training',
@@ -8,7 +8,7 @@ export const trainingFeature = defineFeature({
       path: '/training',
       title: 'Training',
       load: () => import('./training-view'),
-      render: () => shell('training'),
+      render: () => shell('training', '', trainingSelectionFromSearch(location.search)),
     }),
     definePage({
       path: '/training/:id',

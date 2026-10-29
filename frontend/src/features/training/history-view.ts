@@ -2,6 +2,7 @@ import { LitElement, html, nothing } from 'lit';
 import { trainingSessions } from '../../api/generated';
 import type { TrainingSession, Transport } from '../../shared/types';
 import { dateLabel, empty, icon, today } from '../../shared/ui';
+import { trainingOverviewHref } from '../../app/routing';
 
 export class HistoryView extends LitElement {
   static properties = {
@@ -54,8 +55,11 @@ export class HistoryView extends LitElement {
     this.month = date.getMonth();
     this.year = date.getFullYear();
   }
-  private trainingHref(id: string) {
-    return `/training/${encodeURIComponent(id)}${this.demo ? '?demo=1' : ''}`;
+  private trainingHref(session: TrainingSession) {
+    return trainingOverviewHref(
+      { planId: session.plan_id, dayId: session.day_id, week: session.week },
+      this.demo,
+    );
   }
   private monthList(sessions: TrainingSession[]) {
     return html`<div class="history-list month-history-list">
@@ -63,7 +67,7 @@ export class HistoryView extends LitElement {
         const date = new Date(s.started_at);
         return html`<a
           class="history-row"
-          href=${this.trainingHref(s.id)}
+          href=${this.trainingHref(s)}
           aria-label=${`${s.day_name}, ${dateLabel(s.started_at)}`}
         >
           <span class="history-date"
@@ -151,7 +155,7 @@ export class HistoryView extends LitElement {
                       >${date.getDate()}</span
                     >
                     <div class="calendar-events">
-                      ${sessions.map((s) => html`<a class="calendar-event ${s.ended_at ? 'completed' : ''}" href=${this.trainingHref(s.id)} aria-label=${`${s.day_name}, ${dateLabel(s.started_at)}`}>${icon(s.ended_at ? 'check' : 'activity')}<span>${s.day_name}</span></a>`)}
+                      ${sessions.map((s) => html`<a class="calendar-event ${s.ended_at ? 'completed' : ''}" href=${this.trainingHref(s)} aria-label=${`${s.day_name}, ${dateLabel(s.started_at)}`}>${icon(s.ended_at ? 'check' : 'activity')}<span>${s.day_name}</span></a>`)}
                     </div>
                   </div>`;
                 })}

@@ -41,8 +41,34 @@ export const titles: Record<Page, string> = {
   data: 'Konto',
 };
 
-export const shell = (page: Page, id = '') =>
-  html`<training-app .page=${page} .routeId=${id}></training-app>`;
+export interface TrainingSelection {
+  planId: string;
+  dayId: string;
+  week: number;
+}
+
+export function trainingOverviewHref(selection: TrainingSelection, demo = false) {
+  const query = new URLSearchParams({
+    plan: selection.planId,
+    day: selection.dayId,
+    week: String(selection.week),
+  });
+  if (demo) query.set('demo', '1');
+  return `${paths.training}?${query}`;
+}
+
+export function trainingSelectionFromSearch(search: string): TrainingSelection | null {
+  const query = new URLSearchParams(search);
+  if (!['plan', 'day', 'week'].some((key) => query.has(key))) return null;
+  return {
+    planId: query.get('plan') ?? '',
+    dayId: query.get('day') ?? '',
+    week: Number(query.get('week') ?? Number.NaN),
+  };
+}
+
+export const shell = (page: Page, id = '', selection: TrainingSelection | null = null) =>
+  html`<training-app .page=${page} .routeId=${id} .trainingSelection=${selection}></training-app>`;
 
 /** Keep existing shared session links usable after switching to Canon pathname routing. */
 export function migrateHashRoute() {
