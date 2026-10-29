@@ -16,6 +16,7 @@ import {
 import { transportContext, storeContext, navigationContext } from './context';
 import { paths, titles, type Page } from './routing';
 import '../features/training/rest-timer';
+import '../features/auth/auth-view';
 import type { RestTimer } from '../features/training/rest-timer';
 
 export class TrainingApp extends LitElement {
@@ -120,6 +121,7 @@ export class TrainingApp extends LitElement {
       if (e instanceof ApiError && e.status === 401) {
         this.user = null;
         this.store.value!.clear();
+        if (this.page !== 'login' && this.page !== 'register') this.navigate('login');
       } else this.error = (e as Error).message;
     } finally {
       this.loading = false;
@@ -239,7 +241,7 @@ export class TrainingApp extends LitElement {
       this.sessions = [];
       this.exercises = [];
       this.next = null;
-      this.navigate('home');
+      this.navigate('login');
     });
   }
   private currentWeek(plan: Plan) {
@@ -482,17 +484,18 @@ export class TrainingApp extends LitElement {
       ${!valid ? html`<p class="muted training-save-note">Ergänze die Wochenvorgaben im Plan, bevor du das Training startest.</p>` : nothing} `;
   }
   private login() {
-    return html`<div class="login-layout">
-      <div class="login-wordmark">
-        TrainingOS
-        <h1>OS</h1>
-      </div>
-      <div class="login-start">
-        <a class="login-circle" href="/api/v1/auth/google/login"
-          ><strong>Start</strong><small>Mit Google anmelden</small></a
-        ><a class="text-button" href="/?demo=1">Vorschau entdecken ${icon('arrow')}</a>
-      </div>
-    </div>`;
+    return html`<auth-view
+      .api=${this.api}
+      .mode=${this.page === 'register' ? 'register' : 'login'}
+      .demo=${this.demo}
+      .connectionError=${this.error}
+      @authenticated=${(event: CustomEvent<User>) => {
+        this.store.value!.clear();
+        this.user = event.detail;
+        this.navigate('home');
+        void this.act(() => this.refresh());
+      }}
+    ></auth-view>`;
   }
   private content() {
     if (this.loading)
@@ -500,7 +503,7 @@ export class TrainingApp extends LitElement {
         <span class="loader"></span>
         <p>Wird geladen …</p>
       </div>`;
-    if (!this.user || this.page === 'login') return this.login();
+    if (!this.user || this.page === 'login' || this.page === 'register') return this.login();
     switch (this.page) {
       case 'home':
         return this.home();
@@ -587,6 +590,17 @@ export class TrainingApp extends LitElement {
     }
   }
   render() {
+    if (this.loading && !this.user)
+      return html`<div class="auth-layout">
+        <main class="auth-main">
+          <div class="empty loading" role="status">
+            <span class="loader"></span>
+            <p>Wird geladen …</p>
+          </div>
+        </main>
+      </div>`;
+    if (!this.loading && (!this.user || this.page === 'login' || this.page === 'register'))
+      return this.login();
     const training = this.page === 'training';
     const context = this.page === 'plans' ? 'Plan' : '';
     const heading = training ? 'Training' : titles[this.page];

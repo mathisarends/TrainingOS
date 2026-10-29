@@ -2,6 +2,7 @@ import { html } from 'lit';
 
 export type Page =
   | 'login'
+  | 'register'
   | 'home'
   | 'plans'
   | 'training'
@@ -14,7 +15,8 @@ export type Page =
   | 'data';
 
 export const paths: Record<Page, string> = {
-  login: '/getting-started',
+  login: '/login',
+  register: '/register',
   home: '/',
   plans: '/plans',
   training: '/training',
@@ -28,7 +30,8 @@ export const paths: Record<Page, string> = {
 };
 
 export const titles: Record<Page, string> = {
-  login: 'TrainingOS',
+  login: 'Anmelden',
+  register: 'Registrieren',
   home: 'Training',
   plans: 'Bearbeiten',
   training: 'Training',

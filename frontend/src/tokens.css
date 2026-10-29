@@ -1,6 +1,15 @@
 /* Shared visual contract, matched to frontend/references. */
 :root {
   --font-family: Arial, Helvetica, sans-serif;
+  --font-auth: 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif;
+  --color-auth-background: #181818;
+  --color-auth-sidebar: #1e1f20;
+  --color-auth-panel: #252627;
+  --color-auth-panel-hover: #2d2e2f;
+  --color-auth-muted: #a3a3a5;
+  --auth-form-width: 25.5rem;
+  --auth-input-height: 3.5rem;
+  --auth-title-size: clamp(1.75rem, 2.5vw, 2.25rem);
   --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
   --font-xs: 0.75rem;
   --font-sm: 0.875rem;

@@ -46,7 +46,7 @@ export class ProfileView extends LitElement {
           <p
             title=${this.demo ? 'Isolierte Vorschau. Änderungen sind temporär und werden beim Neuladen zurückgesetzt.' : ''}
           >
-            ${this.demo ? 'Beispieldaten' : 'Mit Google angemeldet'} · ${this.user.unit} ·
+            ${this.demo ? 'Beispieldaten' : 'Angemeldet'} · ${this.user.unit} ·
             ${this.user.effort_scale.toUpperCase()}
           </p>
         </div>
