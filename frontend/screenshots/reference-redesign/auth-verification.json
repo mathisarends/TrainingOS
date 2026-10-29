@@ -1,0 +1,44 @@
+[
+  {
+    "page": "login",
+    "size": "desktop",
+    "errors": [],
+    "hasTrainingNav": false,
+    "overflow": false
+  },
+  {
+    "page": "register",
+    "size": "desktop",
+    "errors": [],
+    "hasTrainingNav": false,
+    "overflow": false
+  },
+  {
+    "page": "login",
+    "size": "mobile",
+    "errors": [],
+    "hasTrainingNav": false,
+    "overflow": false
+  },
+  {
+    "page": "register",
+    "size": "mobile",
+    "errors": [],
+    "hasTrainingNav": false,
+    "overflow": false
+  },
+  {
+    "page": "login",
+    "size": "narrow",
+    "errors": [],
+    "hasTrainingNav": false,
+    "overflow": false
+  },
+  {
+    "page": "register",
+    "size": "narrow",
+    "errors": [],
+    "hasTrainingNav": false,
+    "overflow": false
+  }
+]
