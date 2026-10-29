@@ -161,41 +161,48 @@ export class CatalogView extends LitElement {
         text: (n: number) => `${scale} ${n}`,
       },
     ];
-    return html`${rows.map(
-      (row, i) =>
-        html`<tr class=${i === 0 ? 'catalog-default-first' : ''}>
-          <td>
-            <label class="catalog-default-control"
-              ><select
-                aria-label=${`${categories[category]} ${row.label}`}
-                ?disabled=${state?.pending}
-                @change=${(e: Event) => {
-                  const raw = (e.target as HTMLSelectElement).value;
-                  const next = {
-                    ...value,
-                    [row.key]: row.key === 'target_effort' ? raw : Number(raw),
-                  };
-                  this.defaults = this.defaults.map((d) => (d.category === category ? next : d));
-                  void this.saveDefaults(next);
-                }}
-              >
-                ${row.options.map((n) => html`<option value=${n} ?selected=${Number(value[row.key]) === n}>${row.text(n)}</option>`)}
-              </select></label
-            >
-          </td>
-        </tr>`,
-    )}
-    ${
-      state
-        ? html`<tr>
-            <td>
-              <div class="catalog-status" role=${state.error ? 'alert' : 'status'}>
-                ${state.pending ? 'Wird gespeichert …' : state.error ? `Nicht gespeichert: ${state.error}` : 'Gespeichert'}${state.error ? html`<button class="text-button" @click=${() => void this.saveDefaults(value)}>Erneut speichern</button>` : nothing}
-              </div>
-            </td>
-          </tr>`
-        : nothing
-    }`;
+    return html`<tr class="catalog-default-first">
+        <td>
+          <div class="catalog-defaults" aria-label="Vorgaben für neue Übungen">
+            ${rows.map(
+              (row) =>
+                html`<label class="catalog-default-control"
+                  ><span>${row.label}</span>
+                  <training-select variant="inline"
+                    ><select
+                      aria-label=${`${categories[category]} ${row.label}`}
+                      ?disabled=${state?.pending}
+                      @change=${(e: Event) => {
+                        const raw = (e.target as HTMLSelectElement).value;
+                        const next = {
+                          ...value,
+                          [row.key]: row.key === 'target_effort' ? raw : Number(raw),
+                        };
+                        this.defaults = this.defaults.map((d) =>
+                          d.category === category ? next : d,
+                        );
+                        void this.saveDefaults(next);
+                      }}
+                    >
+                      ${row.options.map((n) => html`<option value=${n} ?selected=${Number(value[row.key]) === n}>${row.text(n)}</option>`)}
+                    </select></training-select
+                  ></label
+                >`,
+            )}
+          </div>
+        </td>
+      </tr>
+      ${
+        state
+          ? html`<tr>
+              <td>
+                <div class="catalog-status" role=${state.error ? 'alert' : 'status'}>
+                  ${state.pending ? 'Wird gespeichert …' : state.error ? `Nicht gespeichert: ${state.error}` : 'Gespeichert'}${state.error ? html`<button class="text-button" @click=${() => void this.saveDefaults(value)}>Erneut speichern</button>` : nothing}
+                </div>
+              </td>
+            </tr>`
+          : nothing
+      }`;
   }
   private async archiveExercise() {
     if (!this.editing || this.busy) return;
@@ -297,9 +304,11 @@ export class CatalogView extends LitElement {
                       maxlength="200"
                       .value=${this.editing?.name ?? ''} /></label
                   ><label
-                    >Kategorie<select name="category">
-                      ${Object.entries(categories).map(([value, label]) => html`<option value=${value} ?selected=${this.editing?.category === value}>${label}</option>`)}
-                    </select></label
+                    >Kategorie<training-select
+                      ><select name="category">
+                        ${Object.entries(categories).map(([value, label]) => html`<option value=${value} ?selected=${this.editing?.category === value}>${label}</option>`)}
+                      </select></training-select
+                    ></label
                   >
                 </div>
                 <label class="check-label"
@@ -349,14 +358,16 @@ export class CatalogView extends LitElement {
                   placeholder="Übung suchen …"
                   .value=${this.search}
                   @input=${(e: Event) => (this.search = (e.target as HTMLInputElement).value)} /></label
-              ><select
-                aria-label="Kategorie filtern"
-                .value=${this.category}
-                @change=${(e: Event) => (this.category = (e.target as HTMLSelectElement).value)}
+              ><training-select
+                ><select
+                  aria-label="Kategorie filtern"
+                  .value=${this.category}
+                  @change=${(e: Event) => (this.category = (e.target as HTMLSelectElement).value)}
+                >
+                  <option value="">Alle Kategorien</option>
+                  ${Object.entries(categories).map(([value, label]) => html`<option value=${value}>${label}</option>`)}
+                </select></training-select
               >
-                <option value="">Alle Kategorien</option>
-                ${Object.entries(categories).map(([value, label]) => html`<option value=${value}>${label}</option>`)}
-              </select>
             </div>`
           : nothing
       }

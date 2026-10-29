@@ -335,7 +335,38 @@ export class TrainingApp extends LitElement {
               </div>
             </article>`,
         )}
-        ${!this.plans.length ? html`<div class="empty">${empty('Dein erster Trainingsplan', 'Lege Trainingstage und Wochenvorgaben an.')}<a class="secondary" href=${this.href('plans', 'new')}>${icon('plus')} Plan erstellen</a></div>` : nothing}
+        ${
+          !this.plans.length
+            ? html`<section class="empty-plan" aria-labelledby="first-plan-title">
+                <div class="empty-plan-copy">
+                  <span class="eyebrow">Dein erster Schritt</span>
+                  <h2 id="first-plan-title">Dein Training.<br />Mit einem Plan.</h2>
+                  <p>
+                    Lege deine Trainingstage und Übungen fest. Deine Vorgaben und Fortschritte
+                    bleiben an einem Ort.
+                  </p>
+                  <a class="primary" href=${this.href('plans', 'new')}
+                    >${icon('plus')} Ersten Plan erstellen</a
+                  >
+                </div>
+                <div class="empty-plan-preview" aria-hidden="true">
+                  <div class="empty-preview-heading">
+                    ${icon('dumbbell')}<span>Dein Trainingsplan</span><span>6 Wochen</span>
+                  </div>
+                  <div class="empty-preview-weeks">
+                    ${Array.from({ length: 6 }, (_, week) => html`<div><span>W${week + 1}</span>${Array.from({ length: 3 }, () => html`<i></i>`)}</div>`)}
+                  </div>
+                  <div class="empty-preview-day">
+                    <span>A</span>
+                    <div>
+                      <strong>Trainingstag</strong><small>Deine Übungen und Vorgaben</small>
+                    </div>
+                    ${icon('chevron-right')}
+                  </div>
+                </div>
+              </section>`
+            : nothing
+        }
       </div>
       ${
         this.deleting

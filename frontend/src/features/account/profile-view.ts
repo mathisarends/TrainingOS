@@ -84,20 +84,39 @@ export class ProfileView extends LitElement {
             </div>
           </div>
           <label
-            ><select
-              aria-label="Aktivitätsjahr"
-              .value=${String(this.year)}
-              @change=${(e: Event) => {
-                this.year = Number((e.target as HTMLSelectElement).value);
-              }}
-            >
-              ${Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map((year) => html`<option value=${year}>${year}</option>`)}
-            </select></label
+            ><training-select variant="pill"
+              ><select
+                aria-label="Aktivitätsjahr"
+                .value=${String(this.year)}
+                @change=${(e: Event) => {
+                  this.year = Number((e.target as HTMLSelectElement).value);
+                }}
+              >
+                ${Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map((year) => html`<option value=${year}>${year}</option>`)}
+              </select></training-select
+            ></label
           >
         </div>
       </div>
       <div class="profile-links">
-        ${[entries.slice(0, 3), entries.slice(3)].map((group) => html`<div class="profile-link-group">${group.map(([label, name, path]) => html`<a class="profile-link" href=${path + suffix}><span class="profile-link-icon">${icon(name)}</span><span>${label}</span>${icon('chevron-right')}</a>`)}</div>`)}<button
+        <div class="profile-link-group">
+          ${entries.slice(0, 3).map(([label, name, path]) => html`<a class="profile-link" href=${path + suffix}><span class="profile-link-icon">${icon(name)}</span><span>${label}</span>${icon('chevron-right')}</a>`)}
+        </div>
+        <div class="profile-utilities">
+          ${entries.slice(3).map(
+            ([label, name, path], i) =>
+              html`<a class="profile-utility" href=${path + suffix}
+                ><span class="profile-link-icon">${icon(name)}</span
+                ><span
+                  ><strong>${label}</strong
+                  ><small
+                    >${i === 0 ? 'Einheiten und Trainingsvorgaben' : 'Daten exportieren und Konto verwalten'}</small
+                  ></span
+                >${icon('chevron-right')}</a
+              >`,
+          )}
+        </div>
+        <button
           class="profile-link profile-logout"
           @click=${() => this.dispatchEvent(new CustomEvent('logout', { bubbles: true }))}
         >

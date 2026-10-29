@@ -1,0 +1,94 @@
+{
+  "layouts": [
+    {
+      "page": "settings",
+      "size": "mobile",
+      "alerts": [],
+      "overflow": false,
+      "width": 390
+    },
+    {
+      "page": "data",
+      "size": "mobile",
+      "alerts": [],
+      "overflow": false,
+      "width": 390
+    },
+    {
+      "page": "account",
+      "size": "mobile",
+      "alerts": [],
+      "overflow": false,
+      "width": 390
+    },
+    {
+      "page": "settings",
+      "size": "desktop",
+      "alerts": [],
+      "overflow": false,
+      "width": 1440
+    },
+    {
+      "page": "data",
+      "size": "desktop",
+      "alerts": [],
+      "overflow": false,
+      "width": 1440
+    },
+    {
+      "page": "account",
+      "size": "desktop",
+      "alerts": [],
+      "overflow": false,
+      "width": 1440
+    },
+    {
+      "page": "catalog",
+      "size": "desktop",
+      "alerts": [],
+      "overflow": false,
+      "width": 1440
+    },
+    {
+      "page": "empty",
+      "size": "small-mobile",
+      "alerts": [],
+      "overflow": false,
+      "width": 320
+    },
+    {
+      "page": "settings",
+      "size": "small-mobile",
+      "alerts": [],
+      "overflow": false,
+      "width": 320
+    },
+    {
+      "page": "data",
+      "size": "small-mobile",
+      "alerts": [],
+      "overflow": false,
+      "width": 320
+    },
+    {
+      "page": "account",
+      "size": "small-mobile",
+      "alerts": [],
+      "overflow": false,
+      "width": 320
+    },
+    {
+      "page": "catalog",
+      "size": "small-mobile",
+      "alerts": [],
+      "overflow": false,
+      "width": 320
+    }
+  ],
+  "behavior": {
+    "keyboardCommitAndEscape": true,
+    "outsideDismissal": true,
+    "dialogSelectionDoesNotSubmit": true,
+    "preferenceSavedAndRestoredFromBackend": true
+  }
+}

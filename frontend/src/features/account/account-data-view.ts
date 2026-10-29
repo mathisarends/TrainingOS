@@ -52,15 +52,21 @@ export class AccountDataView extends LitElement {
     return html`<div class="settings-wrapper">
         ${this.error ? html`<div class="notice error" role="alert">${this.error}</div>` : nothing}
         <section class="data-section">
-          <h2>Daten exportieren</h2>
-          <p>Deine Pläne, erfassten Trainings und Einstellungen als JSON-Datei.</p>
+          <span class="data-section-icon">${icon('download')}</span>
+          <div class="data-section-copy">
+            <h2>Daten exportieren</h2>
+            <p>Deine Pläne, erfassten Trainings und Einstellungen als JSON-Datei.</p>
+          </div>
           <button class="secondary" ?disabled=${this.busy} @click=${this.download}>
-            ${icon('download')} Export herunterladen
+            Herunterladen
           </button>
         </section>
-        <section class="data-section">
-          <h2>Konto löschen</h2>
-          <p>Dein Konto und alle zugehörigen Daten werden dauerhaft gelöscht.</p>
+        <section class="data-section data-section-danger">
+          <span class="data-section-icon">${icon('trash')}</span>
+          <div class="data-section-copy">
+            <h2>Konto löschen</h2>
+            <p>Dein Konto und alle zugehörigen Daten werden dauerhaft gelöscht.</p>
+          </div>
           <button
             class="text-button danger-text"
             @click=${() => {
@@ -68,7 +74,7 @@ export class AccountDataView extends LitElement {
               this.confirmed = false;
             }}
           >
-            ${icon('trash')} Konto löschen
+            Konto löschen
           </button>
         </section>
       </div>

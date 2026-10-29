@@ -388,9 +388,11 @@ export class PlansView extends LitElement {
             >
               <label>Name<input name="name" required maxlength="200" .value=${day.name} /></label
               ><label
-                >Wochentag<select name="weekday">
-                  ${weekdays.map((name, i) => html`<option value=${i} ?selected=${day.weekday === i}>${name}</option>`)}
-                </select></label
+                >Wochentag<training-select
+                  ><select name="weekday">
+                    ${weekdays.map((name, i) => html`<option value=${i} ?selected=${day.weekday === i}>${name}</option>`)}
+                  </select></training-select
+                ></label
               ><button
                 class="bare-icon"
                 ?disabled=${this.busy}
@@ -433,10 +435,12 @@ export class PlansView extends LitElement {
         }}
       >
         <label
-          >RPE-Steigerung<select name="increment">
-            <option value="0.5">+0,5 pro Woche</option>
-            <option value="1">+1 pro Woche</option>
-          </select></label
+          >RPE-Steigerung<training-select
+            ><select name="increment">
+              <option value="0.5">+0,5 pro Woche</option>
+              <option value="1">+1 pro Woche</option>
+            </select></training-select
+          ></label
         ><label class="check-label"
           ><input type="checkbox" name="deload" checked />Letzte Woche als Deload</label
         ><button class="secondary" ?disabled=${this.busy}>Vorschau erstellen</button>
@@ -507,17 +511,22 @@ export class PlansView extends LitElement {
         <div class="actions">
           ${
             plan
-              ? html`<select
-                    aria-label="Trainingsplan auswählen"
-                    .value=${plan.id}
-                    @change=${(e: Event) => {
-                      this.selected = (e.target as HTMLSelectElement).value;
-                      this.dispatchEvent(
-                        new CustomEvent('plan-selected', { detail: this.selected, bubbles: true }),
-                      );
-                    }}
-                  >
-                    ${this.plans.map((p) => html`<option value=${p.id} ?selected=${p.id === plan.id}>${p.title}</option>`)}</select
+              ? html`<training-select
+                    ><select
+                      aria-label="Trainingsplan auswählen"
+                      .value=${plan.id}
+                      @change=${(e: Event) => {
+                        this.selected = (e.target as HTMLSelectElement).value;
+                        this.dispatchEvent(
+                          new CustomEvent('plan-selected', {
+                            detail: this.selected,
+                            bubbles: true,
+                          }),
+                        );
+                      }}
+                    >
+                      ${this.plans.map((p) => html`<option value=${p.id} ?selected=${p.id === plan.id}>${p.title}</option>`)}
+                    </select></training-select
                   ><span class="badge">${statuses[plan.status]}</span>`
               : nothing
           }
@@ -777,10 +786,12 @@ export class PlansView extends LitElement {
                       }}
                     >
                       <label
-                        >Übung<select name="exercise_id" required>
-                          <option value="">Übung wählen …</option>
-                          ${this.exercises.filter((e) => !e.archived).map((e) => html`<option value=${e.id}>${e.name}</option>`)}
-                        </select></label
+                        >Übung<training-select
+                          ><select name="exercise_id" required>
+                            <option value="">Übung wählen …</option>
+                            ${this.exercises.filter((e) => !e.archived).map((e) => html`<option value=${e.id}>${e.name}</option>`)}
+                          </select></training-select
+                        ></label
                       ><label
                         >Pause (s)<input
                           type="number"

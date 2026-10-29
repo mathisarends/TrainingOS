@@ -83,6 +83,7 @@ Pages and flows:
   application visits open `/login`. Google is retained in the backend.
 
 - `/`: plan cards; create, open, edit and delete plans while retaining training history.
+  A full-width first-plan panel provides a direct creation action for new users.
 - `/plans`, `/plans/new` and `/plans/:id`: plan settings, named weekdays, exercise slots,
   reordering/removal, rest times and per-week prescriptions. Duplicate, activate,
   archive, copy forward, share/import/revoke templates, and preview/apply progression
@@ -98,10 +99,17 @@ Pages and flows:
 - `/profile/exercises`: inline name editing and the original category tables with
   rest, set, repetition and effort defaults. Search/filter and create/edit/remove
   remain available. Failed inline changes retain their drafts for explicit retry.
+  Category defaults are labeled compact controls, with two columns on mobile.
 - `/profile/best-performance`: main-exercise best values and history using the
   backend-returned e1RM values; no separate statistics or plan-comparison feature.
 - `/profile/settings`: kg/lb, RPE/RIR, rounding step and timezone.
 - `/profile/data`: JSON export and explicitly confirmed account deletion.
+
+Select fields share `training-select`, a dark popover/listbox with keyboard navigation,
+type-ahead, Escape/outside dismissal and a quiet selected state. Native selects remain
+the form-data and validation source; choosing an option emits a single change event.
+Inline name edits use an inset focus border. Settings and data links have descriptive
+subtitles; their destinations use consistent grouped surfaces.
 
 Email/password registration, login, cookie session restoration and logout use the
 backend. The existing Google OAuth endpoints remain available.
@@ -168,9 +176,9 @@ OpenAPI contract and regenerated client. The latest visual checkpoints are saved
 [`frontend/screenshots/reference-redesign`](frontend/screenshots/reference-redesign/index.html).
 Earlier checkpoints remain in `frontend/screenshots` for comparison.
 
-Local verification on 2026-10-29: 32 frontend tests and 84 backend tests passed
+Local verification on 2026-10-29: 35 frontend tests and 85 backend tests passed
 (4 PostgreSQL-only cases skipped), along with TypeScript/Vite, Prettier, Ruff, mypy
-and both API drift checks. A clean `npm ci` was verified. All eleven page routes were checked
+and both API drift checks. A clean `npm ci` was verified. Application routes were checked
 at 320, 390 and 1600 pixels for visible errors and horizontal overflow; desktop
 and mobile screenshots include the forms and dialogs. Login and registration
 were additionally checked at 320, 390 and 1440 pixels. Browser checks also covered
@@ -178,6 +186,13 @@ day/week navigation, training start, explicit set recording and the rest timer,
 plus real local registration, cookie restoration, logout and subsequent login.
 Google consent and locked-screen device signals were not tested against a real
 account/device.
+
+The latest [UI polish checkpoints](frontend/screenshots/ui-polish/index.html) cover
+the empty home page, compact defaults, dropdowns, inline focus, account, settings and
+data screens. Browser checks include 320/390px mobile and 1440px desktop layouts,
+popover behavior inside a dialog, and a real preference save verified after reloading.
+Bodyweight removal is checked by upgrading populated legacy data and inspecting it
+from a separate database scope; recorded training weights remain unchanged.
 
 The frontend container builds from this checkout, including the vendored packages,
 then serves through nginx and proxies `/api` to the API container. Its SPA fallback

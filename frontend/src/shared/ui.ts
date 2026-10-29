@@ -1,5 +1,6 @@
 import { html, type TemplateResult } from 'lit';
 import { icons } from './icons';
+import './select-control';
 export const categories: Record<string, string> = {
   squat: 'Kniebeuge',
   bench_press: 'Bankdrücken',
@@ -58,7 +59,7 @@ export function icon(name: string): TemplateResult {
 }
 export function empty(title: string, detail: string) {
   return html`<div class="empty">
-    ${icon('dumbbell')}
+    <span class="empty-icon">${icon('dumbbell')}</span>
     <h3>${title}</h3>
     <p>${detail}</p>
   </div>`;

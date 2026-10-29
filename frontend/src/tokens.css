@@ -45,6 +45,9 @@
   --color-accent-soft: #3b3b3b;
   --color-border: #303030;
   --color-border-strong: #3a3a3a;
+  --color-control-hover: #505050;
+  --color-focus: #909090;
+  --color-popover: #292929;
   --color-stripe: #252525;
   --color-navigation: rgb(40 40 40 / 94%);
   --color-navigation-text: #919191;
