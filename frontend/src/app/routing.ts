@@ -1,0 +1,54 @@
+import { html } from 'lit';
+
+export type Page =
+  | 'login'
+  | 'home'
+  | 'plans'
+  | 'training'
+  | 'history'
+  | 'catalog'
+  | 'account'
+  | 'bodyweight'
+  | 'records'
+  | 'settings'
+  | 'data';
+
+export const paths: Record<Page, string> = {
+  login: '/getting-started',
+  home: '/',
+  plans: '/plans',
+  training: '/training',
+  history: '/logs',
+  catalog: '/profile/exercises',
+  account: '/profile',
+  bodyweight: '/profile/body-weight',
+  records: '/profile/best-performance',
+  settings: '/profile/settings',
+  data: '/profile/data',
+};
+
+export const titles: Record<Page, string> = {
+  login: 'TrainingOS',
+  home: 'Training',
+  plans: 'Bearbeiten',
+  training: 'Training',
+  history: 'Logs',
+  catalog: 'Übungen',
+  account: 'Konto',
+  bodyweight: 'Körpergewicht',
+  records: 'Bestleistungen',
+  settings: 'Einstellungen',
+  data: 'Meine Daten',
+};
+
+export const shell = (page: Page, id = '') =>
+  html`<training-app .page=${page} .routeId=${id}></training-app>`;
+
+/** Keep existing shared session links usable after switching to Canon pathname routing. */
+export function migrateHashRoute() {
+  const [page, id] = location.hash.slice(1).split('/');
+  if (!(page in paths)) return;
+  const path =
+    paths[page as Page] + (page === 'training' && id ? `/${encodeURIComponent(id)}` : '');
+  history.replaceState(null, '', path + location.search);
+}

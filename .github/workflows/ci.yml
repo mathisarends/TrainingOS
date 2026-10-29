@@ -1,8 +1,26 @@
-name: Backend checks
+name: TrainingOS checks
 on: [push, pull_request]
 permissions:
   contents: read
 jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run api:check
+      - run: npm test
+      - run: npm run build
+      - run: npm run format:check
+      - run: docker build -t trainingos-frontend-ci .
   portable:
     strategy:
       matrix:
@@ -17,6 +35,7 @@ jobs:
           python-version: ${{ matrix.python }}
       - run: uv sync --locked --all-packages --all-groups
       - run: uv run --locked --package backend python scripts/check.py all
+      - run: uv run --locked --package backend python scripts/export_openapi.py --check
   postgres:
     runs-on: ubuntu-latest
     services:

@@ -1,0 +1,37 @@
+{
+  "name": "trainingos-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "api:generate": "lit-canon-api generate",
+    "api:check": "lit-canon-api check",
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "vitest run --pool=threads --maxWorkers=1",
+    "format": "prettier --write src tests *.json *.ts index.html public/manifest.webmanifest",
+    "format:check": "prettier --check src tests *.json *.ts index.html public/manifest.webmanifest"
+  },
+  "dependencies": {
+    "@fontsource/poppins": "^5.2.7",
+    "@lit-labs/router": "^0.1.4",
+    "@lit/context": "^1.1.6",
+    "@tanstack/lit-query": "0.2.25",
+    "lit-canon-composition": "file:vendor/lit-canon/composition",
+    "lit-canon-fetch": "file:vendor/lit-canon/fetch",
+    "urlpattern-polyfill": "^10.1.0",
+    "lit": "^3.3.3"
+  },
+  "devDependencies": {
+    "lit-canon-api": "file:vendor/lit-canon/api",
+    "happy-dom": "^21.0.4",
+    "prettier": "^3.9.10",
+    "typescript": "^6.0.3",
+    "vite": "^8.2.2",
+    "vitest": "5.0.3"
+  }
+}

@@ -1,0 +1,5962 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "TrainingOS API",
+    "summary": "Plan, record and progressively overload strength training.",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["system"],
+        "summary": "Health",
+        "operationId": "get_health",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/google/login": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Google Login",
+        "operationId": "start_google_login",
+        "responses": {
+          "307": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "503": {
+            "description": "Identity provider unavailable",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityProviderUnavailableProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/google/callback": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Google Callback",
+        "operationId": "complete_google_login",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096,
+              "title": "Code"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512,
+              "title": "State"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "303": {
+            "description": "Browser sign-in redirects to the configured frontend"
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Identity provider unavailable",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IdentityProviderUnavailableProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Request validation failed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestValidationProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Me",
+        "operationId": "get_authenticated_user",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Logout",
+        "operationId": "logout_user",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Authentication required",
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/me/preferences": {
+      "put": {
+        "tags": ["users"],
+        "summary": "Configure User",
+        "operationId": "configure_user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreferencesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/me/export": {
+      "get": {
+        "tags": ["users"],
+        "summary": "Export User",
+        "operationId": "export_user_data",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountExportResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/me": {
+      "delete": {
+        "tags": ["users"],
+        "summary": "Delete User",
+        "operationId": "delete_user_account",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Authentication required",
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exercises/category-defaults": {
+      "get": {
+        "tags": ["exercises"],
+        "summary": "List Category Defaults",
+        "operationId": "list_category_defaults",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryDefaultsListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exercises/category-defaults/{category}": {
+      "put": {
+        "tags": ["exercises"],
+        "summary": "Configure Category Defaults",
+        "operationId": "configure_category_defaults",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Category"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryDefaultsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryDefaultsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exercises": {
+      "get": {
+        "tags": ["exercises"],
+        "summary": "List Exercises",
+        "operationId": "list_exercises",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExerciseListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["exercises"],
+        "summary": "Create Exercise",
+        "operationId": "create_exercise",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExerciseRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExerciseResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/exercises/{exercise_id}": {
+      "put": {
+        "tags": ["exercises"],
+        "summary": "Revise Exercise",
+        "operationId": "revise_exercise",
+        "parameters": [
+          {
+            "name": "exercise_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Exercise Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExerciseRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExerciseResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["exercises"],
+        "summary": "Remove Exercise",
+        "operationId": "remove_exercise",
+        "parameters": [
+          {
+            "name": "exercise_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Exercise Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plans": {
+      "get": {
+        "tags": ["plans"],
+        "summary": "List Plans",
+        "operationId": "list_plans",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["plans"],
+        "summary": "Create Plan",
+        "operationId": "create_plan",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePlanRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plans/next-training": {
+      "get": {
+        "tags": ["plans"],
+        "summary": "Next Training",
+        "operationId": "get_next_training",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NextTrainingResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plans/{plan_id}": {
+      "get": {
+        "tags": ["plans"],
+        "summary": "Get Plan",
+        "operationId": "get_plan",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["plans"],
+        "summary": "Configure Plan",
+        "operationId": "configure_plan",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfigurePlanRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["plans"],
+        "summary": "Delete Plan",
+        "operationId": "delete_plan",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plans/{plan_id}/status": {
+      "put": {
+        "tags": ["plans"],
+        "summary": "Set Plan Status",
+        "operationId": "set_plan_status",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StatusRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plans/{plan_id}/days/{day_id}": {
+      "put": {
+        "tags": ["plans"],
+        "summary": "Edit Day",
+        "operationId": "edit_training_day",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "day_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Day Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DayRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plans/{plan_id}/days/{day_id}/slots": {
+      "post": {
+        "tags": ["plans"],
+        "summary": "Add Slot",
+        "operationId": "add_exercise_slot",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "day_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Day Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddSlotRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plans/{plan_id}/days/{day_id}/slot-order": {
+      "put": {
+        "tags": ["plans"],
+        "summary": "Reorder Slots",
+        "operationId": "reorder_exercise_slots",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "day_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Day Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReorderSlotsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plans/{plan_id}/days/{day_id}/slots/{slot_id}": {
+      "put": {
+        "tags": ["plans"],
+        "summary": "Edit Slot",
+        "operationId": "edit_exercise_slot",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "day_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Day Id"
+            }
+          },
+          {
+            "name": "slot_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Slot Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditSlotRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["plans"],
+        "summary": "Remove Slot",
+        "operationId": "remove_exercise_slot",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "day_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Day Id"
+            }
+          },
+          {
+            "name": "slot_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Slot Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plans/{plan_id}/slots/{slot_id}/weeks/{week}": {
+      "put": {
+        "tags": ["plans"],
+        "summary": "Prescribe",
+        "operationId": "set_week_prescription",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "slot_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Slot Id"
+            }
+          },
+          {
+            "name": "week",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Week"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrescriptionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plans/{plan_id}/weeks/{week}/copy-forward": {
+      "post": {
+        "tags": ["plans"],
+        "summary": "Copy Week",
+        "operationId": "copy_week_forward",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "week",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Week"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plans/{plan_id}/progression/preview": {
+      "post": {
+        "tags": ["plans"],
+        "summary": "Preview Progression",
+        "operationId": "preview_progression",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProgressionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgressionPreviewResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plans/{plan_id}/progression/apply": {
+      "post": {
+        "tags": ["plans"],
+        "summary": "Apply Progression",
+        "operationId": "apply_progression",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplyProgressionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plans/{plan_id}/duplicate": {
+      "post": {
+        "tags": ["plans"],
+        "summary": "Duplicate Plan",
+        "operationId": "duplicate_plan",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DuplicatePlanRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plans/{plan_id}/shares": {
+      "post": {
+        "tags": ["plans"],
+        "summary": "Share Plan",
+        "operationId": "share_plan_template",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ShareResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/templates/{token}/import": {
+      "post": {
+        "tags": ["plans"],
+        "summary": "Import Template",
+        "operationId": "import_plan_template",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DuplicatePlanRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/templates/{token}": {
+      "delete": {
+        "tags": ["plans"],
+        "summary": "Revoke Template",
+        "operationId": "revoke_plan_template",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/training-sessions": {
+      "post": {
+        "tags": ["training-sessions"],
+        "summary": "Start Training Session",
+        "operationId": "start_training_session",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartTrainingSessionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingSessionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["training-sessions"],
+        "summary": "List Training Sessions",
+        "operationId": "list_training_sessions",
+        "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingSessionListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/training-sessions/{training_session_id}": {
+      "get": {
+        "tags": ["training-sessions"],
+        "summary": "Get Training Session",
+        "operationId": "get_training_session",
+        "parameters": [
+          {
+            "name": "training_session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Training Session Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingSessionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/training-sessions/{training_session_id}/times": {
+      "put": {
+        "tags": ["training-sessions"],
+        "summary": "Correct Training Session Times",
+        "operationId": "correct_training_session_times",
+        "parameters": [
+          {
+            "name": "training_session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Training Session Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CorrectTrainingSessionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingSessionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/training-sessions/{training_session_id}/finish": {
+      "post": {
+        "tags": ["training-sessions"],
+        "summary": "Finish Training Session",
+        "operationId": "finish_training_session",
+        "parameters": [
+          {
+            "name": "training_session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Training Session Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingSessionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/training-sessions/{training_session_id}/slots/{slot_id}/sets": {
+      "post": {
+        "tags": ["training-sessions"],
+        "summary": "Record Work Set",
+        "operationId": "record_work_set",
+        "parameters": [
+          {
+            "name": "training_session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Training Session Id"
+            }
+          },
+          {
+            "name": "slot_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Slot Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordSetRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SetFeedbackResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/training-sessions/{training_session_id}/slots/{slot_id}/sets/{set_id}": {
+      "put": {
+        "tags": ["training-sessions"],
+        "summary": "Correct Work Set",
+        "operationId": "correct_work_set",
+        "parameters": [
+          {
+            "name": "training_session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Training Session Id"
+            }
+          },
+          {
+            "name": "slot_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Slot Id"
+            }
+          },
+          {
+            "name": "set_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Set Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecordSetRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SetFeedbackResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["training-sessions"],
+        "summary": "Delete Work Set",
+        "operationId": "delete_work_set",
+        "parameters": [
+          {
+            "name": "training_session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Training Session Id"
+            }
+          },
+          {
+            "name": "slot_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Slot Id"
+            }
+          },
+          {
+            "name": "set_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Set Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingSessionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/training-sessions/{training_session_id}/slots/{slot_id}/skipped": {
+      "put": {
+        "tags": ["training-sessions"],
+        "summary": "Skip Slot",
+        "operationId": "skip_training_session_slot",
+        "parameters": [
+          {
+            "name": "training_session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Training Session Id"
+            }
+          },
+          {
+            "name": "slot_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Slot Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SkipSlotRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingSessionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/training-sessions/{training_session_id}/slots/{slot_id}/guidance": {
+      "get": {
+        "tags": ["training-sessions"],
+        "summary": "Slot Guidance",
+        "operationId": "get_slot_guidance",
+        "parameters": [
+          {
+            "name": "training_session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Training Session Id"
+            }
+          },
+          {
+            "name": "slot_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Slot Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuidanceResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/training-sessions/{training_session_id}/timer": {
+      "put": {
+        "tags": ["training-sessions"],
+        "summary": "Adjust Timer",
+        "operationId": "adjust_rest_timer",
+        "parameters": [
+          {
+            "name": "training_session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Training Session Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TimerRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrainingSessionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bodyweight": {
+      "get": {
+        "tags": ["bodyweight"],
+        "summary": "List Bodyweight",
+        "operationId": "list_bodyweight",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BodyweightResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["bodyweight"],
+        "summary": "Record Bodyweight",
+        "operationId": "record_bodyweight",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WeighInRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WeighInResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/bodyweight/{weigh_in_id}": {
+      "delete": {
+        "tags": ["bodyweight"],
+        "summary": "Delete Bodyweight",
+        "operationId": "delete_bodyweight",
+        "parameters": [
+          {
+            "name": "weigh_in_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Weigh In Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationRequiredProblem"
+                }
+              }
+            },
+            "headers": {
+              "WWW-Authenticate": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFoundProblem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "State conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StateConflictProblem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidInputProblem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Request forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForbiddenProblem"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AccountExportResponse": {
+        "properties": {
+          "format_version": {
+            "type": "integer",
+            "const": 2,
+            "title": "Format Version",
+            "default": 2
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserResponse"
+          },
+          "exercises": {
+            "items": {
+              "$ref": "#/components/schemas/ExerciseResponse"
+            },
+            "type": "array",
+            "title": "Exercises"
+          },
+          "plans": {
+            "items": {
+              "$ref": "#/components/schemas/PlanResponse"
+            },
+            "type": "array",
+            "title": "Plans"
+          },
+          "training_sessions": {
+            "items": {
+              "$ref": "#/components/schemas/TrainingSessionResponse"
+            },
+            "type": "array",
+            "title": "Training Sessions"
+          },
+          "bodyweight": {
+            "items": {
+              "$ref": "#/components/schemas/WeighInResponse"
+            },
+            "type": "array",
+            "title": "Bodyweight"
+          },
+          "identities": {
+            "items": {
+              "$ref": "#/components/schemas/IdentityExportResponse"
+            },
+            "type": "array",
+            "title": "Identities"
+          },
+          "shared_templates": {
+            "items": {
+              "$ref": "#/components/schemas/PlanResponse"
+            },
+            "type": "array",
+            "title": "Shared Templates"
+          },
+          "category_defaults": {
+            "items": {
+              "$ref": "#/components/schemas/CategoryDefaultsResponse"
+            },
+            "type": "array",
+            "title": "Category Defaults"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "user",
+          "exercises",
+          "plans",
+          "training_sessions",
+          "bodyweight",
+          "identities",
+          "shared_templates",
+          "category_defaults"
+        ],
+        "title": "AccountExportResponse"
+      },
+      "AddSlotRequest": {
+        "properties": {
+          "exercise_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Exercise Id"
+          },
+          "rest_seconds": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 3600.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rest Seconds"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["exercise_id"],
+        "title": "AddSlotRequest"
+      },
+      "ApplyProgressionRequest": {
+        "properties": {
+          "increment": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Increment",
+            "default": "0.5"
+          },
+          "deload": {
+            "type": "boolean",
+            "title": "Deload",
+            "default": false
+          },
+          "expected_revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Expected Revision"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["expected_revision"],
+        "title": "ApplyProgressionRequest"
+      },
+      "BodyweightResponse": {
+        "properties": {
+          "unit": {
+            "$ref": "#/components/schemas/WeightUnit"
+          },
+          "target_weight": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Weight"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/WeighInResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["unit", "target_weight", "items"],
+        "title": "BodyweightResponse"
+      },
+      "Category": {
+        "type": "string",
+        "enum": [
+          "squat",
+          "bench_press",
+          "deadlift",
+          "overhead_press",
+          "back",
+          "chest",
+          "shoulders",
+          "legs",
+          "biceps",
+          "triceps"
+        ],
+        "title": "Category"
+      },
+      "CategoryDefaultsListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CategoryDefaultsResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["items"],
+        "title": "CategoryDefaultsListResponse"
+      },
+      "CategoryDefaultsRequest": {
+        "properties": {
+          "rest_seconds": {
+            "type": "integer",
+            "maximum": 3600.0,
+            "minimum": 0.0,
+            "title": "Rest Seconds"
+          },
+          "sets": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Sets"
+          },
+          "reps": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Reps"
+          },
+          "target_effort": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Target Effort"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["rest_seconds", "sets", "reps", "target_effort"],
+        "title": "CategoryDefaultsRequest"
+      },
+      "CategoryDefaultsResponse": {
+        "properties": {
+          "category": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "rest_seconds": {
+            "type": "integer",
+            "title": "Rest Seconds"
+          },
+          "sets": {
+            "type": "integer",
+            "title": "Sets"
+          },
+          "reps": {
+            "type": "integer",
+            "title": "Reps"
+          },
+          "target_rpe": {
+            "type": "string",
+            "title": "Target Rpe"
+          },
+          "target_effort": {
+            "type": "string",
+            "title": "Target Effort"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["category", "rest_seconds", "sets", "reps", "target_rpe", "target_effort"],
+        "title": "CategoryDefaultsResponse"
+      },
+      "ConfigurePlanRequest": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Start Date"
+          },
+          "recommendations": {
+            "type": "boolean",
+            "title": "Recommendations"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["title", "start_date", "recommendations"],
+        "title": "ConfigurePlanRequest"
+      },
+      "CorrectTrainingSessionRequest": {
+        "properties": {
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At"
+          },
+          "ended_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ended At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["started_at", "ended_at"],
+        "title": "CorrectTrainingSessionRequest"
+      },
+      "CreatePlanRequest": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Start Date"
+          },
+          "weeks": {
+            "type": "integer",
+            "maximum": 104.0,
+            "minimum": 1.0,
+            "title": "Weeks"
+          },
+          "days": {
+            "items": {
+              "$ref": "#/components/schemas/DayRequest"
+            },
+            "type": "array",
+            "maxItems": 14,
+            "minItems": 1,
+            "title": "Days"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["title", "start_date", "weeks", "days"],
+        "title": "CreatePlanRequest"
+      },
+      "DayRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "weekday": {
+            "type": "integer",
+            "maximum": 6.0,
+            "minimum": 0.0,
+            "title": "Weekday",
+            "description": "Monday=0, Sunday=6"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["name", "weekday"],
+        "title": "DayRequest"
+      },
+      "DayResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "weekday": {
+            "type": "integer",
+            "title": "Weekday"
+          },
+          "slots": {
+            "items": {
+              "$ref": "#/components/schemas/SlotResponse"
+            },
+            "type": "array",
+            "title": "Slots"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["id", "name", "weekday", "slots"],
+        "title": "DayResponse"
+      },
+      "DuplicatePlanRequest": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Start Date"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["title", "start_date"],
+        "title": "DuplicatePlanRequest"
+      },
+      "EditSlotRequest": {
+        "properties": {
+          "rest_seconds": {
+            "type": "integer",
+            "maximum": 3600.0,
+            "minimum": 0.0,
+            "title": "Rest Seconds"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["rest_seconds"],
+        "title": "EditSlotRequest"
+      },
+      "EffortScale": {
+        "type": "string",
+        "enum": ["rpe", "rir"],
+        "title": "EffortScale"
+      },
+      "ExerciseListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ExerciseResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["items"],
+        "title": "ExerciseListResponse"
+      },
+      "ExerciseRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "category": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "main": {
+            "type": "boolean",
+            "title": "Main",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["name", "category"],
+        "title": "ExerciseRequest"
+      },
+      "ExerciseResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "category": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "main": {
+            "type": "boolean",
+            "title": "Main"
+          },
+          "archived": {
+            "type": "boolean",
+            "title": "Archived"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["id", "name", "category", "main", "archived"],
+        "title": "ExerciseResponse"
+      },
+      "GuidanceResponse": {
+        "properties": {
+          "unit": {
+            "$ref": "#/components/schemas/WeightUnit"
+          },
+          "recommended_weight": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recommended Weight"
+          },
+          "backoff_weight": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Backoff Weight"
+          },
+          "last_sets": {
+            "items": {
+              "$ref": "#/components/schemas/WorkSetResponse"
+            },
+            "type": "array",
+            "title": "Last Sets"
+          },
+          "last_performed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Performed At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "unit",
+          "recommended_weight",
+          "backoff_weight",
+          "last_sets",
+          "last_performed_at"
+        ],
+        "title": "GuidanceResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "ok"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "HealthResponse"
+      },
+      "IdentityExportResponse": {
+        "properties": {
+          "issuer": {
+            "type": "string",
+            "title": "Issuer"
+          },
+          "subject": {
+            "type": "string",
+            "title": "Subject"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["issuer", "subject"],
+        "title": "IdentityExportResponse"
+      },
+      "NextTrainingResponse": {
+        "properties": {
+          "plan_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plan Id"
+          },
+          "day_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Day Id"
+          },
+          "week": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Week"
+          },
+          "scheduled_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scheduled Date"
+          },
+          "running_training_session_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Running Training Session Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "NextTrainingResponse"
+      },
+      "PlanListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PlanResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["items"],
+        "title": "PlanListResponse"
+      },
+      "PlanResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Start Date"
+          },
+          "weeks": {
+            "type": "integer",
+            "title": "Weeks"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PlanStatus"
+          },
+          "recommendations": {
+            "type": "boolean",
+            "title": "Recommendations"
+          },
+          "revision": {
+            "type": "integer",
+            "title": "Revision"
+          },
+          "days": {
+            "items": {
+              "$ref": "#/components/schemas/DayResponse"
+            },
+            "type": "array",
+            "title": "Days"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "start_date",
+          "weeks",
+          "status",
+          "recommendations",
+          "revision",
+          "days"
+        ],
+        "title": "PlanResponse"
+      },
+      "PlanStatus": {
+        "type": "string",
+        "enum": ["draft", "active", "ended", "archived"],
+        "title": "PlanStatus"
+      },
+      "PreferencesRequest": {
+        "properties": {
+          "unit": {
+            "$ref": "#/components/schemas/WeightUnit",
+            "default": "kg"
+          },
+          "rounding_step": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Rounding Step",
+            "default": "2.5"
+          },
+          "effort_scale": {
+            "$ref": "#/components/schemas/EffortScale",
+            "default": "rpe"
+          },
+          "target_weight": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1000.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Weight"
+          },
+          "timezone": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Timezone",
+            "default": "Europe/Berlin"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "PreferencesRequest"
+      },
+      "PrescriptionRequest": {
+        "properties": {
+          "sets": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Sets"
+          },
+          "reps": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Reps"
+          },
+          "target_effort": {
+            "anyOf": [
+              {
+                "type": "number",
+                "multipleOf": 0.5,
+                "maximum": 10.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Target Effort"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Note",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["sets", "reps", "target_effort"],
+        "title": "PrescriptionRequest"
+      },
+      "PrescriptionResponse": {
+        "properties": {
+          "week": {
+            "type": "integer",
+            "title": "Week"
+          },
+          "sets": {
+            "type": "integer",
+            "title": "Sets"
+          },
+          "reps": {
+            "type": "integer",
+            "title": "Reps"
+          },
+          "target_rpe": {
+            "type": "string",
+            "title": "Target Rpe"
+          },
+          "target_effort": {
+            "type": "string",
+            "title": "Target Effort"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["week", "sets", "reps", "target_rpe", "target_effort", "note"],
+        "title": "PrescriptionResponse"
+      },
+      "ProgressionPreviewResponse": {
+        "properties": {
+          "base_revision": {
+            "type": "integer",
+            "title": "Base Revision"
+          },
+          "plan": {
+            "$ref": "#/components/schemas/PlanResponse"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["base_revision", "plan"],
+        "title": "ProgressionPreviewResponse"
+      },
+      "ProgressionRequest": {
+        "properties": {
+          "increment": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Increment",
+            "default": "0.5"
+          },
+          "deload": {
+            "type": "boolean",
+            "title": "Deload",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ProgressionRequest"
+      },
+      "RecordSetRequest": {
+        "properties": {
+          "weight": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 10000.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Weight"
+          },
+          "reps": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Reps"
+          },
+          "effort": {
+            "anyOf": [
+              {
+                "type": "number",
+                "multipleOf": 0.5,
+                "maximum": 10.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Effort"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["weight", "reps", "effort"],
+        "title": "RecordSetRequest"
+      },
+      "ReorderSlotsRequest": {
+        "properties": {
+          "slot_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "title": "Slot Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["slot_ids"],
+        "title": "ReorderSlotsRequest"
+      },
+      "SetFeedbackResponse": {
+        "properties": {
+          "training_session": {
+            "$ref": "#/components/schemas/TrainingSessionResponse"
+          },
+          "work_set": {
+            "$ref": "#/components/schemas/WorkSetResponse"
+          },
+          "backoff_weight": {
+            "type": "string",
+            "title": "Backoff Weight"
+          },
+          "new_personal_record": {
+            "type": "boolean",
+            "title": "New Personal Record"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["training_session", "work_set", "backoff_weight", "new_personal_record"],
+        "title": "SetFeedbackResponse"
+      },
+      "ShareResponse": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["token"],
+        "title": "ShareResponse"
+      },
+      "SkipSlotRequest": {
+        "properties": {
+          "skipped": {
+            "type": "boolean",
+            "title": "Skipped",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "SkipSlotRequest"
+      },
+      "SlotResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "exercise_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Exercise Id"
+          },
+          "exercise_name": {
+            "type": "string",
+            "title": "Exercise Name"
+          },
+          "category": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "main": {
+            "type": "boolean",
+            "title": "Main"
+          },
+          "rest_seconds": {
+            "type": "integer",
+            "title": "Rest Seconds"
+          },
+          "prescriptions": {
+            "items": {
+              "$ref": "#/components/schemas/PrescriptionResponse"
+            },
+            "type": "array",
+            "title": "Prescriptions"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "exercise_id",
+          "exercise_name",
+          "category",
+          "main",
+          "rest_seconds",
+          "prescriptions"
+        ],
+        "title": "SlotResponse"
+      },
+      "StartTrainingSessionRequest": {
+        "properties": {
+          "plan_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Plan Id"
+          },
+          "day_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Day Id"
+          },
+          "week": {
+            "type": "integer",
+            "maximum": 104.0,
+            "minimum": 1.0,
+            "title": "Week"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["plan_id", "day_id", "week"],
+        "title": "StartTrainingSessionRequest"
+      },
+      "StatusRequest": {
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/PlanStatus"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["status"],
+        "title": "StatusRequest"
+      },
+      "TimerRequest": {
+        "properties": {
+          "delta_seconds": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 86400.0,
+                "minimum": -86400.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delta Seconds",
+            "description": "Adjust the absolute deadline; null skips the rest"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "TimerRequest"
+      },
+      "TrainingSessionListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/TrainingSessionResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["items"],
+        "title": "TrainingSessionListResponse"
+      },
+      "TrainingSessionResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "plan_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Plan Id"
+          },
+          "plan_title": {
+            "type": "string",
+            "title": "Plan Title"
+          },
+          "day_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Day Id"
+          },
+          "day_name": {
+            "type": "string",
+            "title": "Day Name"
+          },
+          "week": {
+            "type": "integer",
+            "title": "Week"
+          },
+          "unit": {
+            "$ref": "#/components/schemas/WeightUnit"
+          },
+          "effort_scale": {
+            "$ref": "#/components/schemas/EffortScale"
+          },
+          "slots": {
+            "items": {
+              "$ref": "#/components/schemas/TrainingSessionSlotResponse"
+            },
+            "type": "array",
+            "title": "Slots"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At"
+          },
+          "ended_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ended At"
+          },
+          "duration_seconds": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Seconds"
+          },
+          "server_now": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Server Now"
+          },
+          "rest_ends_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rest Ends At"
+          },
+          "rest_remaining_seconds": {
+            "type": "integer",
+            "title": "Rest Remaining Seconds"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "plan_id",
+          "plan_title",
+          "day_id",
+          "day_name",
+          "week",
+          "unit",
+          "effort_scale",
+          "slots",
+          "started_at",
+          "ended_at",
+          "duration_seconds",
+          "server_now",
+          "rest_ends_at",
+          "rest_remaining_seconds"
+        ],
+        "title": "TrainingSessionResponse"
+      },
+      "TrainingSessionSlotResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "exercise_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Exercise Id"
+          },
+          "exercise_name": {
+            "type": "string",
+            "title": "Exercise Name"
+          },
+          "category": {
+            "$ref": "#/components/schemas/Category"
+          },
+          "main": {
+            "type": "boolean",
+            "title": "Main"
+          },
+          "rest_seconds": {
+            "type": "integer",
+            "title": "Rest Seconds"
+          },
+          "prescription": {
+            "$ref": "#/components/schemas/PrescriptionResponse"
+          },
+          "skipped": {
+            "type": "boolean",
+            "title": "Skipped"
+          },
+          "sets": {
+            "items": {
+              "$ref": "#/components/schemas/WorkSetResponse"
+            },
+            "type": "array",
+            "title": "Sets"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "exercise_id",
+          "exercise_name",
+          "category",
+          "main",
+          "rest_seconds",
+          "prescription",
+          "skipped",
+          "sets"
+        ],
+        "title": "TrainingSessionSlotResponse"
+      },
+      "UserResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "unit": {
+            "$ref": "#/components/schemas/WeightUnit"
+          },
+          "rounding_step": {
+            "type": "string",
+            "title": "Rounding Step"
+          },
+          "effort_scale": {
+            "$ref": "#/components/schemas/EffortScale"
+          },
+          "target_weight": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Weight"
+          },
+          "timezone": {
+            "type": "string",
+            "title": "Timezone"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["id", "unit", "rounding_step", "effort_scale", "target_weight", "timezone"],
+        "title": "UserResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": ["loc", "msg", "type"],
+        "title": "ValidationError"
+      },
+      "WeighInRequest": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "weight": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1000.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Weight"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["date", "weight"],
+        "title": "WeighInRequest"
+      },
+      "WeighInResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "weight": {
+            "type": "string",
+            "title": "Weight"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["id", "date", "weight"],
+        "title": "WeighInResponse"
+      },
+      "WeightUnit": {
+        "type": "string",
+        "enum": ["kg", "lb"],
+        "title": "WeightUnit"
+      },
+      "WorkSetResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "weight": {
+            "type": "string",
+            "title": "Weight"
+          },
+          "reps": {
+            "type": "integer",
+            "title": "Reps"
+          },
+          "rpe": {
+            "type": "string",
+            "title": "Rpe"
+          },
+          "effort": {
+            "type": "string",
+            "title": "Effort"
+          },
+          "e1rm": {
+            "type": "string",
+            "title": "E1Rm"
+          },
+          "recorded_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Recorded At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": ["id", "weight", "reps", "rpe", "effort", "e1rm", "recorded_at"],
+        "title": "WorkSetResponse"
+      },
+      "Problem": {
+        "type": "object",
+        "title": "Problem",
+        "description": "RFC 9457 Problem Details with a stable application code.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri-reference"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 599
+          },
+          "code": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{2,}$"
+          },
+          "detail": {
+            "type": ["string", "null"]
+          },
+          "instance": {
+            "type": ["string", "null"],
+            "format": "uri-reference"
+          }
+        },
+        "required": ["type", "title", "status", "code"],
+        "additionalProperties": true
+      },
+      "AuthenticationRequiredProblem": {
+        "type": "object",
+        "title": "AuthenticationRequiredProblem",
+        "description": "RFC 9457 Problem Details with a stable application code.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri-reference",
+            "const": "urn:trainingos:problem/authentication_required"
+          },
+          "title": {
+            "type": "string",
+            "const": "Authentication required"
+          },
+          "status": {
+            "type": "integer",
+            "const": 401
+          },
+          "code": {
+            "type": "string",
+            "const": "authentication_required"
+          },
+          "detail": {
+            "type": ["string", "null"]
+          },
+          "instance": {
+            "type": ["string", "null"],
+            "format": "uri-reference"
+          }
+        },
+        "required": ["type", "title", "status", "code"],
+        "additionalProperties": true
+      },
+      "NotFoundProblem": {
+        "type": "object",
+        "title": "NotFoundProblem",
+        "description": "RFC 9457 Problem Details with a stable application code.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri-reference",
+            "const": "urn:trainingos:problem/not_found"
+          },
+          "title": {
+            "type": "string",
+            "const": "Resource not found"
+          },
+          "status": {
+            "type": "integer",
+            "const": 404
+          },
+          "code": {
+            "type": "string",
+            "const": "not_found"
+          },
+          "detail": {
+            "type": ["string", "null"]
+          },
+          "instance": {
+            "type": ["string", "null"],
+            "format": "uri-reference"
+          }
+        },
+        "required": ["type", "title", "status", "code"],
+        "additionalProperties": true
+      },
+      "StateConflictProblem": {
+        "type": "object",
+        "title": "StateConflictProblem",
+        "description": "RFC 9457 Problem Details with a stable application code.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri-reference",
+            "const": "urn:trainingos:problem/state_conflict"
+          },
+          "title": {
+            "type": "string",
+            "const": "State conflict"
+          },
+          "status": {
+            "type": "integer",
+            "const": 409
+          },
+          "code": {
+            "type": "string",
+            "const": "state_conflict"
+          },
+          "detail": {
+            "type": ["string", "null"]
+          },
+          "instance": {
+            "type": ["string", "null"],
+            "format": "uri-reference"
+          }
+        },
+        "required": ["type", "title", "status", "code"],
+        "additionalProperties": true
+      },
+      "InvalidInputProblem": {
+        "type": "object",
+        "title": "InvalidInputProblem",
+        "description": "RFC 9457 Problem Details with a stable application code.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri-reference",
+            "const": "urn:trainingos:problem/invalid_input"
+          },
+          "title": {
+            "type": "string",
+            "const": "Invalid input"
+          },
+          "status": {
+            "type": "integer",
+            "const": 422
+          },
+          "code": {
+            "type": "string",
+            "const": "invalid_input"
+          },
+          "detail": {
+            "type": ["string", "null"]
+          },
+          "instance": {
+            "type": ["string", "null"],
+            "format": "uri-reference"
+          }
+        },
+        "required": ["type", "title", "status", "code"],
+        "additionalProperties": true
+      },
+      "ForbiddenProblem": {
+        "type": "object",
+        "title": "ForbiddenProblem",
+        "description": "RFC 9457 Problem Details with a stable application code.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri-reference",
+            "const": "urn:trainingos:problem/forbidden"
+          },
+          "title": {
+            "type": "string",
+            "const": "Request forbidden"
+          },
+          "status": {
+            "type": "integer",
+            "const": 403
+          },
+          "code": {
+            "type": "string",
+            "const": "forbidden"
+          },
+          "detail": {
+            "type": ["string", "null"]
+          },
+          "instance": {
+            "type": ["string", "null"],
+            "format": "uri-reference"
+          }
+        },
+        "required": ["type", "title", "status", "code"],
+        "additionalProperties": true
+      },
+      "IdentityProviderUnavailableProblem": {
+        "type": "object",
+        "title": "IdentityProviderUnavailableProblem",
+        "description": "RFC 9457 Problem Details with a stable application code.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri-reference",
+            "const": "urn:trainingos:problem/identity_provider_unavailable"
+          },
+          "title": {
+            "type": "string",
+            "const": "Identity provider unavailable"
+          },
+          "status": {
+            "type": "integer",
+            "const": 503
+          },
+          "code": {
+            "type": "string",
+            "const": "identity_provider_unavailable"
+          },
+          "detail": {
+            "type": ["string", "null"]
+          },
+          "instance": {
+            "type": ["string", "null"],
+            "format": "uri-reference"
+          }
+        },
+        "required": ["type", "title", "status", "code"],
+        "additionalProperties": true
+      },
+      "RequestValidationProblem": {
+        "type": "object",
+        "title": "RequestValidationProblem",
+        "description": "RFC 9457 Problem Details with a stable application code.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri-reference",
+            "const": "urn:trainingos:problem/request_validation_error"
+          },
+          "title": {
+            "type": "string",
+            "const": "Request validation failed"
+          },
+          "status": {
+            "type": "integer",
+            "const": 422
+          },
+          "code": {
+            "type": "string",
+            "const": "request_validation_error"
+          },
+          "detail": {
+            "type": ["string", "null"]
+          },
+          "instance": {
+            "type": ["string", "null"],
+            "format": "uri-reference"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "detail": {
+                  "type": "string"
+                },
+                "pointer": {
+                  "type": "string"
+                },
+                "parameter": {
+                  "type": "string"
+                },
+                "in": {
+                  "type": "string",
+                  "enum": ["path", "query", "header", "cookie"]
+                }
+              },
+              "required": ["code", "detail"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["type", "title", "status", "code", "errors"],
+        "additionalProperties": true
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "lit-canon-composition",
+  "version": "0.1.0",
+  "description": "A thin, opinionated layer over Lit: register pages, bundle them into features, compose features into an app.",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mathisarends/lit-canon.git",
+    "directory": "packages/composition"
+  },
+  "homepage": "https://github.com/mathisarends/lit-canon/tree/main/packages/composition#readme",
+  "bugs": {
+    "url": "https://github.com/mathisarends/lit-canon/issues"
+  },
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./lib/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "peerDependencies": {
+    "@lit-labs/router": "^0.1.4",
+    "@lit/context": "^1.1.6",
+    "lit": "^3.3.3"
+  }
+}
