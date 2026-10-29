@@ -1,7 +1,14 @@
+from collections.abc import Sequence
 from dataclasses import replace
 from uuid import UUID
 
-from backend.features.exercises.domain import Category, Exercise, ExerciseRepository
+from backend.features.exercises.domain import (
+    Category,
+    CategoryDefaults,
+    Exercise,
+    ExerciseRepository,
+    resolve_defaults,
+)
 from backend.features.plans.domain import PlanRepository
 from backend.features.training_sessions.domain import TrainingSessionRepository
 from backend.shared import Conflict, NotFound
@@ -22,6 +29,15 @@ class ExerciseService:
 
     async def list(self, *, user_id: UUID) -> list[Exercise]:
         return await self._exercises.list(user_id=user_id)
+
+    async def defaults(self, *, user_id: UUID) -> Sequence[CategoryDefaults]:
+        return resolve_defaults(await self._exercises.list_defaults(user_id=user_id))
+
+    async def configure_defaults(
+        self, *, user_id: UUID, defaults: CategoryDefaults
+    ) -> CategoryDefaults:
+        await self._exercises.save_defaults(user_id=user_id, defaults=defaults)
+        return defaults
 
     async def create(self, *, user_id: UUID, name: str, category: Category, main: bool) -> Exercise:
         exercise = Exercise(user_id=user_id, name=name, category=category, main=main)

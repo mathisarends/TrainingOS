@@ -6,7 +6,7 @@ from datetime import date, timedelta
 from decimal import Decimal
 from uuid import UUID, uuid4
 
-from backend.features.exercises.domain import Exercise, ExerciseRepository
+from backend.features.exercises.domain import Exercise, ExerciseRepository, resolve_defaults
 from backend.features.plans.domain import (
     Plan,
     PlanRepository,
@@ -104,7 +104,13 @@ class PlanService:
         return plan
 
     async def add_slot(
-        self, *, user_id: UUID, plan_id: UUID, day_id: UUID, exercise_id: UUID, rest_seconds: int
+        self,
+        *,
+        user_id: UUID,
+        plan_id: UUID,
+        day_id: UUID,
+        exercise_id: UUID,
+        rest_seconds: int | None,
     ) -> Plan:
         plan = await self.get(user_id=user_id, plan_id=plan_id)
         day = plan.day(day_id)
@@ -113,13 +119,27 @@ class PlanService:
             raise NotFound
         if exercise.archived:
             raise Conflict("Archived exercises cannot be added to plans")
+        defaults = next(
+            item
+            for item in resolve_defaults(await self._exercises.list_defaults(user_id=user_id))
+            if item.category == exercise.category
+        )
         slot = Slot(
             id=uuid4(),
             exercise_id=exercise.id,
             exercise_name=exercise.name,
             category=exercise.category,
             main=exercise.main,
-            rest_seconds=rest_seconds,
+            rest_seconds=defaults.rest_seconds if rest_seconds is None else rest_seconds,
+            prescriptions=tuple(
+                Prescription(
+                    week=week,
+                    sets=defaults.sets,
+                    reps=defaults.reps,
+                    target_rpe=defaults.target_rpe,
+                )
+                for week in range(1, plan.weeks + 1)
+            ),
         )
         plan.replace_day(replace(day, slots=day.slots + (slot,)))
         await self._plans.save(plan=plan)

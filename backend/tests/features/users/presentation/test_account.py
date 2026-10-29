@@ -74,6 +74,11 @@ async def test_account_delete_cascades_all_owned_rows_and_revokes_login(
     await record_set(client, session)
     await client.put("/api/v1/bodyweight", json={"date": "2026-10-25", "weight": 80})
     await client.post(f"/api/v1/plans/{plan['id']}/shares")
+    defaults = await client.put(
+        "/api/v1/exercises/category-defaults/squat",
+        json={"rest_seconds": 300, "sets": 4, "reps": 6, "target_effort": "8"},
+    )
+    assert defaults.status_code == 200
     token = client.cookies.get("trainingos_session")
 
     response = await client.delete("/api/v1/users/me")

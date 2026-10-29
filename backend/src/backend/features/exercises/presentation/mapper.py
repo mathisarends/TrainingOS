@@ -1,6 +1,22 @@
-from backend.features.exercises.domain import Exercise
+from backend.features.exercises.domain import CategoryDefaults, Exercise
+from backend.features.users.domain import EffortScale, Preferences
 
-from .schemas import ExerciseListResponse, ExerciseResponse
+from .schemas import CategoryDefaultsResponse, ExerciseListResponse, ExerciseResponse
+
+
+def to_defaults_response(
+    defaults: CategoryDefaults, preferences: Preferences
+) -> CategoryDefaultsResponse:
+    return CategoryDefaultsResponse(
+        category=defaults.category,
+        rest_seconds=defaults.rest_seconds,
+        sets=defaults.sets,
+        reps=defaults.reps,
+        target_rpe=defaults.target_rpe,
+        target_effort=10 - defaults.target_rpe
+        if preferences.effort_scale == EffortScale.RIR
+        else defaults.target_rpe,
+    )
 
 
 def to_response(exercise: Exercise) -> ExerciseResponse:

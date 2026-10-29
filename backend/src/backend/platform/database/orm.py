@@ -52,6 +52,16 @@ class ExerciseRow(SQLModel, table=True):
     archived: bool
 
 
+class CategoryDefaultsRow(SQLModel, table=True):
+    __tablename__ = "exercise_category_defaults"
+    user_id: UUID = Field(foreign_key="users.id", ondelete="CASCADE", primary_key=True)
+    category: str = Field(primary_key=True)
+    rest_seconds: int
+    sets: int
+    reps: int
+    target_rpe: Decimal = Field(sa_column=Column(Numeric(3, 1), nullable=False))
+
+
 class PlanRow(SQLModel, table=True):
     __tablename__ = "plans"
     __table_args__ = (

@@ -38,7 +38,7 @@ class StatusRequest(Schema):
 
 class AddSlotRequest(Schema):
     exercise_id: UUID
-    rest_seconds: int = Field(default=180, ge=0, le=3600)
+    rest_seconds: int | None = Field(default=None, ge=0, le=3600)
 
 
 class EditSlotRequest(Schema):

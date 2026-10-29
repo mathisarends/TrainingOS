@@ -1,10 +1,17 @@
 from abc import ABC, abstractmethod
 from uuid import UUID
 
+from .defaults import CategoryDefaults
 from .models import Exercise
 
 
 class ExerciseRepository(ABC):
+    @abstractmethod
+    async def list_defaults(self, *, user_id: UUID) -> list[CategoryDefaults]: ...
+
+    @abstractmethod
+    async def save_defaults(self, *, user_id: UUID, defaults: CategoryDefaults) -> None: ...
+
     @abstractmethod
     async def list(self, *, user_id: UUID) -> list[Exercise]: ...
 

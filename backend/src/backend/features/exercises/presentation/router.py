@@ -5,12 +5,57 @@ from fastapi import Response
 
 from backend.features.auth.presentation import CurrentUser
 from backend.features.exercises.application import ExerciseService
+from backend.features.exercises.domain import Category, CategoryDefaults
+from backend.features.training.domain import effort_to_rpe
+from backend.features.users.domain import EffortScale
 from backend.platform.api.router import protected_router
 
-from .mapper import to_list_response, to_response
-from .schemas import ExerciseListResponse, ExerciseRequest, ExerciseResponse
+from .mapper import to_defaults_response, to_list_response, to_response
+from .schemas import (
+    CategoryDefaultsListResponse,
+    CategoryDefaultsRequest,
+    CategoryDefaultsResponse,
+    ExerciseListResponse,
+    ExerciseRequest,
+    ExerciseResponse,
+)
 
 router = protected_router(prefix="/exercises", tag="exercises")
+
+
+@router.get(
+    "/category-defaults",
+    operation_id="list_category_defaults",
+    status_code=200,
+    response_model=CategoryDefaultsListResponse,
+)
+async def list_category_defaults(
+    user: CurrentUser, exercise_service: FromDishka[ExerciseService]
+) -> CategoryDefaultsListResponse:
+    defaults = await exercise_service.defaults(user_id=user.id)
+    return CategoryDefaultsListResponse(
+        items=[to_defaults_response(item, user.preferences) for item in defaults]
+    )
+
+
+@router.put(
+    "/category-defaults/{category}",
+    operation_id="configure_category_defaults",
+    status_code=200,
+    response_model=CategoryDefaultsResponse,
+)
+async def configure_category_defaults(
+    category: Category,
+    body: CategoryDefaultsRequest,
+    user: CurrentUser,
+    exercise_service: FromDishka[ExerciseService],
+) -> CategoryDefaultsResponse:
+    rpe = effort_to_rpe(body.target_effort, rir=user.preferences.effort_scale == EffortScale.RIR)
+    defaults = await exercise_service.configure_defaults(
+        user_id=user.id,
+        defaults=CategoryDefaults(category, body.rest_seconds, body.sets, body.reps, rpe),
+    )
+    return to_defaults_response(defaults, user.preferences)
 
 
 @router.get("", operation_id="list_exercises", status_code=200, response_model=ExerciseListResponse)

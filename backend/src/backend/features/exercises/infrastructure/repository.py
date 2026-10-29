@@ -4,8 +4,13 @@ from sqlalchemy import delete
 from sqlmodel import col, select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from backend.features.exercises.domain import Category, Exercise, ExerciseRepository
-from backend.platform.database.orm import ExerciseRow
+from backend.features.exercises.domain import (
+    Category,
+    CategoryDefaults,
+    Exercise,
+    ExerciseRepository,
+)
+from backend.platform.database.orm import CategoryDefaultsRow, ExerciseRow
 
 
 def to_domain(row: ExerciseRow) -> Exercise:
@@ -22,6 +27,30 @@ def to_domain(row: ExerciseRow) -> Exercise:
 class SqlExerciseRepository(ExerciseRepository):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
+
+    async def list_defaults(self, *, user_id: UUID) -> list[CategoryDefaults]:
+        rows = await self._session.exec(
+            select(CategoryDefaultsRow).where(col(CategoryDefaultsRow.user_id) == user_id)
+        )
+        return [
+            CategoryDefaults(
+                Category(row.category), row.rest_seconds, row.sets, row.reps, row.target_rpe
+            )
+            for row in rows
+        ]
+
+    async def save_defaults(self, *, user_id: UUID, defaults: CategoryDefaults) -> None:
+        await self._session.merge(
+            CategoryDefaultsRow(
+                user_id=user_id,
+                category=defaults.category,
+                rest_seconds=defaults.rest_seconds,
+                sets=defaults.sets,
+                reps=defaults.reps,
+                target_rpe=defaults.target_rpe,
+            )
+        )
+        await self._session.flush()
 
     async def list(self, *, user_id: UUID) -> list[Exercise]:
         rows = await self._session.exec(

@@ -2,8 +2,12 @@ from typing import Literal
 
 from backend.features.bodyweight.presentation.mapper import to_response as weigh_in_response
 from backend.features.bodyweight.presentation.schemas import WeighInResponse
+from backend.features.exercises.presentation.mapper import to_defaults_response
 from backend.features.exercises.presentation.mapper import to_response as exercise_response
-from backend.features.exercises.presentation.schemas import ExerciseResponse
+from backend.features.exercises.presentation.schemas import (
+    CategoryDefaultsResponse,
+    ExerciseResponse,
+)
 from backend.features.plans.presentation.mapper import to_response as plan_response
 from backend.features.plans.presentation.schemas import PlanResponse
 from backend.features.training_sessions.presentation.mapper import (
@@ -31,6 +35,7 @@ class AccountExportResponse(Schema):
     bodyweight: list[WeighInResponse]
     identities: list[IdentityExportResponse]
     shared_templates: list[PlanResponse]
+    category_defaults: list[CategoryDefaultsResponse]
 
 
 def to_export_response(export: AccountExport) -> AccountExportResponse:
@@ -48,4 +53,7 @@ def to_export_response(export: AccountExport) -> AccountExportResponse:
             for item in export.identities
         ],
         shared_templates=[plan_response(item, preferences) for item in export.shared_templates],
+        category_defaults=[
+            to_defaults_response(item, preferences) for item in export.category_defaults
+        ],
     )
