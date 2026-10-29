@@ -5,6 +5,7 @@
 }
 html {
   color-scheme: dark;
+  scrollbar-gutter: stable;
   font-family: var(--font-family);
   font-size: 16px;
 }
@@ -386,9 +387,6 @@ lit-canon-root {
 .mobile-nav a:hover,
 .mobile-nav button:hover {
   color: var(--color-on-dark);
-}
-.page-account {
-  --page-gutter: var(--account-gutter);
 }
 .header-actions .header-add {
   border: 1px solid var(--color-border-strong);
@@ -1532,12 +1530,7 @@ summary {
 @media (max-width: 768px) {
   :root {
     --header-height: 4.5rem;
-    --page-gutter: 4.5%;
-    --account-gutter: 4.5%;
     --navigation-inset: 1rem;
-  }
-  .topbar {
-    padding-inline: 6.5%;
   }
   .header-title {
     font-size: var(--font-xl);
@@ -2639,7 +2632,7 @@ summary {
 }
 
 .settings-wrapper {
-  width: min(100%, 42rem);
+  width: 100%;
   margin-inline: auto;
 }
 .settings-wrapper .primary {
@@ -2731,10 +2724,6 @@ summary {
   background: var(--color-error);
 }
 @media (max-width: 1199px) and (min-width: 769px) {
-  :root {
-    --page-gutter: 7%;
-    --account-gutter: 20%;
-  }
   .training-plan-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

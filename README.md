@@ -54,8 +54,12 @@ The visual contract lives in [`frontend/src/tokens.css`](frontend/src/tokens.css
 charcoal backgrounds (`#202020`), subtly raised surfaces, fine neutral borders,
 light text, green completion indicators, a system sans-serif with monospaced progress
 labels, shared spacing, rounded panels and a floating four-item navigation. The
-header and main content share a centered content column; Account has a narrower
-column. Mobile layouts use full-width stacked cards with safe-area-aware navigation.
+header and main content share a centered content column across every application
+page, including Account, Settings and My data. `--page-content-max` and the responsive
+`--page-inline-inset` define its width through `--page-gutter`; individual pages do
+not override that width. A stable scrollbar gutter prevents page-to-page horizontal
+shifts when only some pages need scrolling. Mobile layouts use full-width stacked cards with
+safe-area-aware navigation.
 
 Home cards show the real completed training days in each plan week; an active
 plan highlights its current calendar week. The training preview uses a desktop

@@ -80,8 +80,9 @@
   --navigation-height: 4.75rem;
   --navigation-width: 31rem;
   --navigation-inset: 1.25rem;
-  --page-gutter: max(15%, calc((100% - 87.5rem) / 2));
-  --account-gutter: max(29%, calc((100% - 52.5rem) / 2));
+  --page-content-max: 87.5rem;
+  --page-inline-inset: 15%;
+  --page-gutter: max(var(--page-inline-inset), calc((100% - var(--page-content-max)) / 2));
   --activity-cell-size: 0.6875rem;
   --activity-cell-gap: 0.1875rem;
   --calendar-day-height: 7.625rem;
@@ -90,4 +91,14 @@
   --layer-header: 20;
   --layer-navigation: 40;
   --layer-timer: 35;
+}
+@media (min-width: 769px) and (max-width: 1199px) {
+  :root {
+    --page-inline-inset: 7%;
+  }
+}
+@media (max-width: 768px) {
+  :root {
+    --page-inline-inset: 4.5%;
+  }
 }
