@@ -36,6 +36,7 @@ class AccountExportResponse(Schema):
     identities: list[IdentityExportResponse]
     shared_templates: list[PlanResponse]
     category_defaults: list[CategoryDefaultsResponse]
+    login_email: str | None
 
 
 def to_export_response(export: AccountExport) -> AccountExportResponse:
@@ -56,4 +57,5 @@ def to_export_response(export: AccountExport) -> AccountExportResponse:
         category_defaults=[
             to_defaults_response(item, preferences) for item in export.category_defaults
         ],
+        login_email=export.login_email,
     )

@@ -6,7 +6,21 @@
 
 import { mutationOptions } from '@tanstack/lit-query';
 
-import { startGoogleLogin, completeGoogleLogin, logoutUser } from './api';
+import { registerUser, loginUser, startGoogleLogin, completeGoogleLogin, logoutUser } from './api';
+
+export const registerUserMutation = () =>
+  mutationOptions({
+    mutationKey: ['auth', 'registerUser'] as const,
+    mutationFn: (variables: { request: Parameters<typeof registerUser>[0] }) =>
+      registerUser(variables.request),
+  });
+
+export const loginUserMutation = () =>
+  mutationOptions({
+    mutationKey: ['auth', 'loginUser'] as const,
+    mutationFn: (variables: { request: Parameters<typeof loginUser>[0] }) =>
+      loginUser(variables.request),
+  });
 
 export const startGoogleLoginMutation = () =>
   mutationOptions({

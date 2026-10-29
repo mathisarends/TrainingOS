@@ -23,6 +23,13 @@ class IdentityRow(SQLModel, table=True):
     subject: str
 
 
+class PasswordCredentialRow(SQLModel, table=True):
+    __tablename__ = "auth_password_credentials"
+    user_id: UUID = Field(foreign_key="users.id", ondelete="CASCADE", primary_key=True)
+    email: str = Field(sa_column=Column(String(254), nullable=False, unique=True, index=True))
+    password_hash: str
+
+
 class AttemptRow(SQLModel, table=True):
     __tablename__ = "auth_attempts"
     state_hash: str = Field(primary_key=True)

@@ -20,3 +20,7 @@ class Forbidden(Exception):
 
 class ProviderUnavailable(Exception):
     pass
+
+
+class RateLimited(Exception):
+    pass

@@ -7,6 +7,7 @@ from backend.shared import (
     InvalidInput,
     NotFound,
     ProviderUnavailable,
+    RateLimited,
 )
 
 authentication_required = Error(
@@ -49,6 +50,15 @@ provider_unavailable = Error(
     title="Identity provider unavailable",
     detail="Google sign-in is temporarily unavailable or not configured.",
 )
+rate_limited = Error(
+    RateLimited,
+    status=429,
+    code="rate_limited",
+    title="Too many attempts",
+    detail="Too many sign-in attempts. Please wait five minutes and try again.",
+    headers={"Retry-After": "300"},
+    openapi_headers={"Retry-After": {"schema": {"type": "string"}}},
+)
 errors = ErrorRegistry(
     name="trainingos",
     errors=[
@@ -58,5 +68,6 @@ errors = ErrorRegistry(
         invalid_input,
         forbidden,
         provider_unavailable,
+        rate_limited,
     ],
 )

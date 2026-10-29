@@ -2,6 +2,7 @@ from collections.abc import AsyncGenerator, AsyncIterator
 
 from dishka import Provider, Scope, provide
 from sqlalchemy import event
+from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -22,7 +23,13 @@ class DatabaseProvider(Provider):
 
             @event.listens_for(engine.sync_engine, "connect")
             def foreign_keys(connection: object, _: object) -> None:
+                # sqlite3's legacy mode otherwise commits a top-level SAVEPOINT.
+                connection.isolation_level = None  # type: ignore[attr-defined]
                 connection.execute("PRAGMA foreign_keys=ON")  # type: ignore[attr-defined]
+
+            @event.listens_for(engine.sync_engine, "begin")
+            def begin(connection: Connection) -> None:
+                connection.exec_driver_sql("BEGIN")
 
         try:
             yield engine

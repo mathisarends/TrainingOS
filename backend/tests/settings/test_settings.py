@@ -22,3 +22,13 @@ def test_production_accepts_https_and_explicit_origins() -> None:
         frontend_url="https://training.example",
     )
     assert settings.secure_cookies
+
+
+def test_production_email_login_does_not_require_google_credentials() -> None:
+    settings = AppSettings(
+        environment="production",
+        secure_cookies=True,
+        allowed_origins=["https://training.example"],
+        frontend_url="https://training.example",
+    )
+    assert settings.google_client_id == ""

@@ -3,19 +3,14 @@
  * TrainingOS API
  * OpenAPI spec version: 0.1.0
  */
-/**
- * RFC 9457 Problem Details with a stable application code.
- */
-export interface IdentityProviderUnavailableProblem {
-  type: 'urn:trainingos:problem/identity_provider_unavailable';
-  title: 'Identity provider unavailable';
-  status: 503;
-  code: 'identity_provider_unavailable';
-  /** @nullable */
-  detail?: string | null;
-  /** @nullable */
-  instance?: string | null;
-  [key: string]: unknown;
+export interface CredentialsRequest {
+  /** @maxLength 254 */
+  email: string;
+  /**
+   * @minLength 1
+   * @maxLength 128
+   */
+  password: string;
 }
 
 export type WeightUnit = (typeof WeightUnit)[keyof typeof WeightUnit];
@@ -49,6 +44,66 @@ export interface AuthenticationRequiredProblem {
   title: 'Authentication required';
   status: 401;
   code: 'authentication_required';
+  /** @nullable */
+  detail?: string | null;
+  /** @nullable */
+  instance?: string | null;
+  [key: string]: unknown;
+}
+
+/**
+ * RFC 9457 Problem Details with a stable application code.
+ */
+export interface ForbiddenProblem {
+  type: 'urn:trainingos:problem/forbidden';
+  title: 'Request forbidden';
+  status: 403;
+  code: 'forbidden';
+  /** @nullable */
+  detail?: string | null;
+  /** @nullable */
+  instance?: string | null;
+  [key: string]: unknown;
+}
+
+/**
+ * RFC 9457 Problem Details with a stable application code.
+ */
+export interface StateConflictProblem {
+  type: 'urn:trainingos:problem/state_conflict';
+  title: 'State conflict';
+  status: 409;
+  code: 'state_conflict';
+  /** @nullable */
+  detail?: string | null;
+  /** @nullable */
+  instance?: string | null;
+  [key: string]: unknown;
+}
+
+/**
+ * RFC 9457 Problem Details with a stable application code.
+ */
+export interface InvalidInputProblem {
+  type: 'urn:trainingos:problem/invalid_input';
+  title: 'Invalid input';
+  status: 422;
+  code: 'invalid_input';
+  /** @nullable */
+  detail?: string | null;
+  /** @nullable */
+  instance?: string | null;
+  [key: string]: unknown;
+}
+
+/**
+ * RFC 9457 Problem Details with a stable application code.
+ */
+export interface RateLimitedProblem {
+  type: 'urn:trainingos:problem/rate_limited';
+  title: 'Too many attempts';
+  status: 429;
+  code: 'rate_limited';
   /** @nullable */
   detail?: string | null;
   /** @nullable */
@@ -93,11 +148,11 @@ export interface RequestValidationProblem {
 /**
  * RFC 9457 Problem Details with a stable application code.
  */
-export interface ForbiddenProblem {
-  type: 'urn:trainingos:problem/forbidden';
-  title: 'Request forbidden';
-  status: 403;
-  code: 'forbidden';
+export interface IdentityProviderUnavailableProblem {
+  type: 'urn:trainingos:problem/identity_provider_unavailable';
+  title: 'Identity provider unavailable';
+  status: 503;
+  code: 'identity_provider_unavailable';
   /** @nullable */
   detail?: string | null;
   /** @nullable */

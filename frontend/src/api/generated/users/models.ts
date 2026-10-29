@@ -249,4 +249,5 @@ export interface AccountExportResponse {
   identities: IdentityExportResponse[];
   shared_templates: PlanResponse[];
   category_defaults: CategoryDefaultsResponse[];
+  login_email: string | null;
 }

@@ -6,6 +6,7 @@ from .errors import (
     InvalidInput,
     NotFound,
     ProviderUnavailable,
+    RateLimited,
 )
 
 __all__ = [
@@ -17,4 +18,5 @@ __all__ = [
     "InvalidInput",
     "NotFound",
     "ProviderUnavailable",
+    "RateLimited",
 ]

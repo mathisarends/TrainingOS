@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from uuid import UUID
 
 from backend.features.auth.domain import AuthRepository, ExternalIdentity
+from backend.features.auth.domain.credentials import CredentialRepository
 from backend.features.bodyweight.domain import BodyweightRepository, WeighIn
 from backend.features.exercises.domain import (
     CategoryDefaults,
@@ -25,6 +26,7 @@ class AccountExport:
     identities: list[ExternalIdentity]
     shared_templates: list[Plan]
     category_defaults: list[CategoryDefaults]
+    login_email: str | None
 
 
 class UserService:
@@ -36,6 +38,7 @@ class UserService:
         training_session_repository: TrainingSessionRepository,
         bodyweight_repository: BodyweightRepository,
         auth_repository: AuthRepository,
+        credentials: CredentialRepository,
     ) -> None:
         self._users, self._exercises, self._plans = (
             user_repository,
@@ -47,6 +50,7 @@ class UserService:
             bodyweight_repository,
         )
         self._auth = auth_repository
+        self._credentials = credentials
 
     async def configure(self, *, user_id: UUID, preferences: Preferences) -> User:
         user = await self._users.get(user_id=user_id)
@@ -74,4 +78,5 @@ class UserService:
             category_defaults=resolve_defaults(
                 await self._exercises.list_defaults(user_id=user_id)
             ),
+            login_email=await self._credentials.login_email(user_id=user_id),
         )

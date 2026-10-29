@@ -23,9 +23,9 @@ class AuthCookies:
             return token if scheme.lower() == "bearer" else ""
         return request.cookies.get(self.session_name, "")
 
-    def verify_origin(self, request: Request) -> None:
-        if request.method not in ("GET", "HEAD", "OPTIONS") and not request.headers.get(
-            "authorization"
+    def verify_origin(self, request: Request, *, allow_bearer: bool = True) -> None:
+        if request.method not in ("GET", "HEAD", "OPTIONS") and not (
+            allow_bearer and request.headers.get("authorization")
         ):
             if request.headers.get("origin") not in self._settings.allowed_origins:
                 raise Forbidden

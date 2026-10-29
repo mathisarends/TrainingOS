@@ -25,10 +25,12 @@ class AppSettings(BaseSettings):
         if self.frontend_url not in self.allowed_origins:
             raise ValueError("Frontend URL must be an explicitly allowed origin")
         if self.environment == "production":
-            if not self.secure_cookies or not self.google_redirect_uri.startswith("https://"):
+            if not self.secure_cookies or (
+                self.google_client_id and not self.google_redirect_uri.startswith("https://")
+            ):
                 raise ValueError("Production requires secure cookies and an HTTPS OAuth callback")
-            if not self.google_client_id or not self.google_client_secret.get_secret_value():
-                raise ValueError("Production requires Google OAuth credentials")
+            if bool(self.google_client_id) != bool(self.google_client_secret.get_secret_value()):
+                raise ValueError("Configure both Google OAuth credentials or leave both empty")
             if not self.allowed_origins or any(
                 not origin.startswith("https://") for origin in self.allowed_origins
             ):

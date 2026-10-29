@@ -4,9 +4,21 @@
  * OpenAPI spec version: 0.1.0
  */
 
-import type { CompleteGoogleLoginParams, UserResponse } from './models';
+import type { CompleteGoogleLoginParams, CredentialsRequest, UserResponse } from './models';
 
 import { apiFetch, type ApiRequestOptions } from '../../request';
+
+export const registerUser = (
+  request: CredentialsRequest,
+  options?: ApiRequestOptions,
+): Promise<UserResponse> =>
+  apiFetch<UserResponse>('/api/v1/auth/register', { ...options, method: 'POST', body: request });
+
+export const loginUser = (
+  request: CredentialsRequest,
+  options?: ApiRequestOptions,
+): Promise<UserResponse> =>
+  apiFetch<UserResponse>('/api/v1/auth/login', { ...options, method: 'POST', body: request });
 
 export const startGoogleLogin = (options?: ApiRequestOptions): Promise<unknown> =>
   apiFetch<unknown>('/api/v1/auth/google/login', { ...options, method: 'GET' });

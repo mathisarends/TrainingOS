@@ -9,8 +9,21 @@ import type {
   AuthenticationRequiredProblem,
   ForbiddenProblem,
   IdentityProviderUnavailableProblem,
+  InvalidInputProblem,
+  RateLimitedProblem,
   RequestValidationProblem,
+  StateConflictProblem,
 } from './models';
+
+export type RegisterUserProblem =
+  | AuthenticationRequiredProblem
+  | ForbiddenProblem
+  | StateConflictProblem
+  | InvalidInputProblem
+  | RateLimitedProblem;
+
+export type LoginUserProblem =
+  AuthenticationRequiredProblem | ForbiddenProblem | RequestValidationProblem | RateLimitedProblem;
 
 export type StartGoogleLoginProblem = IdentityProviderUnavailableProblem;
 
@@ -22,6 +35,8 @@ export type GetAuthenticatedUserProblem = AuthenticationRequiredProblem | Forbid
 export type LogoutUserProblem = AuthenticationRequiredProblem | ForbiddenProblem;
 
 export type AuthProblem =
+  | RegisterUserProblem
+  | LoginUserProblem
   | StartGoogleLoginProblem
   | CompleteGoogleLoginProblem
   | GetAuthenticatedUserProblem
