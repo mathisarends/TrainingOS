@@ -14,6 +14,7 @@ from backend.platform.api.errors import (
     forbidden,
     provider_unavailable,
 )
+from backend.settings import AppSettings
 
 from .cookies import AuthCookies
 from .dependencies import CurrentUser
@@ -43,20 +44,28 @@ async def google_login(
     status_code=200,
     response_model=UserResponse,
     raises=[authentication_required, provider_unavailable],
+    responses={303: {"description": "Browser sign-in redirects to the configured frontend"}},
 )
 async def google_callback(
     request: Request,
     response: Response,
     auth_service: FromDishka[AuthService],
     auth_cookies: FromDishka[AuthCookies],
+    settings: FromDishka[AppSettings],
     code: Annotated[str, Query(min_length=1, max_length=4096)],
     state: Annotated[str, Query(min_length=1, max_length=512)],
-) -> UserResponse:
+) -> UserResponse | RedirectResponse:
     signed_in = await auth_service.google_callback(
         code=code, state=state, expected_state=auth_cookies.oauth_state(request)
     )
     # Replacing a browser login revokes the old application session.
     await auth_service.logout(token=auth_cookies.token(request))
+    # Browser navigations return to a fixed, trusted origin; API clients retain JSON.
+    if "text/html" in request.headers.get("accept", ""):
+        redirect = RedirectResponse(settings.frontend_url, status_code=303)
+        auth_cookies.set_session(redirect, signed_in.token)
+        auth_cookies.clear_oauth_state(redirect)
+        return redirect
     auth_cookies.set_session(response, signed_in.token)
     auth_cookies.clear_oauth_state(response)
     return to_response(signed_in.user)

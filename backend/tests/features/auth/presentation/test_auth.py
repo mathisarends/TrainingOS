@@ -97,3 +97,29 @@ async def test_invalid_provider_code_creates_no_account(app: FastAPI) -> None:
         )
         assert rejected.status_code == 401
         assert (await browser.get("/api/v1/auth/me")).status_code == 401
+
+
+async def test_browser_callback_redirects_with_a_committed_session(app: FastAPI) -> None:
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://test"
+    ) as browser:
+        started = await browser.get("/api/v1/auth/google/login")
+        state = parse_qs(urlparse(started.headers["location"]).query)["state"][0]
+        completed = await browser.get(
+            "/api/v1/auth/google/callback",
+            params={"code": "browser-user", "state": state},
+            headers={"Accept": "text/html,application/xhtml+xml"},
+        )
+        assert completed.status_code == 303
+        assert completed.headers["location"] == "http://localhost:5173"
+        assert completed.headers["cache-control"] == "no-store"
+        assert "trainingos_oauth_state" not in browser.cookies
+        # Observe persistence after the callback request scope has committed.
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app),
+            base_url="http://test",
+            cookies=browser.cookies,
+        ) as next_request:
+            assert (await next_request.get("/api/v1/auth/me")).status_code == 200
+            catalog = await next_request.get("/api/v1/exercises")
+            assert len(catalog.json()["items"]) == 19

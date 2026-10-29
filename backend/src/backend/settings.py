@@ -14,6 +14,7 @@ class AppSettings(BaseSettings):
     google_client_id: str = ""
     google_client_secret: SecretStr = SecretStr("")
     google_redirect_uri: str = "http://localhost:8000/api/v1/auth/google/callback"
+    frontend_url: str = "http://localhost:5173"
     session_days: int = Field(default=30, ge=1, le=90)
     oauth_timeout_seconds: float = Field(default=10, gt=0, le=60)
     host: str = "127.0.0.1"
@@ -21,6 +22,8 @@ class AppSettings(BaseSettings):
 
     @model_validator(mode="after")
     def production_settings(self) -> Self:
+        if self.frontend_url not in self.allowed_origins:
+            raise ValueError("Frontend URL must be an explicitly allowed origin")
         if self.environment == "production":
             if not self.secure_cookies or not self.google_redirect_uri.startswith("https://"):
                 raise ValueError("Production requires secure cookies and an HTTPS OAuth callback")

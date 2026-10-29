@@ -19,5 +19,6 @@ def test_production_accepts_https_and_explicit_origins() -> None:
         google_client_id="client-id",
         google_client_secret=SecretStr("client-secret"),
         allowed_origins=["https://training.example"],
+        frontend_url="https://training.example",
     )
     assert settings.secure_cookies
