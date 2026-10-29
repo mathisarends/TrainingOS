@@ -1,11 +1,17 @@
 import { LitElement, html } from 'lit';
-import type { User } from '../../shared/types';
+import type { Transport, User } from '../../shared/types';
 import { icon } from '../../shared/ui';
 import { accountNavigation } from './account-navigation';
+import './account-data-view';
 
 export class ProfileView extends LitElement {
-  static properties = { user: { attribute: false }, demo: { type: Boolean } };
+  static properties = {
+    user: { attribute: false },
+    api: { attribute: false },
+    demo: { type: Boolean },
+  };
   user!: User;
+  api!: Transport;
   demo = false;
   createRenderRoot() {
     return this;
@@ -58,6 +64,7 @@ export class ProfileView extends LitElement {
             >`,
         )}
       </section>
+      <account-data-view .api=${this.api}></account-data-view>
     </div>`;
   }
 }

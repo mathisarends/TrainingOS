@@ -24,7 +24,7 @@ export class TrainingStore {
       this.client.fetchQuery(trainingSessions.listTrainingSessionsQuery({ limit: 100 })),
       this.client.fetchQuery(plans.getNextTrainingQuery()),
     ]);
-    // Progress grids and the activity year need the complete recorded history.
+    // Plan progress needs the complete recorded history.
     const sessions = [...history.items];
     let pageSize = history.items.length;
     while (pageSize === 100) {

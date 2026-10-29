@@ -66,7 +66,7 @@ plan highlights its current calendar week. The training preview uses a desktop
 table and labeled exercise cards on mobile, with day/week controls above the
 content and a floating mobile start action. Logs uses desktop calendar entries and
 mobile completion dots plus a monthly session list. Account follows the Maximus
-settings structure: shared section navigation, profile identity and quiet rows with
+settings structure: two prominent Account/Settings sections, profile identity and quiet rows with
 descriptions, separators and trailing controls. The activity grid and the account
 link to training plans have been removed; plans remain accessible from Home.
 Dashboard history is paginated completely so plan progress does not stop at the
@@ -101,7 +101,8 @@ Pages and flows:
   recording, previous performance, backend e1RM/backoff feedback, skipping exercises,
   completion, set correction/deletion and training-time correction.
 - `/logs`: monthly calendar, month navigation, list view and reopening recorded sessions.
-- `/profile`: account identity, logout, exercise catalog and best-performance links.
+- `/profile`: account identity, logout, exercise catalog and best-performance links,
+  JSON export and explicitly confirmed account deletion.
 - `/profile/exercises`: inline name editing and the original category tables with
   rest, set, repetition and effort defaults. Search/filter and create/edit/remove
   remain available. Failed inline changes retain their drafts for explicit retry.
@@ -109,13 +110,14 @@ Pages and flows:
 - `/profile/best-performance`: main-exercise best values and history using the
   backend-returned e1RM values; no separate statistics or plan-comparison feature.
 - `/profile/settings`: kg/lb, RPE/RIR, rounding step and timezone.
-- `/profile/data`: JSON export and explicitly confirmed account deletion.
+- `/profile/data`: compatibility alias for the integrated account page.
 
 Select fields share `training-select`, a dark popover/listbox with keyboard navigation,
 type-ahead, Escape/outside dismissal and a quiet selected state. Native selects remain
 the form-data and validation source; choosing an option emits a single change event.
-Inline name edits use an inset focus border. Account, Settings and My data share
-pathname-based section navigation, including preview-mode links. Settings group
+Inline name edits use an inset focus border. Account and Settings share prominent
+pathname-based section navigation, including preview-mode links, under the common
+Account header. Neither section adds a redundant header back link. Settings group
 training and regional preferences into rows, with right-aligned controls on desktop
 and stacked controls on mobile. Failed saves preserve the complete draft for retry.
 

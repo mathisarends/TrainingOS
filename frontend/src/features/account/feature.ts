@@ -24,9 +24,9 @@ export const accountFeature = defineFeature({
     }),
     definePage({
       path: '/profile/data',
-      title: 'Meine Daten',
-      load: () => import('./account-data-view'),
-      render: () => shell('data'),
+      title: 'Konto',
+      load: () => import('./profile-view'),
+      render: () => shell('account'),
     }),
   ],
 });

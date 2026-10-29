@@ -572,10 +572,16 @@ export class TrainingApp extends LitElement {
           }}
         ></catalog-view>`;
       case 'account':
+      case 'data':
         return html`<profile-view
           .user=${this.user}
+          .api=${this.api}
           .demo=${this.demo}
           @logout=${this.logout}
+          @account-deleted=${() => {
+            this.store.value!.clear();
+            location.assign('/login');
+          }}
         ></profile-view>`;
       case 'settings':
         return html`<account-view
@@ -590,15 +596,6 @@ export class TrainingApp extends LitElement {
         ></account-view>`;
       case 'records':
         return html`<records-view .api=${this.api} .user=${this.user}></records-view>`;
-      case 'data':
-        return html`<account-data-view
-          .api=${this.api}
-          .demo=${this.demo}
-          @account-deleted=${() => {
-            this.store.value!.clear();
-            location.assign('/');
-          }}
-        ></account-data-view>`;
       case 'history':
         return html`<history-view
           .api=${this.api}
@@ -633,7 +630,8 @@ export class TrainingApp extends LitElement {
       return this.login();
     const training = this.page === 'training';
     const context = this.page === 'plans' ? 'Plan' : '';
-    const heading = training ? 'Training' : titles[this.page];
+    const accountSection = ['account', 'settings', 'data'].includes(this.page);
+    const heading = accountSection ? 'Konto' : training ? 'Training' : titles[this.page];
     const nav = [
       { page: 'home' as Page, label: 'Home', icon: 'home' },
       { page: 'training' as Page, label: 'Training', icon: 'activity' },
@@ -646,13 +644,13 @@ export class TrainingApp extends LitElement {
       >
         <header class="topbar">
           <div class="header-title">
-            ${['catalog', 'records', 'settings', 'data', 'plans'].includes(this.page) ? html`<a class="bare-icon back-link" href=${this.href(['catalog', 'records', 'settings', 'data'].includes(this.page) ? 'account' : 'home')} aria-label="Zurück">${icon('arrow-left')}</a>` : nothing}${context ? html`<span class="context">${context}</span>` : nothing}<span
+            ${['catalog', 'records', 'plans'].includes(this.page) ? html`<a class="bare-icon back-link" href=${this.href(['catalog', 'records'].includes(this.page) ? 'account' : 'home')} aria-label="Zurück">${icon('arrow-left')}</a>` : nothing}${context ? html`<span class="context">${context}</span>` : nothing}<span
               class="current"
               >${heading}</span
             >
           </div>
           <div class="header-actions">
-            ${this.page === 'home' && this.user ? html`<a class="bare-icon header-add" href=${this.href('plans', 'new')} aria-label="Neuen Plan erstellen">${icon('plus')}</a>` : this.page === 'account' ? nothing : html`<a class="bare-icon header-account" href=${this.href('account')} aria-label="Konto öffnen">${icon('user')}</a>`}
+            ${this.page === 'home' && this.user ? html`<a class="bare-icon header-add" href=${this.href('plans', 'new')} aria-label="Neuen Plan erstellen">${icon('plus')}</a>` : accountSection ? nothing : html`<a class="bare-icon header-account" href=${this.href('account')} aria-label="Konto öffnen">${icon('user')}</a>`}
           </div>
         </header>
         <main id="main-content" tabindex="-1">

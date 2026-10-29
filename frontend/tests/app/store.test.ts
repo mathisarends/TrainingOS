@@ -28,7 +28,7 @@ it('invalidates generated resource keys after changes and clears all cached user
   expect(client.getQueryCache().getAll()).toEqual([]);
 });
 
-it('loads history beyond the first page so plan progress and activity counts stay complete', async () => {
+it('loads history beyond the first page so plan progress stays complete', async () => {
   const demo = new DemoTransport({ seedHistory: true });
   const sample = (await demo.request<{ items: TrainingSession[] }>('/training-sessions?limit=1'))
     .items[0];

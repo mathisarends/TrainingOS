@@ -2,19 +2,16 @@ import { LitElement, html, nothing } from 'lit';
 import { users } from '../../api/generated';
 import type { Transport } from '../../shared/types';
 import { icon, today } from '../../shared/ui';
-import { accountNavigation } from './account-navigation';
 
 export class AccountDataView extends LitElement {
   static properties = {
     api: { attribute: false },
-    demo: { type: Boolean },
     busy: { state: true },
     error: { state: true },
     deleting: { state: true },
     confirmed: { state: true },
   };
   api!: Transport;
-  demo = false;
   private busy = false;
   private error = '';
   private deleting = false;
@@ -52,8 +49,7 @@ export class AccountDataView extends LitElement {
     });
   }
   render() {
-    return html`<div class="settings-wrapper">
-        ${accountNavigation('data', this.demo)}
+    return html`<div class="account-data-sections">
         ${this.error ? html`<div class="notice error" role="alert">${this.error}</div>` : nothing}
         <section class="settings-section" aria-labelledby="account-export-title">
           <div class="settings-section-heading"><h2 id="account-export-title">Daten</h2></div>

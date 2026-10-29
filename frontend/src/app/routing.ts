@@ -24,7 +24,7 @@ export const paths: Record<Page, string> = {
   account: '/profile',
   records: '/profile/best-performance',
   settings: '/profile/settings',
-  data: '/profile/data',
+  data: '/profile', // Legacy data hash links open the integrated account page.
 };
 
 export const titles: Record<Page, string> = {
@@ -38,7 +38,7 @@ export const titles: Record<Page, string> = {
   account: 'Konto',
   records: 'Bestleistungen',
   settings: 'Einstellungen',
-  data: 'Meine Daten',
+  data: 'Konto',
 };
 
 export const shell = (page: Page, id = '') =>

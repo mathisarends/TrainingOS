@@ -178,6 +178,8 @@ plans-view,
 training-view,
 catalog-view,
 account-view,
+profile-view,
+account-data-view,
 lit-canon-root {
   display: block;
 }
@@ -2441,18 +2443,18 @@ summary {
 .account-tabs {
   display: flex;
   align-items: center;
-  gap: var(--space-6);
+  gap: var(--space-8);
   margin-bottom: var(--settings-section-gap);
   border-bottom: 1px solid var(--color-border);
 }
 .account-tabs a {
   display: inline-flex;
   align-items: center;
-  min-height: var(--control-height);
-  padding: var(--space-2) 0;
+  min-height: calc(var(--control-height) + var(--space-3));
+  padding: var(--space-3) 0;
   margin-bottom: -1px;
-  border-bottom: 2px solid transparent;
-  font-size: var(--font-sm);
+  border-bottom: 3px solid transparent;
+  font-size: var(--font-card);
   color: var(--color-text-muted);
   white-space: nowrap;
 }
@@ -2462,6 +2464,7 @@ summary {
 }
 .account-tabs a[aria-current] {
   border-bottom-color: var(--color-text);
+  font-weight: var(--weight-semibold);
 }
 .account-tabs a:focus-visible {
   outline-offset: -3px;
@@ -2479,7 +2482,7 @@ summary {
   min-width: 0;
 }
 .profile-identity h1 {
-  font-size: var(--font-xl);
+  font-size: var(--font-lg);
 }
 .profile-identity p {
   color: var(--color-text-muted);
@@ -2502,8 +2505,8 @@ summary {
 }
 .profile-logout {
   margin-left: auto;
-  font-size: var(--font-sm);
-  color: var(--color-text-muted);
+  font-size: var(--font-base);
+  color: var(--color-text);
 }
 .profile-link-icon {
   display: grid;
@@ -2902,9 +2905,6 @@ summary {
   }
   .month-history-list .history-row strong {
     font-size: var(--font-lg);
-  }
-  .profile-identity h1 {
-    font-size: var(--font-xl);
   }
   .records-grid {
     grid-template-columns: 1fr;
