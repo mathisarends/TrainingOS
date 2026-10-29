@@ -2,16 +2,19 @@ import { LitElement, html, nothing } from 'lit';
 import { users } from '../../api/generated';
 import type { Transport } from '../../shared/types';
 import { icon, today } from '../../shared/ui';
+import { accountNavigation } from './account-navigation';
 
 export class AccountDataView extends LitElement {
   static properties = {
     api: { attribute: false },
+    demo: { type: Boolean },
     busy: { state: true },
     error: { state: true },
     deleting: { state: true },
     confirmed: { state: true },
   };
   api!: Transport;
+  demo = false;
   private busy = false;
   private error = '';
   private deleting = false;
@@ -50,32 +53,37 @@ export class AccountDataView extends LitElement {
   }
   render() {
     return html`<div class="settings-wrapper">
+        ${accountNavigation('data', this.demo)}
         ${this.error ? html`<div class="notice error" role="alert">${this.error}</div>` : nothing}
-        <section class="data-section">
-          <span class="data-section-icon">${icon('download')}</span>
-          <div class="data-section-copy">
-            <h2>Daten exportieren</h2>
-            <p>Deine Pläne, erfassten Trainings und Einstellungen als JSON-Datei.</p>
+        <section class="settings-section" aria-labelledby="account-export-title">
+          <div class="settings-section-heading"><h2 id="account-export-title">Daten</h2></div>
+          <div class="settings-row">
+            <div class="settings-row-copy">
+              <strong>Daten exportieren</strong>
+              <small>Deine Pläne, erfassten Trainings und Einstellungen als JSON-Datei.</small>
+            </div>
+            <button class="secondary" ?disabled=${this.busy} @click=${this.download}>
+              ${icon('download')} Herunterladen
+            </button>
           </div>
-          <button class="secondary" ?disabled=${this.busy} @click=${this.download}>
-            Herunterladen
-          </button>
         </section>
-        <section class="data-section data-section-danger">
-          <span class="data-section-icon">${icon('trash')}</span>
-          <div class="data-section-copy">
-            <h2>Konto löschen</h2>
-            <p>Dein Konto und alle zugehörigen Daten werden dauerhaft gelöscht.</p>
+        <section class="settings-section danger-section" aria-labelledby="account-manage-title">
+          <div class="settings-section-heading"><h2 id="account-manage-title">Konto</h2></div>
+          <div class="settings-row">
+            <div class="settings-row-copy">
+              <strong>Konto löschen</strong>
+              <small>Dein Konto und alle zugehörigen Daten werden dauerhaft gelöscht.</small>
+            </div>
+            <button
+              class="text-button danger-text"
+              @click=${() => {
+                this.deleting = true;
+                this.confirmed = false;
+              }}
+            >
+              Konto löschen
+            </button>
           </div>
-          <button
-            class="text-button danger-text"
-            @click=${() => {
-              this.deleting = true;
-              this.confirmed = false;
-            }}
-          >
-            Konto löschen
-          </button>
         </section>
       </div>
       ${

@@ -574,7 +574,6 @@ export class TrainingApp extends LitElement {
       case 'account':
         return html`<profile-view
           .user=${this.user}
-          .sessions=${this.sessions}
           .demo=${this.demo}
           @logout=${this.logout}
         ></profile-view>`;
@@ -582,6 +581,7 @@ export class TrainingApp extends LitElement {
         return html`<account-view
           .api=${this.api}
           .user=${this.user}
+          .demo=${this.demo}
           @user-changed=${(e: CustomEvent<User>) => {
             this.user = e.detail;
             this.store.value!.clear();
@@ -593,6 +593,7 @@ export class TrainingApp extends LitElement {
       case 'data':
         return html`<account-data-view
           .api=${this.api}
+          .demo=${this.demo}
           @account-deleted=${() => {
             this.store.value!.clear();
             location.assign('/');

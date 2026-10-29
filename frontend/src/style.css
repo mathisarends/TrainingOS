@@ -2432,15 +2432,51 @@ summary {
   margin-left: auto;
   color: var(--color-text-muted);
 }
-.profile-wrapper {
+/* Account pages follow the same content edges as every other application page. */
+.profile-wrapper,
+.settings-wrapper {
   width: 100%;
-  margin-inline: auto;
+  min-width: 0;
+}
+.account-tabs {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  margin-bottom: var(--settings-section-gap);
+  border-bottom: 1px solid var(--color-border);
+}
+.account-tabs a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-height);
+  padding: var(--space-2) 0;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+.account-tabs a:hover,
+.account-tabs a[aria-current] {
+  color: var(--color-text);
+}
+.account-tabs a[aria-current] {
+  border-bottom-color: var(--color-text);
+}
+.account-tabs a:focus-visible {
+  outline-offset: -3px;
 }
 .profile-identity {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: var(--space-4);
-  margin-bottom: var(--space-5);
+  padding: 0 0 var(--space-8);
+  border-bottom: 1px solid var(--color-border);
+}
+.profile-identity-copy {
+  flex: 1;
+  min-width: 0;
 }
 .profile-identity h1 {
   font-size: var(--font-xl);
@@ -2448,197 +2484,138 @@ summary {
 .profile-identity p {
   color: var(--color-text-muted);
   font-size: var(--font-sm);
+  margin-top: var(--space-1);
 }
 .profile-avatar {
   display: grid;
   place-items: center;
   background: var(--color-surface-muted);
-  width: 4rem;
-  height: 4rem;
+  width: 3.5rem;
+  height: 3.5rem;
   border-radius: var(--radius-round);
   flex-shrink: 0;
+  color: var(--color-text-muted);
 }
 .profile-avatar .icon {
-  width: 1.625rem;
-  height: 1.625rem;
-  color: var(--color-text-muted);
+  width: 1.5rem;
+  height: 1.5rem;
 }
-.activity-card {
-  padding: var(--space-4);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-md);
-}
-.activity-scroll {
-  overflow-x: auto;
-  padding-bottom: var(--space-3);
-  scrollbar-color: var(--color-accent-soft) transparent;
-  scrollbar-width: thin;
-}
-.activity-months {
-  width: calc(
-    53 * (var(--activity-cell-size) + var(--activity-cell-gap)) - var(--activity-cell-gap)
-  );
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  text-align: center;
-  font-size: var(--font-xs);
-  color: var(--color-text-muted);
-  margin-bottom: var(--space-2);
-}
-.activity-grid {
-  display: grid;
-  grid-template-rows: repeat(7, var(--activity-cell-size));
-  grid-auto-flow: column;
-  grid-auto-columns: var(--activity-cell-size);
-  gap: var(--activity-cell-gap);
-  width: max-content;
-}
-.activity-cell,
-.activity-level {
-  background: var(--color-progress-empty);
-  border-radius: 2px;
-}
-.activity-cell.trained {
-  background: var(--color-activity);
-}
-.activity-footer {
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--space-2);
-  margin-top: var(--space-4);
-  color: var(--color-text-muted);
-  font-size: var(--font-sm);
-}
-.activity-summary {
-  width: 100%;
-}
-.activity-footer label {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-}
-.activity-summary strong {
-  color: var(--color-text);
-}
-.activity-footer training-select {
-  width: 5.5rem;
-}
-.activity-legend {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: var(--space-2);
-  font-size: var(--font-xs);
-}
-.activity-legend > span:first-child {
-  margin-right: var(--space-1);
-}
-.activity-legend > span:last-child {
-  margin-left: var(--space-1);
-}
-.activity-level {
-  width: var(--activity-cell-size);
-  height: var(--activity-cell-size);
-}
-.level-1 {
-  background: var(--color-activity-1);
-}
-.level-2 {
-  background: var(--color-activity-2);
-}
-.level-3 {
-  background: var(--color-activity-3);
-}
-.level-4 {
-  background: var(--color-activity-4);
-}
-.profile-links {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
-  margin-top: var(--space-5);
-}
-.profile-link-group,
 .profile-logout {
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-}
-.profile-link {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-4);
-  min-height: 3.75rem;
-  border: 0;
-  border-bottom: 1px solid var(--color-border);
-  background: transparent;
-  width: 100%;
-  text-align: left;
-  font-size: var(--font-md);
-}
-.profile-link:last-child {
-  border-bottom: 0;
-}
-.profile-link:hover {
-  background: var(--color-surface-muted);
-}
-.profile-link > .icon:last-child {
   margin-left: auto;
-  width: 1rem;
-  height: 1rem;
-  color: var(--color-text-subtle);
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
 }
 .profile-link-icon {
   display: grid;
   place-items: center;
   color: var(--color-text-muted);
 }
-.profile-logout {
-  border: 1px solid var(--color-border-strong) !important;
+.settings-wrapper > form {
+  gap: 0;
+}
+.settings-section {
+  margin-top: var(--settings-section-gap);
+}
+.settings-wrapper > form .settings-section:first-child,
+.settings-wrapper > .settings-section:first-of-type {
+  margin-top: 0;
+}
+.settings-section-heading {
+  padding-bottom: var(--space-2);
+}
+.settings-section-heading h2 {
   color: var(--color-text-muted);
+  font-size: var(--font-sm);
+  font-weight: var(--weight-normal);
 }
-.profile-utilities {
-  border-block: 1px solid var(--color-border);
-}
-.profile-utility {
-  display: flex;
-  gap: var(--space-4);
+.settings-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--settings-control-width);
+  gap: var(--space-4) var(--space-6);
   align-items: center;
-  min-height: 5rem;
-  padding: var(--space-4);
-  border-radius: var(--radius-sm);
+  padding-block: var(--settings-row-padding);
 }
-.profile-utility:hover {
-  background: var(--color-surface);
+.settings-row + .settings-row,
+.settings-link + .settings-link {
+  border-top: 1px solid var(--color-border);
 }
-.profile-utility strong {
+.settings-row > button {
+  justify-self: end;
+  font-size: var(--font-sm);
+}
+.danger-section {
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-6);
+}
+.settings-row-copy {
+  display: block;
+  min-width: 0;
+}
+.settings-row-copy strong {
   display: block;
   font-size: var(--font-base);
   font-weight: var(--weight-normal);
+  color: var(--color-text);
 }
-.profile-utility small {
+.settings-row-copy small {
   display: block;
   color: var(--color-text-muted);
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
+  line-height: 1.6;
   margin-top: var(--space-1);
 }
-.profile-utility > .icon:last-child {
-  margin-left: auto;
-  width: 1rem;
+.settings-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding-block: var(--settings-row-padding);
+}
+.settings-link .settings-row-copy {
+  flex: 1;
+}
+.settings-link > .icon:last-child {
   color: var(--color-text-subtle);
+  width: 1rem;
 }
-
-.settings-wrapper {
-  width: 100%;
-  margin-inline: auto;
+.settings-link:hover .settings-row-copy strong {
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
-.settings-wrapper .primary {
-  align-self: start;
+.settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-top: var(--space-6);
+  margin-top: var(--space-6);
+  border-top: 1px solid var(--color-border);
 }
-
+.settings-actions p {
+  color: var(--color-text-muted);
+  font-size: var(--font-sm);
+}
+@media (max-width: 768px) {
+  .account-tabs {
+    gap: var(--space-5);
+  }
+  .profile-identity-copy {
+    flex-basis: calc(100% - 5rem);
+  }
+  .profile-logout {
+    margin-left: 4.5rem;
+  }
+  .settings-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .settings-row > button {
+    justify-self: start;
+  }
+  .settings-actions > .primary {
+    width: 100%;
+    justify-content: center;
+  }
+}
 .value-chart {
   margin: 0;
   padding: var(--space-2) 0;
@@ -2707,15 +2684,6 @@ summary {
   width: 2rem;
   height: 2rem;
   color: var(--color-text-muted);
-}
-.data-section {
-  padding-block: var(--space-5);
-  border-bottom: 1px solid var(--color-border);
-}
-.data-section p {
-  margin-top: var(--space-2);
-  color: var(--color-text-muted);
-  font-size: var(--font-sm);
 }
 .danger-text {
   color: var(--color-error);
@@ -2938,10 +2906,6 @@ summary {
   .profile-identity h1 {
     font-size: var(--font-xl);
   }
-  .profile-link {
-    font-size: var(--font-md);
-  }
-
   .records-grid {
     grid-template-columns: 1fr;
   }
@@ -3228,33 +3192,6 @@ select:hover {
   padding-bottom: var(--space-4);
   border-bottom: 1px solid var(--color-border);
 }
-.settings-wrapper > form {
-  gap: var(--space-5);
-}
-.settings-section {
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-md);
-  padding: var(--space-6);
-}
-.settings-section-heading {
-  margin-bottom: var(--space-6);
-}
-.settings-section-heading h2 {
-  font-size: var(--font-base);
-}
-.settings-section-heading p,
-.settings-section > .muted {
-  color: var(--color-text-muted);
-  font-size: var(--font-sm);
-  margin-top: var(--space-2);
-  line-height: 1.65;
-}
-.settings-section > .muted {
-  margin-top: var(--space-5);
-}
-.settings-wrapper > form > .primary {
-  align-self: flex-end;
-}
 .catalog-table {
   border-collapse: separate;
   border-spacing: 0;
@@ -3288,37 +3225,6 @@ select:hover {
   padding-inline: 0;
   border: 0;
 }
-.data-section {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--space-4);
-  padding: var(--space-6);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--space-5);
-}
-.data-section-icon {
-  display: grid;
-  place-items: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  background: var(--color-surface-muted);
-  color: var(--color-text-muted);
-  border-radius: var(--radius-sm);
-}
-.data-section h2 {
-  font-size: var(--font-base);
-}
-.data-section > button {
-  grid-column: 2;
-  justify-self: start;
-}
-.data-section-copy {
-  min-width: 0;
-}
-.data-section p {
-  line-height: 1.65;
-}
 .modal {
   border-radius: var(--radius-lg);
 }
@@ -3330,16 +3236,6 @@ select:hover {
   gap: var(--space-5);
 }
 @media (max-width: 768px) {
-  .activity-summary > span {
-    display: block;
-    margin-bottom: var(--space-3);
-  }
-  .activity-legend {
-    padding-right: 5.5rem;
-  }
-  .settings-section {
-    padding: var(--space-5);
-  }
   .training-sheet .sheet-field > span:last-child {
     text-align: right;
   }

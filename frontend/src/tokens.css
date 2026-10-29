@@ -60,11 +60,6 @@
   --color-progress: #25a944;
   --color-progress-empty: #2b2b2b;
   --color-progress-archived: #5e5e5e;
-  --color-activity: #007735;
-  --color-activity-1: #16452e;
-  --color-activity-2: #00833e;
-  --color-activity-3: #25a944;
-  --color-activity-4: #32cf54;
   --color-timer: #292929;
   --color-backdrop: rgb(0 0 0 / 65%);
   --radius-sm: 0.75rem;
@@ -83,8 +78,9 @@
   --page-content-max: 87.5rem;
   --page-inline-inset: 15%;
   --page-gutter: max(var(--page-inline-inset), calc((100% - var(--page-content-max)) / 2));
-  --activity-cell-size: 0.6875rem;
-  --activity-cell-gap: 0.1875rem;
+  --settings-control-width: 18rem;
+  --settings-row-padding: 1.25rem;
+  --settings-section-gap: 2rem;
   --calendar-day-height: 7.625rem;
   --control-height: 2.75rem;
   --duration-fast: 160ms;

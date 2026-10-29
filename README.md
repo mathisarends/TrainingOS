@@ -65,10 +65,12 @@ Home cards show the real completed training days in each plan week; an active
 plan highlights its current calendar week. The training preview uses a desktop
 table and labeled exercise cards on mobile, with day/week controls above the
 content and a floating mobile start action. Logs uses desktop calendar entries and
-mobile completion dots plus a monthly session list. Account groups its menu into
-outlined panels below the activity year, with a 30-day completion count and legend.
-Dashboard history is paginated completely so plan progress and activity counts do
-not stop at the first API page. Recorded history remains the source of completion.
+mobile completion dots plus a monthly session list. Account follows the Maximus
+settings structure: shared section navigation, profile identity and quiet rows with
+descriptions, separators and trailing controls. The activity grid and the account
+link to training plans have been removed; plans remain accessible from Home.
+Dashboard history is paginated completely so plan progress does not stop at the
+first API page. Recorded history remains the source of completion.
 
 The remaining screens infer the same design language: outlined category tables,
 rounded plan/set editors, neutral charts and record cards, grouped settings and
@@ -99,7 +101,7 @@ Pages and flows:
   recording, previous performance, backend e1RM/backoff feedback, skipping exercises,
   completion, set correction/deletion and training-time correction.
 - `/logs`: monthly calendar, month navigation, list view and reopening recorded sessions.
-- `/profile`: account menu and a recent-training activity calendar.
+- `/profile`: account identity, logout, exercise catalog and best-performance links.
 - `/profile/exercises`: inline name editing and the original category tables with
   rest, set, repetition and effort defaults. Search/filter and create/edit/remove
   remain available. Failed inline changes retain their drafts for explicit retry.
@@ -112,8 +114,10 @@ Pages and flows:
 Select fields share `training-select`, a dark popover/listbox with keyboard navigation,
 type-ahead, Escape/outside dismissal and a quiet selected state. Native selects remain
 the form-data and validation source; choosing an option emits a single change event.
-Inline name edits use an inset focus border. Settings and data links have descriptive
-subtitles; their destinations use consistent grouped surfaces.
+Inline name edits use an inset focus border. Account, Settings and My data share
+pathname-based section navigation, including preview-mode links. Settings group
+training and regional preferences into rows, with right-aligned controls on desktop
+and stacked controls on mobile. Failed saves preserve the complete draft for retry.
 
 Email/password registration, login, cookie session restoration and logout use the
 backend. The existing Google OAuth endpoints remain available.
@@ -180,7 +184,7 @@ OpenAPI contract and regenerated client. The latest visual checkpoints are saved
 [`frontend/screenshots/reference-redesign`](frontend/screenshots/reference-redesign/index.html).
 Earlier checkpoints remain in `frontend/screenshots` for comparison.
 
-Local verification on 2026-10-29: 35 frontend tests and 85 backend tests passed
+Local verification on 2026-10-29: 37 frontend tests and 85 backend tests passed
 (4 PostgreSQL-only cases skipped), along with TypeScript/Vite, Prettier, Ruff, mypy
 and both API drift checks. A clean `npm ci` was verified. Application routes were checked
 at 320, 390 and 1600 pixels for visible errors and horizontal overflow; desktop
@@ -191,9 +195,12 @@ plus real local registration, cookie restoration, logout and subsequent login.
 Google consent and locked-screen device signals were not tested against a real
 account/device.
 
-The latest [UI polish checkpoints](frontend/screenshots/ui-polish/index.html) cover
-the empty home page, compact defaults, dropdowns, inline focus, account, settings and
-data screens. Browser checks include 320/390px mobile and 1440px desktop layouts,
+The latest [account/layout checkpoints](frontend/screenshots/account-layout/index.html)
+include the simplified account, Maximus-style preferences and data screens. Nine
+application pages share identical header and content edges at 320, 390, 1024, 1440
+and 2560 pixels; the wide layout respects the shared maximum width. Earlier
+[UI polish checkpoints](frontend/screenshots/ui-polish/index.html) cover the empty
+home page, compact defaults, dropdowns and inline focus. Browser checks include
 popover behavior inside a dialog, and a real preference save verified after reloading.
 Bodyweight removal is checked by upgrading populated legacy data and inspecting it
 from a separate database scope; recorded training weights remain unchanged.

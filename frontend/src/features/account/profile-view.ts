@@ -1,128 +1,63 @@
-import { LitElement, html, type PropertyValues } from 'lit';
-import type { User, TrainingSession } from '../../shared/types';
+import { LitElement, html } from 'lit';
+import type { User } from '../../shared/types';
 import { icon } from '../../shared/ui';
+import { accountNavigation } from './account-navigation';
 
 export class ProfileView extends LitElement {
-  static properties = {
-    user: { attribute: false },
-    sessions: { attribute: false },
-    demo: { attribute: false },
-    year: { state: true },
-  };
+  static properties = { user: { attribute: false }, demo: { type: Boolean } };
   user!: User;
-  sessions: TrainingSession[] = [];
   demo = false;
-  private year = new Date().getFullYear();
   createRenderRoot() {
     return this;
-  }
-  protected updated(changes: PropertyValues) {
-    if (changes.has('year') || changes.has('sessions')) {
-      const scroll = this.querySelector('.activity-scroll');
-      if (scroll) scroll.scrollLeft = scroll.scrollWidth;
-    }
   }
   render() {
     const suffix = this.demo ? '?demo=1' : '';
     const entries = [
-      ['Übungen', 'dumbbell', '/profile/exercises'],
-      ['Bestleistungen', 'award', '/profile/best-performance'],
-      ['Trainingspläne', 'plans', '/plans'],
-      ['Einstellungen', 'sliders', '/profile/settings'],
-      ['Meine Daten', 'download', '/profile/data'],
+      {
+        label: 'Übungen',
+        description: 'Übungen verwalten und Kategorie-Vorgaben festlegen.',
+        icon: 'dumbbell',
+        path: '/profile/exercises',
+      },
+      {
+        label: 'Bestleistungen',
+        description: 'Deine Bestwerte und erfassten Trainings ansehen.',
+        icon: 'award',
+        path: '/profile/best-performance',
+      },
     ];
-    const since = new Date();
-    since.setDate(since.getDate() - 29);
-    since.setHours(0, 0, 0, 0);
-    const recent = this.sessions.filter(
-      (s) => s.ended_at && new Date(s.started_at) >= since,
-    ).length;
     return html`<div class="profile-wrapper">
+      ${accountNavigation('account', this.demo)}
       <div class="profile-identity">
         <div class="profile-avatar">${icon('user')}</div>
-        <div>
+        <div class="profile-identity-copy">
           <h1>${this.demo ? 'Vorschau' : 'Dein Trainingskonto'}</h1>
           <p
-            title=${this.demo ? 'Isolierte Vorschau. Änderungen sind temporär und werden beim Neuladen zurückgesetzt.' : ''}
+            title=${this.demo ? 'Isolierte Vorschau. Änderungen werden beim Neuladen zurückgesetzt.' : ''}
           >
             ${this.demo ? 'Beispieldaten' : 'Angemeldet'} · ${this.user.unit} ·
             ${this.user.effort_scale.toUpperCase()}
           </p>
         </div>
-      </div>
-      <div class="activity-card">
-        <div class="activity-scroll">
-          <div class="activity-months">
-            ${['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'].map((m) => html`<span>${m}</span>`)}
-          </div>
-          <div class="activity-grid">
-            ${Array.from({ length: 371 }, (_, i) => {
-              const date = new Date(
-                this.year,
-                0,
-                1 + i - ((new Date(this.year, 0, 1).getDay() + 6) % 7),
-              );
-              const count = this.sessions.filter(
-                (s) =>
-                  !!s.ended_at && new Date(s.started_at).toDateString() === date.toDateString(),
-              ).length;
-              return html`<span
-                class="activity-cell ${count ? 'trained' : ''}"
-                title=${`${date.toLocaleDateString('de-DE')} · ${count} Trainings`}
-              ></span>`;
-            })}
-          </div>
-        </div>
-        <div class="activity-footer">
-          <div class="activity-summary">
-            <span><strong>${recent} Trainings</strong> in den letzten 30 Tagen</span>
-            <div class="activity-legend">
-              <span>Weniger</span
-              >${Array.from({ length: 5 }, (_, i) => html`<span class="activity-level level-${i}"></span>`)}<span
-                >Mehr</span
-              >
-            </div>
-          </div>
-          <label
-            ><training-select variant="pill"
-              ><select
-                aria-label="Aktivitätsjahr"
-                .value=${String(this.year)}
-                @change=${(e: Event) => {
-                  this.year = Number((e.target as HTMLSelectElement).value);
-                }}
-              >
-                ${Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map((year) => html`<option value=${year}>${year}</option>`)}
-              </select></training-select
-            ></label
-          >
-        </div>
-      </div>
-      <div class="profile-links">
-        <div class="profile-link-group">
-          ${entries.slice(0, 3).map(([label, name, path]) => html`<a class="profile-link" href=${path + suffix}><span class="profile-link-icon">${icon(name)}</span><span>${label}</span>${icon('chevron-right')}</a>`)}
-        </div>
-        <div class="profile-utilities">
-          ${entries.slice(3).map(
-            ([label, name, path], i) =>
-              html`<a class="profile-utility" href=${path + suffix}
-                ><span class="profile-link-icon">${icon(name)}</span
-                ><span
-                  ><strong>${label}</strong
-                  ><small
-                    >${i === 0 ? 'Einheiten und Trainingsvorgaben' : 'Daten exportieren und Konto verwalten'}</small
-                  ></span
-                >${icon('chevron-right')}</a
-              >`,
-          )}
-        </div>
         <button
-          class="profile-link profile-logout"
+          class="secondary profile-logout"
           @click=${() => this.dispatchEvent(new CustomEvent('logout', { bubbles: true }))}
         >
-          <span class="profile-link-icon">${icon('logout')}</span><span>Abmelden</span>
+          ${icon('logout')} Abmelden
         </button>
       </div>
+      <section class="settings-section" aria-labelledby="account-training-title">
+        <div class="settings-section-heading"><h2 id="account-training-title">Training</h2></div>
+        ${entries.map(
+          (entry) =>
+            html`<a class="settings-link" href=${entry.path + suffix}
+              ><span class="profile-link-icon">${icon(entry.icon)}</span
+              ><span class="settings-row-copy"
+                ><strong>${entry.label}</strong><small>${entry.description}</small></span
+              >${icon('chevron-right')}</a
+            >`,
+        )}
+      </section>
     </div>`;
   }
 }

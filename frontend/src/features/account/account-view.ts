@@ -2,17 +2,20 @@ import { LitElement, html, nothing } from 'lit';
 import { users } from '../../api/generated';
 import type { Transport, User } from '../../shared/types';
 import { formValues } from '../../shared/ui';
+import { accountNavigation } from './account-navigation';
 
 export class AccountView extends LitElement {
   static properties = {
     api: { attribute: false },
     user: { attribute: false },
+    demo: { type: Boolean },
     busy: { state: true },
     error: { state: true },
     message: { state: true },
   };
   api!: Transport;
   user!: User;
+  demo = false;
   private busy = false;
   private error = '';
   private message = '';
@@ -45,59 +48,85 @@ export class AccountView extends LitElement {
   }
   render() {
     return html`<div class="settings-wrapper">
-      ${this.error ? html`<div class="notice error" role="alert">${this.error}</div>` : nothing}${this.message ? html`<div class="notice success" role="status">${this.message}</div>` : nothing}
+      ${accountNavigation('settings', this.demo)}
+      ${this.error ? html`<div class="notice error" role="alert">${this.error}</div>` : nothing}
+      ${this.message ? html`<div class="notice success" role="status">${this.message}</div>` : nothing}
       <form class="stack" @submit=${this.save}>
         <section class="settings-section" aria-labelledby="training-preferences-title">
           <div class="settings-section-heading">
             <h2 id="training-preferences-title">Training</h2>
-            <p>So werden deine Gewichte und Vorgaben angezeigt.</p>
           </div>
-          <div class="input-grid">
-            <label
-              >Gewichtseinheit<training-select
-                ><select name="unit">
-                  <option value="kg" ?selected=${this.user.unit === 'kg'}>Kilogramm (kg)</option>
-                  <option value="lb" ?selected=${this.user.unit === 'lb'}>Pfund (lb)</option>
-                </select></training-select
-              ></label
+          <label class="settings-row"
+            ><span class="settings-row-copy"
+              ><strong>Gewichtseinheit</strong
+              ><small>Gewichte für dein Training und deine Empfehlungen.</small></span
             >
-            <label
-              >Anstrengungsskala<training-select
-                ><select name="effort_scale">
-                  <option value="rpe" ?selected=${this.user.effort_scale === 'rpe'}>
-                    RPE · Anstrengung
-                  </option>
-                  <option value="rir" ?selected=${this.user.effort_scale === 'rir'}>
-                    RIR · Wiederholungen in Reserve
-                  </option>
-                </select></training-select
-              ></label
+            <training-select
+              ><select aria-label="Gewichtseinheit" name="unit" ?disabled=${this.busy}>
+                <option value="kg" ?selected=${this.user.unit === 'kg'}>Kilogramm (kg)</option>
+                <option value="lb" ?selected=${this.user.unit === 'lb'}>Pfund (lb)</option>
+              </select></training-select
             >
-            <label
-              >Rundungsschritt (${this.user.unit})<input
-                type="number"
-                name="rounding_step"
-                min="0.01"
-                max="100"
-                step="0.01"
-                required
-                .value=${this.user.rounding_step}
-            /></label>
-          </div>
-          <p class="muted">
-            RPE 8 entspricht RIR 2. Ein Wechsel ändert keine gespeicherten Trainingswerte.
-          </p>
+          </label>
+          <label class="settings-row"
+            ><span class="settings-row-copy"
+              ><strong>Anstrengungsskala</strong
+              ><small>RPE 8 entspricht zwei Wiederholungen in Reserve (RIR 2).</small></span
+            >
+            <training-select
+              ><select aria-label="Anstrengungsskala" name="effort_scale" ?disabled=${this.busy}>
+                <option value="rpe" ?selected=${this.user.effort_scale === 'rpe'}>
+                  RPE · Anstrengung
+                </option>
+                <option value="rir" ?selected=${this.user.effort_scale === 'rir'}>
+                  RIR · Wiederholungen in Reserve
+                </option>
+              </select></training-select
+            >
+          </label>
+          <label class="settings-row"
+            ><span class="settings-row-copy"
+              ><strong>Rundungsschritt</strong
+              ><small>Schrittweite für Gewichtsempfehlungen in der gewählten Einheit.</small></span
+            >
+            <input
+              aria-label="Rundungsschritt"
+              type="number"
+              name="rounding_step"
+              min="0.01"
+              max="100"
+              step="0.01"
+              required
+              ?disabled=${this.busy}
+              .value=${this.user.rounding_step}
+            />
+          </label>
         </section>
         <section class="settings-section" aria-labelledby="regional-preferences-title">
           <div class="settings-section-heading">
             <h2 id="regional-preferences-title">Region</h2>
-            <p>Für die Zuordnung deiner Trainings zum richtigen Tag.</p>
           </div>
-          <label
-            >Zeitzone<input name="timezone" required maxlength="100" .value=${this.user.timezone}
-          /></label>
+          <label class="settings-row"
+            ><span class="settings-row-copy"
+              ><strong>Zeitzone</strong
+              ><small>Ordnet deine Trainings dem richtigen Kalendertag zu.</small></span
+            >
+            <input
+              aria-label="Zeitzone"
+              name="timezone"
+              required
+              maxlength="100"
+              ?disabled=${this.busy}
+              .value=${this.user.timezone}
+            />
+          </label>
         </section>
-        <button class="primary" ?disabled=${this.busy}>Einstellungen speichern</button>
+        <div class="settings-actions">
+          <p>Gespeicherte Trainingswerte bleiben erhalten.</p>
+          <button class="primary" ?disabled=${this.busy}>
+            ${this.busy ? 'Wird gespeichert …' : 'Einstellungen speichern'}
+          </button>
+        </div>
       </form>
     </div>`;
   }

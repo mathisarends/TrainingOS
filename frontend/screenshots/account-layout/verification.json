@@ -1,0 +1,496 @@
+{
+  "summary": [
+    {
+      "viewport": 320,
+      "pages": 9,
+      "identicalEdges": true,
+      "panelWidth": 277.5625,
+      "overflow": false,
+      "alerts": []
+    },
+    {
+      "viewport": 390,
+      "pages": 9,
+      "identicalEdges": true,
+      "panelWidth": 341.25,
+      "overflow": false,
+      "alerts": []
+    },
+    {
+      "viewport": 1024,
+      "pages": 9,
+      "identicalEdges": true,
+      "panelWidth": 867.75,
+      "overflow": false,
+      "alerts": []
+    },
+    {
+      "viewport": 1440,
+      "pages": 9,
+      "identicalEdges": true,
+      "panelWidth": 997.5,
+      "overflow": false,
+      "alerts": []
+    },
+    {
+      "viewport": 2560,
+      "pages": 9,
+      "identicalEdges": true,
+      "panelWidth": 1400,
+      "overflow": false,
+      "alerts": []
+    }
+  ],
+  "measurements": [
+    {
+      "alerts": [],
+      "headerInset": "213.75px",
+      "mainInset": "213.75px",
+      "overflow": false,
+      "panelLeft": 213.75,
+      "panelWidth": 997.5,
+      "path": "/",
+      "viewport": 1440
+    },
+    {
+      "alerts": [],
+      "headerInset": "213.75px",
+      "mainInset": "213.75px",
+      "overflow": false,
+      "panelLeft": 213.75,
+      "panelWidth": 997.5,
+      "path": "/training",
+      "viewport": 1440
+    },
+    {
+      "alerts": [],
+      "headerInset": "213.75px",
+      "mainInset": "213.75px",
+      "overflow": false,
+      "panelLeft": 213.75,
+      "panelWidth": 997.5,
+      "path": "/logs",
+      "viewport": 1440
+    },
+    {
+      "alerts": [],
+      "headerInset": "213.75px",
+      "mainInset": "213.75px",
+      "overflow": false,
+      "panelLeft": 213.75,
+      "panelWidth": 997.5,
+      "path": "/plans",
+      "viewport": 1440
+    },
+    {
+      "alerts": [],
+      "headerInset": "213.75px",
+      "mainInset": "213.75px",
+      "overflow": false,
+      "panelLeft": 213.75,
+      "panelWidth": 997.5,
+      "path": "/profile",
+      "viewport": 1440
+    },
+    {
+      "alerts": [],
+      "headerInset": "213.75px",
+      "mainInset": "213.75px",
+      "overflow": false,
+      "panelLeft": 213.75,
+      "panelWidth": 997.5,
+      "path": "/profile/settings",
+      "viewport": 1440
+    },
+    {
+      "alerts": [],
+      "headerInset": "213.75px",
+      "mainInset": "213.75px",
+      "overflow": false,
+      "panelLeft": 213.75,
+      "panelWidth": 997.5,
+      "path": "/profile/data",
+      "viewport": 1440
+    },
+    {
+      "alerts": [],
+      "headerInset": "213.75px",
+      "mainInset": "213.75px",
+      "overflow": false,
+      "panelLeft": 213.75,
+      "panelWidth": 997.5,
+      "path": "/profile/exercises",
+      "viewport": 1440
+    },
+    {
+      "alerts": [],
+      "headerInset": "213.75px",
+      "mainInset": "213.75px",
+      "overflow": false,
+      "panelLeft": 213.75,
+      "panelWidth": 997.5,
+      "path": "/profile/best-performance",
+      "viewport": 1440
+    },
+    {
+      "alerts": [],
+      "headerInset": "16.875px",
+      "mainInset": "16.875px",
+      "overflow": false,
+      "panelLeft": 16.875,
+      "panelWidth": 341.25,
+      "path": "/",
+      "viewport": 390
+    },
+    {
+      "alerts": [],
+      "headerInset": "16.875px",
+      "mainInset": "16.875px",
+      "overflow": false,
+      "panelLeft": 16.875,
+      "panelWidth": 341.25,
+      "path": "/training",
+      "viewport": 390
+    },
+    {
+      "alerts": [],
+      "headerInset": "16.875px",
+      "mainInset": "16.875px",
+      "overflow": false,
+      "panelLeft": 16.875,
+      "panelWidth": 341.25,
+      "path": "/logs",
+      "viewport": 390
+    },
+    {
+      "alerts": [],
+      "headerInset": "16.875px",
+      "mainInset": "16.875px",
+      "overflow": false,
+      "panelLeft": 16.875,
+      "panelWidth": 341.25,
+      "path": "/plans",
+      "viewport": 390
+    },
+    {
+      "alerts": [],
+      "headerInset": "16.875px",
+      "mainInset": "16.875px",
+      "overflow": false,
+      "panelLeft": 16.875,
+      "panelWidth": 341.25,
+      "path": "/profile",
+      "viewport": 390
+    },
+    {
+      "alerts": [],
+      "headerInset": "16.875px",
+      "mainInset": "16.875px",
+      "overflow": false,
+      "panelLeft": 16.875,
+      "panelWidth": 341.25,
+      "path": "/profile/settings",
+      "viewport": 390
+    },
+    {
+      "alerts": [],
+      "headerInset": "16.875px",
+      "mainInset": "16.875px",
+      "overflow": false,
+      "panelLeft": 16.875,
+      "panelWidth": 341.25,
+      "path": "/profile/data",
+      "viewport": 390
+    },
+    {
+      "alerts": [],
+      "headerInset": "16.875px",
+      "mainInset": "16.875px",
+      "overflow": false,
+      "panelLeft": 16.875,
+      "panelWidth": 341.25,
+      "path": "/profile/exercises",
+      "viewport": 390
+    },
+    {
+      "alerts": [],
+      "headerInset": "16.875px",
+      "mainInset": "16.875px",
+      "overflow": false,
+      "panelLeft": 16.875,
+      "panelWidth": 341.25,
+      "path": "/profile/best-performance",
+      "viewport": 390
+    },
+    {
+      "alerts": [],
+      "headerInset": "13.7188px",
+      "mainInset": "13.7188px",
+      "overflow": false,
+      "panelLeft": 13.71875,
+      "panelWidth": 277.5625,
+      "path": "/",
+      "viewport": 320
+    },
+    {
+      "alerts": [],
+      "headerInset": "13.7188px",
+      "mainInset": "13.7188px",
+      "overflow": false,
+      "panelLeft": 13.71875,
+      "panelWidth": 277.5625,
+      "path": "/training",
+      "viewport": 320
+    },
+    {
+      "alerts": [],
+      "headerInset": "13.7188px",
+      "mainInset": "13.7188px",
+      "overflow": false,
+      "panelLeft": 13.71875,
+      "panelWidth": 277.5625,
+      "path": "/logs",
+      "viewport": 320
+    },
+    {
+      "alerts": [],
+      "headerInset": "13.7188px",
+      "mainInset": "13.7188px",
+      "overflow": false,
+      "panelLeft": 13.71875,
+      "panelWidth": 277.5625,
+      "path": "/plans",
+      "viewport": 320
+    },
+    {
+      "alerts": [],
+      "headerInset": "13.7188px",
+      "mainInset": "13.7188px",
+      "overflow": false,
+      "panelLeft": 13.71875,
+      "panelWidth": 277.5625,
+      "path": "/profile",
+      "viewport": 320
+    },
+    {
+      "alerts": [],
+      "headerInset": "13.7188px",
+      "mainInset": "13.7188px",
+      "overflow": false,
+      "panelLeft": 13.71875,
+      "panelWidth": 277.5625,
+      "path": "/profile/settings",
+      "viewport": 320
+    },
+    {
+      "alerts": [],
+      "headerInset": "13.7188px",
+      "mainInset": "13.7188px",
+      "overflow": false,
+      "panelLeft": 13.71875,
+      "panelWidth": 277.5625,
+      "path": "/profile/data",
+      "viewport": 320
+    },
+    {
+      "alerts": [],
+      "headerInset": "13.7188px",
+      "mainInset": "13.7188px",
+      "overflow": false,
+      "panelLeft": 13.71875,
+      "panelWidth": 277.5625,
+      "path": "/profile/exercises",
+      "viewport": 320
+    },
+    {
+      "alerts": [],
+      "headerInset": "13.7188px",
+      "mainInset": "13.7188px",
+      "overflow": false,
+      "panelLeft": 13.71875,
+      "panelWidth": 277.5625,
+      "path": "/profile/best-performance",
+      "viewport": 320
+    },
+    {
+      "alerts": [],
+      "headerInset": "70.625px",
+      "mainInset": "70.625px",
+      "overflow": false,
+      "panelLeft": 70.625,
+      "panelWidth": 867.75,
+      "path": "/",
+      "viewport": 1024
+    },
+    {
+      "alerts": [],
+      "headerInset": "70.625px",
+      "mainInset": "70.625px",
+      "overflow": false,
+      "panelLeft": 70.625,
+      "panelWidth": 867.75,
+      "path": "/training",
+      "viewport": 1024
+    },
+    {
+      "alerts": [],
+      "headerInset": "70.625px",
+      "mainInset": "70.625px",
+      "overflow": false,
+      "panelLeft": 70.625,
+      "panelWidth": 867.75,
+      "path": "/logs",
+      "viewport": 1024
+    },
+    {
+      "alerts": [],
+      "headerInset": "70.625px",
+      "mainInset": "70.625px",
+      "overflow": false,
+      "panelLeft": 70.625,
+      "panelWidth": 867.75,
+      "path": "/plans",
+      "viewport": 1024
+    },
+    {
+      "alerts": [],
+      "headerInset": "70.625px",
+      "mainInset": "70.625px",
+      "overflow": false,
+      "panelLeft": 70.625,
+      "panelWidth": 867.75,
+      "path": "/profile",
+      "viewport": 1024
+    },
+    {
+      "alerts": [],
+      "headerInset": "70.625px",
+      "mainInset": "70.625px",
+      "overflow": false,
+      "panelLeft": 70.625,
+      "panelWidth": 867.75,
+      "path": "/profile/settings",
+      "viewport": 1024
+    },
+    {
+      "alerts": [],
+      "headerInset": "70.625px",
+      "mainInset": "70.625px",
+      "overflow": false,
+      "panelLeft": 70.625,
+      "panelWidth": 867.75,
+      "path": "/profile/data",
+      "viewport": 1024
+    },
+    {
+      "alerts": [],
+      "headerInset": "70.625px",
+      "mainInset": "70.625px",
+      "overflow": false,
+      "panelLeft": 70.625,
+      "panelWidth": 867.75,
+      "path": "/profile/exercises",
+      "viewport": 1024
+    },
+    {
+      "alerts": [],
+      "headerInset": "70.625px",
+      "mainInset": "70.625px",
+      "overflow": false,
+      "panelLeft": 70.625,
+      "panelWidth": 867.75,
+      "path": "/profile/best-performance",
+      "viewport": 1024
+    },
+    {
+      "alerts": [],
+      "headerInset": "572.5px",
+      "mainInset": "572.5px",
+      "overflow": false,
+      "panelLeft": 572.5,
+      "panelWidth": 1400,
+      "path": "/",
+      "viewport": 2560
+    },
+    {
+      "alerts": [],
+      "headerInset": "572.5px",
+      "mainInset": "572.5px",
+      "overflow": false,
+      "panelLeft": 572.5,
+      "panelWidth": 1400,
+      "path": "/training",
+      "viewport": 2560
+    },
+    {
+      "alerts": [],
+      "headerInset": "572.5px",
+      "mainInset": "572.5px",
+      "overflow": false,
+      "panelLeft": 572.5,
+      "panelWidth": 1400,
+      "path": "/logs",
+      "viewport": 2560
+    },
+    {
+      "alerts": [],
+      "headerInset": "572.5px",
+      "mainInset": "572.5px",
+      "overflow": false,
+      "panelLeft": 572.5,
+      "panelWidth": 1400,
+      "path": "/plans",
+      "viewport": 2560
+    },
+    {
+      "alerts": [],
+      "headerInset": "572.5px",
+      "mainInset": "572.5px",
+      "overflow": false,
+      "panelLeft": 572.5,
+      "panelWidth": 1400,
+      "path": "/profile",
+      "viewport": 2560
+    },
+    {
+      "alerts": [],
+      "headerInset": "572.5px",
+      "mainInset": "572.5px",
+      "overflow": false,
+      "panelLeft": 572.5,
+      "panelWidth": 1400,
+      "path": "/profile/settings",
+      "viewport": 2560
+    },
+    {
+      "alerts": [],
+      "headerInset": "572.5px",
+      "mainInset": "572.5px",
+      "overflow": false,
+      "panelLeft": 572.5,
+      "panelWidth": 1400,
+      "path": "/profile/data",
+      "viewport": 2560
+    },
+    {
+      "alerts": [],
+      "headerInset": "572.5px",
+      "mainInset": "572.5px",
+      "overflow": false,
+      "panelLeft": 572.5,
+      "panelWidth": 1400,
+      "path": "/profile/exercises",
+      "viewport": 2560
+    },
+    {
+      "alerts": [],
+      "headerInset": "572.5px",
+      "mainInset": "572.5px",
+      "overflow": false,
+      "panelLeft": 572.5,
+      "panelWidth": 1400,
+      "path": "/profile/best-performance",
+      "viewport": 2560
+    }
+  ]
+}

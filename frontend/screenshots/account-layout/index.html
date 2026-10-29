@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TrainingOS · Shared layout and account</title>
+<style>
+@import '../../src/tokens.css';
+*{box-sizing:border-box}html{color-scheme:dark;background:var(--color-background);color:var(--color-text);font:15px Arial,sans-serif}body{max-width:1440px;margin:auto;padding:40px 24px}h1{font-size:26px;letter-spacing:-.03em}p{max-width:850px;color:var(--color-text-muted);line-height:1.7}a{color:inherit}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-top:32px}main a{display:block;text-decoration:none;overflow:hidden;border:1px solid var(--color-border-strong);border-radius:16px;background:var(--color-surface)}img{display:block;width:100%;height:340px;object-fit:contain;background:#181818}h2{font-size:15px;font-weight:400;margin:18px 20px}a:focus-visible{outline:2px solid var(--color-focus);outline-offset:4px}table{border-collapse:collapse;font-size:14px;margin:24px 0}th,td{text-align:left;padding:12px 24px 12px 0;border-bottom:1px solid var(--color-border)}th{color:var(--color-text-muted);font-weight:400}code{color:var(--color-text)}
+</style>
+<h1>TrainingOS · Shared layout and account</h1>
+<p>29 October 2026. Every application page uses the same content width and header edges through <code>--page-content-max</code>, <code>--page-inline-inset</code> and <code>--page-gutter</code>. Account has no separate width override. A stable scrollbar gutter prevents horizontal shifts between short and long pages.</p>
+<p>The account no longer contains an activity grid or a training-plan link. Account, Settings and My data share section navigation. Settings follow the Maximus section/row pattern: quiet headings, descriptive labels, separators and trailing controls, stacked on mobile. Screenshots use isolated sample data.</p>
+<table><thead><tr><th>Viewport</th><th>Content width</th><th>Nine pages</th></tr></thead><tbody><tr><td>320 px</td><td>277.56 px</td><td>Identical edges</td></tr><tr><td>390 px</td><td>341.25 px</td><td>Identical edges</td></tr><tr><td>1024 px</td><td>867.75 px</td><td>Identical edges</td></tr><tr><td>1440 px</td><td>997.5 px</td><td>Identical edges</td></tr><tr><td>2560 px</td><td>1400 px</td><td>Identical edges</td></tr></tbody></table>
+<p><a href="verification.json">All 45 layout measurements</a> · <a href="/profile?demo=1">Live account preview</a> · <a href="/profile/settings?demo=1">Live settings preview</a> · <a href="../ui-polish/index.html">Other UI checkpoints</a></p>
+<main>
+<a href="account-desktop.jpg"><img src="account-desktop.jpg" alt="Account, desktop"><h2>Account · Desktop</h2></a>
+<a href="account-mobile.jpg"><img src="account-mobile.jpg" alt="Account, mobile"><h2>Account · Mobile</h2></a>
+<a href="settings-desktop.jpg"><img src="settings-desktop.jpg" alt="Maximus-style settings, desktop"><h2>Settings · Desktop</h2></a>
+<a href="settings-mobile.jpg"><img loading="lazy" src="settings-mobile.jpg" alt="Stacked settings rows, mobile"><h2>Settings · Mobile</h2></a>
+<a href="data-desktop.jpg"><img loading="lazy" src="data-desktop.jpg" alt="My data, desktop"><h2>My data · Desktop</h2></a>
+<a href="data-mobile.jpg"><img loading="lazy" src="data-mobile.jpg" alt="My data, mobile"><h2>My data · Mobile</h2></a>
+</main>
+</html>
